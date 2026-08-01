@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Nearby Shelter Locator - Disaster Relief Centers{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
+        <div>
+            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Emergency Shelter Locator</h2>
+            <p class="text-muted small mb-0">Search disaster relief camps, check available bed capacity, and locate amenities on the live map.</p>
+        </div>
+
+        <!-- District Filter Form -->
+        <form method="GET" action="{{ url_for('feature.shelters') }}" class="d-flex gap-2" style="max-width: 400px;">
+            <select name="district" class="form-select bg-dark text-white border-secondary">
+                <option value="">All Districts</option>
+                {% for dist in districts %}
+                    <option value="{{ dist }}" {% if current_district == dist %}selected{% endif %}>{{ dist }}</option>
+                {% endfor %}
+            </select>
+            <button type="submit" class="btn btn-cyan text-nowrap"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+        </form>
+    </div>
+
+    <!-- Interactive Leaflet Map View -->
+    <div class="mb-5">
+        <div id="map"></div>
+    </div>
+
+    <!-- Shelters List -->
+    <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-building-user text-cyan me-2"></i>Available Relief Shelters</h4>
+
+    <div class="row g-4">
+        {% if shelters %}
+            {% for s in shelters %}
+            <div class="col-md-6 col-lg-4">
+                <div class="glass-card p-4 h-100 d-flex flex-column">
+                    <div class="d-flex align-items-start justify-content-between mb-2">
+                        <span class="badge bg-info text-dark font-monospace fw-bold">{{ s.district }}</span>
+                        {% if s.available_beds > 50 %}
+                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Available</span>
+                        {% elif s.available_beds > 0 %}
+                            <span class="badge bg-warning text-dark"><if class="fa-solid fa-triangle-exclamation me-1"></i>Limited Beds</span>
+                        {% else %}
+                            <span class="badge bg-danger"><i class="fa-solid fa-ban me-1"></i>Full Capacity</span>
+                        {% endif %}
+                    </div>
+
+                    <h5 class="fw-bold text-white mb-2">{{ s.name }}</h5>
+                    <p class="small text-muted mb-3"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ s.address }}</p>
+
+                    <!-- Bed Occupancy Bar -->
+                    <div class="mb-3">
+                        <div class="d-flex justify-content-between small text-muted mb-1">
+                            <span>Bed Capacity</span>
+                            <span class="fw-bold text-white">{{ s.available_beds }} / {{ s.total_capacity }} Beds Free</span>
+                        </div>
+                        <div class="progress" style="height: 10px; background-color: rgba(255,255,255,0.1);">
+                            <div class="progress-bar {% if s.available_beds < 50 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ s.occupancy_percentage }}%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Amenities Badges -->
+                    <div class="d-flex flex-wrap gap-2 mb-4">
+                        {% if s.has_food %}
+                            <span class="badge bg-dark border border-secondary text-slate-300"><i class="fa-solid fa-utensils text-warning me-1"></i> Food</span>
+                        {% endif %}
+                        {% if s.has_water %}
+                            <span class="badge bg-dark border border-secondary text-slate-300"><i class="fa-solid fa-bottle-water text-cyan me-1"></i> Clean Water</span>
+                        {% endif %}
+                        {% if s.has_medical %}
+                            <span class="badge bg-dark border border-secondary text-slate-300"><i class="fa-solid fa-kit-medical text-danger me-1"></i> Medical Desk</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="mt-auto d-flex gap-2">
+                        <a href="tel:{{ s.contact_number }}" class="btn btn-cyan btn-sm flex-fill fw-bold">
+                            <i class="fa-solid fa-phone me-1"></i> Call Shelter
+                        </a>
+                        <a href="https://maps.google.com/?q={{ s.latitude }},{{ s.longitude }}" target="_blank" class="btn btn-outline-light btn-sm">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5 glass-card">
+                <p class="text-muted mb-0">No shelters found matching your search district filter.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/shelter_map.js') }}"></script>
+{% endblock %}

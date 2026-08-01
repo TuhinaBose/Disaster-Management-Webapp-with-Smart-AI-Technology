@@ -1,0 +1,81 @@
+{% extends 'base.html' %}
+
+{% block title %}Live Weather & Disaster Alerts - Disaster Management Application{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="text-center mb-5">
+        <h2 class="fw-extrabold text-white"><i class="fa-solid fa-cloud-bolt text-warning me-2"></i>Live Weather & Disaster Alerts</h2>
+        <p class="text-muted mx-auto" style="max-width: 600px;">
+            Real-time meteorological warnings, severe storm advisories, and disaster bulletins broadcasted directly by emergency management agencies.
+        </p>
+    </div>
+
+    <!-- Live Weather Quick Overview Widget -->
+    <div class="glass-card p-4 mb-5">
+        <div class="row align-items-center g-4">
+            <div class="col-md-4 text-center border-end-md border-secondary">
+                <div class="tile-icon-box bg-icon-cyan mx-auto mb-2 fs-2">
+                    <i class="fa-solid fa-cloud-sun-rain"></i>
+                </div>
+                <h3 class="fw-bold text-white mb-0">29°C</h3>
+                <p class="text-cyan mb-0">Heavy Overcast & Rain</p>
+                <small class="text-muted">Updated 10 minutes ago</small>
+            </div>
+            <div class="col-md-8">
+                <div class="row text-center text-md-start g-3">
+                    <div class="col-6 col-sm-3">
+                        <small class="text-muted d-block">Precipitation</small>
+                        <strong class="text-white">142 mm</strong>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <small class="text-muted d-block">Wind Gusts</small>
+                        <strong class="text-white">68 km/h</strong>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <small class="text-muted d-block">Humidity</small>
+                        <strong class="text-white">88 %</strong>
+                    </div>
+                    <div class="col-6 col-sm-3">
+                        <small class="text-muted d-block">Barometer</small>
+                        <strong class="text-white">1004 hPa</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Alert Cards Feed -->
+    <h4 class="fw-bold text-white mb-4"><i class="fa-solid fa-bullhorn text-danger me-2"></i>Active Disaster Bulletins</h4>
+
+    <div class="row g-4">
+        {% if alerts %}
+            {% for alert in alerts %}
+            <div class="col-md-6">
+                <div class="glass-card p-4 h-100 border-start border-5 {% if alert.severity == 'Critical' %}border-danger{% elif alert.severity == 'Warning' %}border-warning{% else %}border-info{% endif %}">
+                    <div class="d-flex align-items-center justify-content-between mb-3">
+                        <span class="badge {% if alert.severity == 'Critical' %}bg-danger{% elif alert.severity == 'Warning' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %} fs-6">
+                            <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ alert.severity }}
+                        </span>
+                        <span class="badge bg-dark text-cyan border border-secondary">{{ alert.disaster_type }}</span>
+                    </div>
+
+                    <h5 class="fw-bold text-white mb-2">{{ alert.title }}</h5>
+                    <p class="small text-danger mb-3"><i class="fa-solid fa-location-pin me-1"></i>Affected Region: <strong>{{ alert.location }}</strong></p>
+                    <p class="text-slate-300 small mb-4">{{ alert.description }}</p>
+
+                    <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
+                        <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>Issued: {{ alert.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        <a href="{{ url_for('feature.predict') }}" class="btn btn-sm btn-outline-cyan">Check Risk</a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-5 glass-card">
+                <p class="text-muted mb-0">No active disaster alerts registered.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

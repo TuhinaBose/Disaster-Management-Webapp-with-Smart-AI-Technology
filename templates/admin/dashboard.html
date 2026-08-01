@@ -1,0 +1,146 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Dashboard - Disaster Operations Control{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
+        <div>
+            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-gauge-high text-cyan me-2"></i>Emergency Operations Control Room</h2>
+            <p class="text-muted small mb-0">Welcome back, Admin! Manage relief shelters, disaster alerts, and live distress calls.</p>
+        </div>
+        <div class="d-flex gap-2">
+            <a href="{{ url_for('admin.manage_shelters') }}" class="btn btn-sm btn-outline-info"><i class="fa-solid fa-hospital-user me-1"></i> Shelters</a>
+            <a href="{{ url_for('admin.manage_alerts') }}" class="btn btn-sm btn-outline-warning"><i class="fa-solid fa-bell me-1"></i> Alerts</a>
+            <a href="{{ url_for('admin.manage_sos') }}" class="btn btn-sm btn-emergency"><i class="fa-solid fa-phone-volume me-1"></i> SOS Queue ({{ pending_sos }})</a>
+        </div>
+    </div>
+
+    <!-- Stat Counters -->
+    <div class="row g-4 mb-5">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-campground text-cyan fs-2 mb-2"></i>
+                <h3 class="fw-bold text-white mb-0">{{ total_shelters }}</h3>
+                <span class="small text-muted">Registered Shelters</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-triangle-exclamation text-warning fs-2 mb-2"></i>
+                <h3 class="fw-bold text-white mb-0">{{ active_alerts }}</h3>
+                <span class="small text-muted">Active Alerts Broadcasted</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-tower-broadcast text-danger fs-2 mb-2"></i>
+                <h3 class="fw-bold text-white mb-0">{{ pending_sos }}</h3>
+                <span class="small text-muted">Pending SOS Emergency Requests</span>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4 text-center">
+                <i class="fa-solid fa-users text-success fs-2 mb-2"></i>
+                <h3 class="fw-bold text-white mb-0">{{ total_users }}</h3>
+                <span class="small text-muted">System Accounts</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Emergency SOS Live Requests Table -->
+    <div class="glass-card p-4 mb-5">
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="fw-bold text-white mb-0"><i class="fa-solid fa-truck-droplet text-danger me-2"></i>Recent Emergency SOS Requests</h4>
+            <a href="{{ url_for('admin.manage_sos') }}" class="btn btn-sm btn-outline-danger">Manage All Requests</a>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Sender Name</th>
+                        <th>Phone</th>
+                        <th>Location</th>
+                        <th>Urgency</th>
+                        <th>Status</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if recent_requests %}
+                        {% for req in recent_requests %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td class="fw-bold text-white">{{ req.sender_name }}</td>
+                            <td><a href="tel:{{ req.contact_phone }}" class="text-cyan text-decoration-none">{{ req.contact_phone }}</a></td>
+                            <td class="small">{{ req.location }}</td>
+                            <td>
+                                <span class="badge {% if req.urgency_level == 'Critical' %}bg-danger{% elif req.urgency_level == 'High' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                                    {{ req.urgency_level }}
+                                </span>
+                            </td>
+                            <td>
+                                <span class="badge {% if req.status == 'Pending' %}bg-danger{% elif req.status == 'In Progress' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                    {{ req.status }}
+                                </span>
+                            </td>
+                            <td class="small text-muted">{{ req.created_at.strftime('%H:%M:%S') }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">No emergency distress requests recorded yet.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent AI Predictions History -->
+    <div class="glass-card p-4">
+        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-brain text-cyan me-2"></i>Recent AI Risk Assessment Logs</h4>
+
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Rainfall</th>
+                        <th>River Level</th>
+                        <th>Wind Speed</th>
+                        <th>Earthquake Mag</th>
+                        <th>Risk Score</th>
+                        <th>Predicted Level</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if recent_predictions %}
+                        {% for pred in recent_predictions %}
+                        <tr>
+                            <td>#{{ pred.id }}</td>
+                            <td>{{ pred.rainfall }} mm</td>
+                            <td>{{ pred.river_level }} m</td>
+                            <td>{{ pred.wind_speed }} km/h</td>
+                            <td>{{ pred.earthquake_mag }} M</td>
+                            <td class="fw-bold">{{ pred.risk_score }}%</td>
+                            <td>
+                                <span class="badge {% if pred.predicted_risk == 'High' %}bg-danger{% elif pred.predicted_risk == 'Medium' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                                    {{ pred.predicted_risk }}
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">No AI prediction logs available.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

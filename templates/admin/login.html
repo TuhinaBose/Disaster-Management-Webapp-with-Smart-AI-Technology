@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Admin Authentication - Disaster Management Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-5 col-lg-4">
+            <div class="glass-card p-4 p-md-5">
+                <div class="text-center mb-4">
+                    <div class="tile-icon-box bg-icon-cyan mx-auto mb-3">
+                        <i class="fa-solid fa-user-shield fs-3"></i>
+                    </div>
+                    <h4 class="fw-bold text-white mb-1">Admin Portal Login</h4>
+                    <p class="text-muted small mb-0">Authorized Emergency Control Personnel Only</p>
+                </div>
+
+                <form method="POST" action="{{ url_for('admin.login') }}">
+                    <div class="mb-3">
+                        <label class="form-label text-slate-300 small fw-semibold">Admin Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark text-cyan border-secondary"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" name="username" class="form-control bg-dark text-white border-secondary" placeholder="Username" required autofocus>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label text-slate-300 small fw-semibold">Admin Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-dark text-cyan border-secondary"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="Password" required>
+                        </div>
+                    </div>
+
+                    <button type="submit" class="btn btn-cyan w-100 py-2 fw-bold mb-3">
+                        <i class="fa-solid fa-right-to-bracket me-1"></i> Log In to Dashboard
+                    </button>
+
+                    <div class="text-center p-2 rounded" style="background: rgba(255,255,255,0.05);">
+                        <small class="text-muted d-block">Default Credentials for Demo:</small>
+                        <small class="text-cyan font-monospace">Username: <strong>admin</strong> | Password: <strong>admin123</strong></small>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

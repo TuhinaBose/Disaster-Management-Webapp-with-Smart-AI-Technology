@@ -1,0 +1,185 @@
+{% extends 'base.html' %}
+
+{% block title %}Home - Disaster Management Web Application with Smart AI Technology{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero-section text-center">
+    <div class="container">
+        <div class="mb-3">
+            <span class="badge-emergency">
+                <div class="pulse-dot"></div>
+                DISASTER MONITORING ACTIVE
+            </span>
+        </div>
+        <h1 class="hero-title mb-3">
+            Disaster Management Web Application<br>with <span class="text-cyan">Smart AI Technology</span>
+        </h1>
+        <p class="hero-subtitle mx-auto mb-4">
+            Real-time disaster risk prediction, instant emergency shelter navigation, live meteorological alert broadcasts, and rapid one-click emergency SOS dispatch.
+        </p>
+
+        <div class="d-flex justify-content-center flex-wrap gap-3 mb-5">
+            <a href="{{ url_for('feature.predict') }}" class="btn btn-cyan btn-lg px-4 py-3 shadow">
+                <i class="fa-solid fa-brain me-2"></i> Check Disaster Risk
+            </a>
+            <a href="{{ url_for('feature.shelters') }}" class="btn btn-outline-light btn-lg px-4 py-3">
+                <i class="fa-solid fa-campground me-2 text-warning"></i> Find Nearby Shelter
+            </a>
+            <a href="{{ url_for('feature.sos') }}" class="btn btn-emergency btn-lg px-4 py-3">
+                <i class="fa-solid fa-triangle-exclamation me-2"></i> Emergency SOS
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Live Awareness Banner Ticker -->
+{% if active_alerts %}
+<div class="container mb-5">
+    <div class="alert-ticker-wrap shadow-sm">
+        <div class="d-flex align-items-center gap-2 text-danger fw-bold flex-shrink-0">
+            <i class="fa-solid fa-bullhorn fa-beat"></i>
+            <span>LIVE ALERT:</span>
+        </div>
+        <div class="text-white overflow-hidden text-truncate">
+            {% for alert in active_alerts %}
+                <span class="badge bg-danger me-2">{{ alert.severity }}</span>
+                <strong>{{ alert.title }}</strong> ({{ alert.location }}) &nbsp;•&nbsp;
+            {% endfor %}
+        </div>
+        <a href="{{ url_for('main.alerts') }}" class="btn btn-sm btn-outline-danger ms-auto flex-shrink-0">View All Alerts</a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Real-Time System Metrics Counter -->
+<div class="container mb-5">
+    <div class="row g-4 text-center">
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4">
+                <div class="tile-icon-box bg-icon-blue mx-auto mb-3">
+                    <i class="fa-solid fa-hospital-user"></i>
+                </div>
+                <h2 class="fw-extrabold text-white mb-1">{{ total_shelters }}</h2>
+                <p class="text-muted small mb-0">Total Active Shelters</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4">
+                <div class="tile-icon-box bg-icon-green mx-auto mb-3">
+                    <i class="fa-solid fa-bed"></i>
+                </div>
+                <h2 class="fw-extrabold text-white mb-1">{{ available_beds }}</h2>
+                <p class="text-muted small mb-0">Available Beds</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4">
+                <div class="tile-icon-box bg-icon-red mx-auto mb-3">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+                <h2 class="fw-extrabold text-white mb-1">{{ active_alerts|length }}</h2>
+                <p class="text-muted small mb-0">Active Warning Bulletins</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-3">
+            <div class="glass-card p-4">
+                <div class="tile-icon-box bg-icon-cyan mx-auto mb-3">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h2 class="fw-extrabold text-white mb-1">24 / 7</h2>
+                <p class="text-muted small mb-0">AI Emergency Operations</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Four Core Feature Tiles -->
+<div class="container mb-5">
+    <div class="text-center mb-4">
+        <h3 class="fw-bold text-white mb-2">Core System Features</h3>
+        <p class="text-muted">Intelligent emergency response modules powered by machine learning and geospatial data.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="tile-icon-box bg-icon-cyan mb-3">
+                    <i class="fa-solid fa-microchip"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-2">1. AI Risk Prediction</h5>
+                <p class="text-muted small flex-grow-1">Analyze environmental metrics including rainfall, river gauge, wind speed, and earthquake magnitude with Random Forest ML.</p>
+                <a href="{{ url_for('feature.predict') }}" class="btn btn-sm btn-cyan w-100 mt-3">Analyze Risk Now <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="tile-icon-box bg-icon-blue mb-3">
+                    <i class="fa-solid fa-location-dot"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-2">2. Nearby Shelter Locator</h5>
+                <p class="text-muted small flex-grow-1">Search relief centers by district. View live bed availability, food/water amenities, medical support, and Leaflet map location.</p>
+                <a href="{{ url_for('feature.shelters') }}" class="btn btn-sm btn-outline-primary w-100 mt-3">Find Shelters <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="tile-icon-box bg-icon-red mb-3">
+                    <i class="fa-solid fa-phone-volume"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-2">3. Emergency SOS</h5>
+                <p class="text-muted small flex-grow-1">One-click SOS alert sending your live browser GPS coordinates directly to disaster control rooms and emergency helplines.</p>
+                <a href="{{ url_for('feature.sos') }}" class="btn btn-sm btn-emergency w-100 mt-3">Transmit SOS <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="tile-icon-box bg-icon-green mb-3">
+                    <i class="fa-solid fa-shield-heart"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-2">4. Safety Guidelines</h5>
+                <p class="text-muted small flex-grow-1">Interactive survival checklists and emergency protocol procedures for Floods, Earthquakes, Cyclones, Fires, and Heatwaves.</p>
+                <a href="{{ url_for('main.safety') }}" class="btn btn-sm btn-outline-success w-100 mt-3">View Guidelines <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Active Alerts Bulletin Feed -->
+<div class="container mb-5">
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="fw-bold text-white mb-1"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Active Disaster Advisories</h4>
+            <p class="text-muted small mb-0">Issued by Central Meteorological & Disaster Authorities</p>
+        </div>
+        <a href="{{ url_for('main.alerts') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+    </div>
+
+    <div class="row g-3">
+        {% if recent_alerts %}
+            {% for alert in recent_alerts %}
+            <div class="col-md-4">
+                <div class="glass-card p-3 border-start border-4 {% if alert.severity == 'Critical' %}border-danger{% elif alert.severity == 'Warning' %}border-warning{% else %}border-info{% endif %}">
+                    <div class="d-flex align-items-center justify-content-between mb-2">
+                        <span class="badge {% if alert.severity == 'Critical' %}bg-danger{% elif alert.severity == 'Warning' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                            {{ alert.severity }}
+                        </span>
+                        <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>{{ alert.created_at.strftime('%b %d, %H:%M') }}</small>
+                    </div>
+                    <h6 class="fw-bold text-white mb-1">{{ alert.title }}</h6>
+                    <p class="small text-muted mb-2"><i class="fa-solid fa-location-pin me-1 text-danger"></i>{{ alert.location }}</p>
+                    <p class="small text-slate-300 mb-0 line-clamp-2">{{ alert.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12 text-center py-4 glass-card">
+                <p class="text-muted mb-0"><i class="fa-solid fa-circle-check text-success me-2"></i>No active disaster advisories at present. Weather conditions normal.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

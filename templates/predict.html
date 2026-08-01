@@ -1,0 +1,151 @@
+{% extends 'base.html' %}
+
+{% block title %}AI Disaster Risk Prediction - Smart AI Technology{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header -->
+    <div class="text-center mb-5">
+        <span class="badge bg-info text-dark font-monospace mb-2 px-3 py-2 fw-bold">SCIKIT-LEARN ML ENGINE</span>
+        <h2 class="fw-extrabold text-white">AI Disaster Risk Prediction Engine</h2>
+        <p class="text-muted mx-auto" style="max-width: 650px;">
+            Input environmental parameters to calculate real-time flood, cyclone, and earthquake disaster risk levels using our Random Forest Machine Learning classifier.
+        </p>
+    </div>
+
+    <!-- Quick Scenario Presets -->
+    <div class="glass-card p-3 mb-4 max-w-4xl mx-auto text-center">
+        <span class="small text-muted me-3 fw-bold"><i class="fa-solid fa-bolt text-warning me-1"></i> Quick Test Scenarios:</span>
+        <div class="btn-group flex-wrap mt-2 mt-md-0" role="group">
+            <button type="button" class="btn btn-sm btn-outline-danger preset-btn" data-preset="severe_flood">
+                <i class="fa-solid fa-water me-1"></i> Severe Flood
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-warning preset-btn" data-preset="severe_cyclone">
+                <i class="fa-solid fa-wind me-1"></i> Severe Cyclone
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-info preset-btn" data-preset="earthquake">
+                <i class="fa-solid fa-house-crack me-1"></i> Major Earthquake
+            </button>
+            <button type="button" class="btn btn-sm btn-outline-success preset-btn" data-preset="normal">
+                <i class="fa-solid fa-sun me-1"></i> Clear Weather
+            </button>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Input Form Column -->
+        <div class="col-lg-6">
+            <div class="glass-card p-4">
+                <h4 class="fw-bold text-white mb-4">
+                    <i class="fa-solid fa-sliders text-cyan me-2"></i>Environmental Metrics Input
+                </h4>
+
+                <form id="predict-form">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="rainfall" class="form-label text-slate-300 small fw-semibold">Rainfall (mm)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-cyan border-secondary"><i class="fa-solid fa-cloud-showers-heavy"></i></span>
+                                <input type="number" step="0.1" min="0" max="500" class="form-control bg-dark text-white border-secondary" id="rainfall" placeholder="e.g. 120" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="river_level" class="form-label text-slate-300 small fw-semibold">River Water Level (meters)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-primary border-secondary"><i class="fa-solid fa-water"></i></span>
+                                <input type="number" step="0.1" min="0" max="20" class="form-control bg-dark text-white border-secondary" id="river_level" placeholder="e.g. 6.5" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="wind_speed" class="form-label text-slate-300 small fw-semibold">Wind Speed (km/h)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-warning border-secondary"><i class="fa-solid fa-wind"></i></span>
+                                <input type="number" step="0.1" min="0" max="250" class="form-control bg-dark text-white border-secondary" id="wind_speed" placeholder="e.g. 85" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="earthquake_mag" class="form-label text-slate-300 small fw-semibold">Earthquake Mag (Richter)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-danger border-secondary"><i class="fa-solid fa-house-crack"></i></span>
+                                <input type="number" step="0.1" min="0" max="10" class="form-control bg-dark text-white border-secondary" id="earthquake_mag" placeholder="e.g. 5.2" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="temperature" class="form-label text-slate-300 small fw-semibold">Temperature (°C)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-warning border-secondary"><i class="fa-solid fa-temperature-high"></i></span>
+                                <input type="number" step="0.1" min="-20" max="60" class="form-control bg-dark text-white border-secondary" id="temperature" value="28" required>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label for="humidity" class="form-label text-slate-300 small fw-semibold">Humidity (%)</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-dark text-info border-secondary"><i class="fa-solid fa-droplet"></i></span>
+                                <input type="number" step="0.1" min="0" max="100" class="form-control bg-dark text-white border-secondary" id="humidity" value="70" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="predict-btn" class="btn btn-cyan btn-lg w-100 mt-4 py-3 fw-bold">
+                        <i class="fa-solid fa-wand-magic-sparkles me-2"></i>Run AI Risk Prediction
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Result Card Column -->
+        <div class="col-lg-6">
+            <div id="prediction-result-box" class="glass-card p-4 h-100 d-none">
+                <div class="d-flex align-items-center justify-content-between mb-3">
+                    <h4 class="fw-bold text-white mb-0"><i class="fa-solid fa-chart-pie text-cyan me-2"></i>AI Assessment Result</h4>
+                    <span id="res-risk-level" class="badge risk-badge-low fs-5">LOW RISK</span>
+                </div>
+
+                <div class="mb-4">
+                    <div class="d-flex justify-content-between small text-muted mb-1">
+                        <span>Risk Threat Score</span>
+                        <span id="res-risk-score" class="fw-bold text-white">0%</span>
+                    </div>
+                    <div class="progress" style="height: 14px; background-color: rgba(255,255,255,0.1);">
+                        <div id="res-progress-bar" class="progress-bar progress-bar-striped progress-bar-animated bg-success" role="progressbar" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="p-3 mb-4 rounded-3" style="background: rgba(0,0,0,0.3); border: 1px solid var(--border-color);">
+                    <h6 class="fw-bold text-white mb-2"><i class="fa-solid fa-circle-check text-cyan me-2"></i>AI Safety Recommendations:</h6>
+                    <ul id="res-recommendations" class="list-unstyled mb-0 small">
+                        <!-- Populated via JS -->
+                    </ul>
+                </div>
+
+                <div class="d-flex gap-2">
+                    <a href="{{ url_for('feature.shelters') }}" class="btn btn-outline-light btn-sm flex-fill">
+                        <i class="fa-solid fa-campground me-1"></i> View Nearby Shelters
+                    </a>
+                    <a href="{{ url_for('feature.sos') }}" class="btn btn-danger btn-sm flex-fill fw-bold">
+                        <i class="fa-solid fa-triangle-exclamation me-1"></i> Send Emergency SOS
+                    </a>
+                </div>
+            </div>
+
+            <!-- Placeholder Before Prediction -->
+            <div id="prediction-placeholder" class="glass-card p-5 h-100 text-center d-flex flex-column align-items-center justify-content-center">
+                <div class="tile-icon-box bg-icon-cyan mb-3 fs-2">
+                    <i class="fa-solid fa-brain"></i>
+                </div>
+                <h5 class="fw-bold text-white mb-2">Ready for AI Evaluation</h5>
+                <p class="text-muted small max-w-sm mb-0">Fill out the parameters on the left or choose a test scenario to compute real-time disaster threat probabilities.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/predict.js') }}"></script>
+{% endblock %}
