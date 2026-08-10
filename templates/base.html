@@ -59,15 +59,24 @@
                         <div class="pulse-dot"></div>
                         <span>EMERGENCY SOS</span>
                     </a>
-                    {% if session.get('role') == 'admin' %}
-                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-info btn-sm">
-                        <i class="fa-solid fa-user-shield me-1"></i> Admin Panel
-                    </a>
-                    <a href="{{ url_for('admin.logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+                    {% if session.get('user_id') %}
+                        {% if session.get('role') == 'admin' %}
+                            <a href="{{ url_for('admin.dashboard') }}" class="btn btn-outline-info btn-sm">
+                                <i class="fa-solid fa-user-shield me-1"></i> Admin Panel
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('main.profile') }}" class="btn btn-outline-cyan btn-sm">
+                                <i class="fa-solid fa-user me-1"></i> My Profile ({{ session.get('username') }})
+                            </a>
+                        {% endif %}
+                        <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
                     {% else %}
-                    <a href="{{ url_for('admin.login') }}" class="text-slate-400 text-decoration-none small">
-                        <i class="fa-solid fa-lock me-1"></i> Admin Login
-                    </a>
+                        <a href="{{ url_for('main.login') }}" class="btn btn-outline-light btn-sm">
+                            <i class="fa-solid fa-right-to-bracket me-1"></i> Login
+                        </a>
+                        <a href="{{ url_for('main.register') }}" class="btn btn-cyan btn-sm fw-bold">
+                            Register
+                        </a>
                     {% endif %}
                 </div>
             </div>

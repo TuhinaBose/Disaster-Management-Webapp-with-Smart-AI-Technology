@@ -1,25 +1,36 @@
 {% extends 'base.html' %}
 
-{% block title %}Nearby Shelter Locator - Disaster Relief Centers{% endblock %}
+{% block title %}Nearby Shelter Locator - RADAR Disaster Management{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div>
             <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Emergency Shelter Locator</h2>
-            <p class="text-muted small mb-0">Search disaster relief camps, check available bed capacity, and locate amenities on the live map.</p>
+            <p class="text-muted small mb-0">Search disaster relief camps, calculate real-time distance from your live position, and check bed availability.</p>
         </div>
 
-        <!-- District Filter Form -->
-        <form method="GET" action="{{ url_for('feature.shelters') }}" class="d-flex gap-2" style="max-width: 400px;">
-            <select name="district" class="form-select bg-dark text-white border-secondary">
-                <option value="">All Districts</option>
-                {% for dist in districts %}
-                    <option value="{{ dist }}" {% if current_district == dist %}selected{% endif %}>{{ dist }}</option>
-                {% endfor %}
-            </select>
-            <button type="submit" class="btn btn-cyan text-nowrap"><i class="fa-solid fa-filter me-1"></i> Filter</button>
-        </form>
+        <div class="d-flex flex-column flex-sm-row gap-2">
+            <button id="locate-me-btn" class="btn btn-outline-cyan btn-sm text-nowrap">
+                <i class="fa-solid fa-location-crosshairs me-1"></i> Locate My Position
+            </button>
+
+            <!-- District Filter Form -->
+            <form method="GET" action="{{ url_for('feature.shelters') }}" class="d-flex gap-2" style="max-width: 300px;">
+                <select name="district" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="">All Districts</option>
+                    {% for dist in districts %}
+                        <option value="{{ dist }}" {% if current_district == dist %}selected{% endif %}>{{ dist }}</option>
+                    {% endfor %}
+                </select>
+                <button type="submit" class="btn btn-cyan btn-sm text-nowrap"><i class="fa-solid fa-filter me-1"></i> Filter</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Live GPS Status Banner -->
+    <div class="mb-3 text-end">
+        <span id="gps-status-text" class="small text-cyan font-monospace"></span>
     </div>
 
     <!-- Interactive Leaflet Map View -->
@@ -40,14 +51,17 @@
                         {% if s.available_beds > 50 %}
                             <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Available</span>
                         {% elif s.available_beds > 0 %}
-                            <span class="badge bg-warning text-dark"><if class="fa-solid fa-triangle-exclamation me-1"></i>Limited Beds</span>
+                            <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i>Limited Beds</span>
                         {% else %}
                             <span class="badge bg-danger"><i class="fa-solid fa-ban me-1"></i>Full Capacity</span>
                         {% endif %}
                     </div>
 
-                    <h5 class="fw-bold text-white mb-2">{{ s.name }}</h5>
-                    <p class="small text-muted mb-3"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ s.address }}</p>
+                    <h5 class="fw-bold text-white mb-1">{{ s.name }}</h5>
+                    <p class="small text-muted mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ s.address }}</p>
+
+                    <!-- Dynamic Live GPS Distance Badge -->
+                    <div id="shelter-dist-{{ s.id }}" class="small text-cyan mb-3 d-none"></div>
 
                     <!-- Bed Occupancy Bar -->
                     <div class="mb-3">
@@ -77,7 +91,7 @@
                         <a href="tel:{{ s.contact_number }}" class="btn btn-cyan btn-sm flex-fill fw-bold">
                             <i class="fa-solid fa-phone me-1"></i> Call Shelter
                         </a>
-                        <a href="https://maps.google.com/?q={{ s.latitude }},{{ s.longitude }}" target="_blank" class="btn btn-outline-light btn-sm">
+                        <a href="https://maps.google.com/?q={{ s.latitude }},{{ s.longitude }}" target="_blank" class="btn btn-outline-light btn-sm" title="Open in Google Maps">
                             <i class="fa-solid fa-map-location-dot"></i>
                         </a>
                     </div>

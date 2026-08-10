@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}My Citizen Profile & Emergency Requests - RADAR{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="glass-card p-4 p-md-5 mb-5 border-start border-5 border-cyan">
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+            <div class="d-flex align-items-center gap-3">
+                <div class="tile-icon-box bg-icon-cyan fs-2">
+                    <i class="fa-solid fa-user-gear"></i>
+                </div>
+                <div>
+                    <h3 class="fw-bold text-white mb-0">{{ user.username }}</h3>
+                    <p class="text-muted small mb-0"><i class="fa-solid fa-envelope me-1"></i>{{ user.email }} &bull; Citizen Account</p>
+                </div>
+            </div>
+            <div>
+                <a href="{{ url_for('feature.sos') }}" class="btn btn-emergency btn-sm fw-bold">
+                    <i class="fa-solid fa-triangle-exclamation me-1"></i> Send Emergency SOS
+                </a>
+                <a href="{{ url_for('main.logout') }}" class="btn btn-outline-danger btn-sm">Logout</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- My SOS Requests Status Tracker -->
+    <div class="glass-card p-4 mb-5">
+        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-truck-droplet text-danger me-2"></i>My Emergency SOS Distress Calls</h4>
+
+        <div class="table-responsive">
+            <table class="table table-custom align-middle">
+                <thead>
+                    <tr>
+                        <th>Req ID</th>
+                        <th>Location</th>
+                        <th>Urgency</th>
+                        <th>Situation Details</th>
+                        <th>Status</th>
+                        <th>Transmitted At</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if my_requests %}
+                        {% for req in my_requests %}
+                        <tr>
+                            <td>#{{ req.id }}</td>
+                            <td class="fw-bold text-white">{{ req.location }}</td>
+                            <td>
+                                <span class="badge {% if req.urgency_level == 'Critical' %}bg-danger{% elif req.urgency_level == 'High' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                                    {{ req.urgency_level }}
+                                </span>
+                            </td>
+                            <td class="small text-slate-300">{{ req.situation_description }}</td>
+                            <td>
+                                <span class="badge {% if req.status == 'Pending' %}bg-danger{% elif req.status == 'In Progress' %}bg-warning text-dark{% else %}bg-success{% endif %} fs-6">
+                                    <i class="fa-solid {% if req.status == 'Pending' %}fa-clock{% elif req.status == 'In Progress' %}fa-person-running{% else %}fa-circle-check{% endif %} me-1"></i>{{ req.status }}
+                                </span>
+                            </td>
+                            <td class="small text-muted">{{ req.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center text-muted py-4">You have not submitted any emergency distress calls.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
