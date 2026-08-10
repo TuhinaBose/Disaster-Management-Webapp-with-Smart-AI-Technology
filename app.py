@@ -136,8 +136,8 @@ app = create_app()
 
 if __name__ == '__main__':
     print("\n========================================================")
-    print(" 🚀 DISASTER MANAGEMENT WEB APPLICATION RUNNING")
-    print(" Project: Disaster Management Web Application with Smart AI Technology")
+    print(" 🚀 RADAR - DISASTER MANAGEMENT WEB APPLICATION RUNNING")
+    print(" Project: RADAR - Disaster Management Web Application with Smart AI Technology")
     print(" Access App at: http://127.0.0.1:5000")
     print(" Admin Login at: http://127.0.0.1:5000/admin/login")
     print(" Default Admin: admin / admin123")
