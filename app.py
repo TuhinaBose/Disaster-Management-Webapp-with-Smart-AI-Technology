@@ -28,7 +28,7 @@ def create_app():
 def seed_database():
     """Seeds initial admin account and sample data if tables are empty."""
     try:
-        # Check Admin Account
+        # 1. Ensure Admin Account exists with guaranteed password 'admin123'
         admin_user = User.query.filter_by(username='admin').first()
         if not admin_user:
             admin = User(username='admin', email='admin@disasterapp.org', role='admin')
@@ -36,92 +36,155 @@ def seed_database():
             db.session.add(admin)
             db.session.commit()
             print("[Database Seed] Created default admin account (admin / admin123).")
+        else:
+            # Re-verify password hash to ensure admin123 always works
+            if not admin_user.check_password('admin123'):
+                admin_user.set_password('admin123')
+                admin_user.role = 'admin'
+                db.session.commit()
+                print("[Database Seed] Reset admin password to admin123.")
 
-        # Check Shelters Seed
-        if Shelter.query.count() == 0:
+        # 2. Check & Seed Rich Realistic Emergency Shelters
+        if Shelter.query.count() < 4:
+            # Clear old vague shelters if any
+            Shelter.query.delete()
+            db.session.commit()
+
             sample_shelters = [
                 Shelter(
-                    name="Central Relief & Rescue Community Hall",
-                    address="124 Station Road, Central District",
-                    district="Central",
+                    name="Central Disaster Relief & Rescue Complex",
+                    address="Sector 14, Connaught Place Avenue, Central District",
+                    district="Central Delhi",
                     latitude=28.6139,
                     longitude=77.2090,
-                    total_capacity=500,
-                    available_beds=320,
+                    total_capacity=800,
+                    available_beds=480,
                     has_food=True,
                     has_water=True,
                     has_medical=True,
                     contact_number="+91-9876543210"
                 ),
                 Shelter(
-                    name="St. Mary High School Emergency Complex",
-                    address="88 Riverside Drive, North Haven",
-                    district="North Haven",
+                    name="St. Mary Emergency High Ground Shelter",
+                    address="88 Riverside Boulevard, Civil Lines, North District",
+                    district="North Delhi",
                     latitude=28.7041,
                     longitude=77.1025,
-                    total_capacity=300,
-                    available_beds=145,
+                    total_capacity=450,
+                    available_beds=195,
                     has_food=True,
                     has_water=True,
                     has_medical=True,
                     contact_number="+91-9876543211"
                 ),
                 Shelter(
-                    name="Metro Indoor Stadium Shelter",
-                    address="45 Sports City Boulevard, East Zone",
-                    district="East Zone",
+                    name="Metro Indoor Sports Stadium Relief Camp",
+                    address="45 Sports City Boulevard, Laxmi Nagar, East District",
+                    district="East Delhi",
                     latitude=28.5355,
                     longitude=77.3910,
-                    total_capacity=1200,
-                    available_beds=890,
+                    total_capacity=1500,
+                    available_beds=1120,
                     has_food=True,
                     has_water=True,
                     has_medical=True,
                     contact_number="+91-9876543212"
                 ),
                 Shelter(
-                    name="Coastal High Ground Refuge Camp",
-                    address="12 Beach Safety Highway, South Shore",
+                    name="Coastal High Ground Evacuation Refuge",
+                    address="12 Beach Safety Highway, South Shore Zone",
                     district="South Shore",
                     latitude=28.4595,
                     longitude=77.0266,
-                    total_capacity=400,
-                    available_beds=50,
+                    total_capacity=600,
+                    available_beds=85,
                     has_food=True,
                     has_water=True,
                     has_medical=False,
                     contact_number="+91-9876543213"
+                ),
+                Shelter(
+                    name="Green Valley Community Relief Center",
+                    address="Plot 52, Ring Road Bypass, West District",
+                    district="West Delhi",
+                    latitude=28.6500,
+                    longitude=77.0800,
+                    total_capacity=700,
+                    available_beds=510,
+                    has_food=True,
+                    has_water=True,
+                    has_medical=True,
+                    contact_number="+91-9876543214"
+                ),
+                Shelter(
+                    name="National Red Cross Flood Evacuation Camp",
+                    address="Old Cantonment Road, Riverbank Ward",
+                    district="North Haven",
+                    latitude=28.7500,
+                    longitude=77.1500,
+                    total_capacity=1000,
+                    available_beds=730,
+                    has_food=True,
+                    has_water=True,
+                    has_medical=True,
+                    contact_number="+91-9876543215"
+                ),
+                Shelter(
+                    name="Sunrise High School Typhoon Shelter",
+                    address="44 Ocean View Avenue, Coastal Belt",
+                    district="South Shore",
+                    latitude=28.4200,
+                    longitude=77.0500,
+                    total_capacity=350,
+                    available_beds=40,
+                    has_food=True,
+                    has_water=True,
+                    has_medical=False,
+                    contact_number="+91-9876543216"
+                ),
+                Shelter(
+                    name="Apex Medical Center Relief Annex",
+                    address="10 Hospital Expressway, Knowledge Park",
+                    district="Greater Noida",
+                    latitude=28.4700,
+                    longitude=77.5000,
+                    total_capacity=500,
+                    available_beds=310,
+                    has_food=True,
+                    has_water=True,
+                    has_medical=True,
+                    contact_number="+91-9876543217"
                 )
             ]
             db.session.bulk_save_objects(sample_shelters)
             db.session.commit()
-            print("[Database Seed] Created sample emergency shelters.")
+            print("[Database Seed] Created 8 detailed emergency relief shelters.")
 
-        # Check Active Alerts Seed
+        # 3. Check Active Alerts Seed
         if DisasterAlert.query.count() == 0:
             sample_alerts = [
                 DisasterAlert(
-                    title="Heavy Rainfall & Flash Flood Warning",
+                    title="Heavy Rainfall & Severe Flash Flood Warning",
                     disaster_type="Flood",
                     severity="Critical",
-                    location="Riverside & North Haven",
-                    description="Severe precipitation exceeded 180mm. Water levels in local rivers approaching critical marks. Citizens advised to move to higher ground.",
+                    location="North Haven & Riverside Lowlands",
+                    description="Severe precipitation exceeded 195mm. Water levels in local rivers approaching critical overflow marks. Citizens in low-lying sectors advised to move to designated shelters immediately.",
                     is_active=True
                 ),
                 DisasterAlert(
-                    title="Cyclone Alert - Strong Gusts Expected",
+                    title="Cyclone Warning - High Wind Gusts (95 km/h)",
                     disaster_type="Cyclone",
                     severity="Warning",
                     location="South Shore Coastal Belt",
-                    description="Wind speeds recorded up to 95 km/h. Coastal communities urged to remain indoors and secure emergency supplies.",
+                    description="Wind speeds recorded up to 95 km/h. Coastal communities urged to remain indoors, stay away from window glass, and secure emergency supplies.",
                     is_active=True
                 ),
                 DisasterAlert(
-                    title="Heatwave Advisory - Extreme Temperatures",
+                    title="Heatwave Advisory - High Temperature Alert (44°C)",
                     disaster_type="Heatwave",
                     severity="Advisory",
-                    location="Central Plains",
-                    description="Temperatures reaching 44°C. Stay hydrated and avoid outdoor exposure during mid-day hours.",
+                    location="Central Plains & West District",
+                    description="Extreme temperatures reaching 44°C. Stay hydrated, avoid outdoor activity between 12:00 PM and 4:00 PM, and keep emergency fluids ready.",
                     is_active=True
                 )
             ]

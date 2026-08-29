@@ -130,40 +130,55 @@ def chatbot_api():
     """
     AI Chatbot API ('RescuBot') for automated disaster assistance, shelter queries, and emergency advice.
     """
-    data = request.get_json() or {}
-    message = data.get('message', '').lower().strip()
+    try:
+        data = request.get_json(silent=True) or request.form or {}
+        message = data.get('message', '').lower().strip()
 
-    if not message:
-        return jsonify({'reply': "Hello! I am **RescuBot**, your AI Emergency Assistant. How can I help you today?"})
+        if not message:
+            return jsonify({'reply': "👋 Hello! I am **RescuBot**, your RADAR AI Emergency Assistant. How can I help you today?"})
 
-    # Rule-based natural language intent parser for quick, helpful emergency response
-    if any(k in message for k in ['shelter', 'refuge', 'bed', 'camp', 'stay']):
-        available_shelters = Shelter.query.filter(Shelter.available_beds > 0).all()
-        if available_shelters:
-            top_s = available_shelters[0]
-            reply = f"🏠 **Shelter Update**: We currently have **{len(available_shelters)} shelters** open. Recommended: **{top_s.name}** in *{top_s.district}* with **{top_s.available_beds} beds** remaining. Call: {top_s.contact_number}."
+        # Rule-based natural language intent parser with live DB telemetry
+        if any(k in message for k in ['shelter', 'refuge', 'bed', 'camp', 'stay', 'where', 'location', 'accommodation']):
+            available_shelters = Shelter.query.filter(Shelter.available_beds > 0).order_by(Shelter.available_beds.desc()).all()
+            if available_shelters:
+                top_s = available_shelters[0]
+                reply = f"🏠 **Shelter Update**: We currently have **{len(available_shelters)} shelters** open. Recommended: **{top_s.name}** in *{top_s.district}* with **{top_s.available_beds} free beds** remaining. Call: {top_s.contact_number}. View map at [Shelter Locator](/shelters)."
+            else:
+                reply = "🏠 All shelters are currently monitored. Please visit our [Shelter Locator](/shelters) for live capacity updates."
+
+        elif any(k in message for k in ['flood', 'water', 'submerged', 'drowning', 'rain', 'river']):
+            reply = "🌊 **Flood Emergency Tip**: Move immediately to higher ground! Avoid walking or driving through moving flood water. Call **108** for emergency medical/rescue support. Check real-time weather at [Live Alerts](/alerts)."
+
+        elif any(k in message for k in ['earthquake', 'tremor', 'quake', 'shaking']):
+            reply = "🧱 **Earthquake Emergency Tip**: DROP, COVER, and HOLD ON! Take shelter under a sturdy table. Stay away from glass windows, heavy furniture, and power lines."
+
+        elif any(k in message for k in ['cyclone', 'wind', 'storm', 'hurricane', 'gust']):
+            reply = "🌪️ **Cyclone Warning Tip**: Stay indoors away from windows! Secure loose items outside, keep emergency torchlight ready, and monitor local warning broadcasts."
+
+        elif any(k in message for k in ['fire', 'flame', 'smoke', 'burn']):
+            reply = "🔥 **Fire Emergency Tip**: GET OUT, STAY OUT! Crawl low under smoke to avoid toxic gas. Call Fire Brigade **101** immediately. Remember: STOP, DROP, and ROLL if clothes catch fire."
+
+        elif any(k in message for k in ['heatwave', 'heat', 'sun', 'temperature']):
+            reply = "☀️ **Heatwave Advisory**: Stay hydrated with water and ORS. Avoid outdoor exposure between 12:00 PM and 4:00 PM. Wear light cotton clothes."
+
+        elif any(k in message for k in ['sos', 'help', 'danger', 'rescue', 'distress', 'emergency', 'trapped', 'stuck']):
+            reply = "🚨 **Emergency SOS**: If you are in immediate danger, hit the red [Emergency SOS Button](/sos) to broadcast your live GPS coordinates to rescue teams! Helplines: **108** (Ambulance) / **100** (Police) / **1078** (NDRF)."
+
+        elif any(k in message for k in ['helpline', 'number', 'contact', 'phone', 'police', 'ambulance', 'ndrf', 'call']):
+            reply = "📞 **National Emergency Helplines (24x7)**:\n- NDRF Disaster Support: **1078** / **011-24363260**\n- Ambulance Services: **108**\n- Police Operations: **100** / **112**\n- Fire Station: **101**"
+
+        elif any(k in message for k in ['predict', 'risk', 'ai', 'level', 'forecast', 'calculate']):
+            reply = "⚡ **AI Risk Predictor**: Calculate real-time flood, cyclone & earthquake risk using our Scikit-Learn ML engine! [Click here to analyze risk](/predict)."
+
+        elif any(k in message for k in ['login', 'admin', 'account', 'password', 'sign in', 'register']):
+            reply = "🔐 **Account Access**:\n- Citizen Sign In: [User Login](/login)\n- New Account: [Register](/register)\n- Admin Operations Portal: [Admin Login](/admin/login) *(Default Admin: admin / admin123)*."
+
         else:
-            reply = "🏠 All shelters are currently monitored. Please visit our [Shelter Locator](/shelters) for live capacity updates."
+            reply = "🤖 I am **RescuBot**! You can ask me about **Shelters**, **Flood/Earthquake/Cyclone Safety**, **Emergency Helplines**, **AI Risk Predictor**, or **User Login**."
 
-    elif any(k in message for k in ['flood', 'water', 'submerged', 'drowning']):
-        reply = "🌊 **Flood Emergency Tip**: Move immediately to higher ground! Avoid walking or driving through moving water. Call **108** for emergency medical/rescue support."
-
-    elif any(k in message for k in ['earthquake', 'tremor', 'quake', 'shaking']):
-        reply = "🧱 **Earthquake Emergency Tip**: DROP, COVER, and HOLD ON! Take shelter under a sturdy table. Stay away from glass windows and power lines."
-
-    elif any(k in message for k in ['sos', 'help', 'danger', 'rescue', 'distress', 'emergency']):
-        reply = "🚨 **Emergency SOS**: If you are in immediate danger, please hit the red [Emergency SOS Button](/sos) to send your GPS coordinates to our rescue operations room! Helpline: **108** (Ambulance) / **100** (Police) / **1078** (NDRF)."
-
-    elif any(k in message for k in ['helpline', 'number', 'contact', 'phone', 'police']):
-        reply = "📞 **Emergency Numbers**:\n- NDRF Disaster Support: **1078** / **011-24363260**\n- Ambulance Services: **108**\n- Police Operations: **100**\n- Fire Station: **101**\n- National Emergency Number: **112**"
-
-    elif any(k in message for k in ['predict', 'risk', 'ai', 'level', 'forecast']):
-        reply = "⚡ **AI Risk Predictor**: You can calculate real-time flood & cyclone risk using our AI ML tool! [Click here to analyze risk](/predict)."
-
-    else:
-        reply = "🤖 I am here to assist with disaster response! You can ask me about **Shelters**, **Flood/Earthquake Safety**, **Helpline Numbers**, or **Emergency SOS**."
-
-    return jsonify({'reply': reply})
+        return jsonify({'reply': reply})
+    except Exception as e:
+        return jsonify({'reply': f"🤖 I am RescuBot! You can ask me about **Shelters**, **Safety Tips**, or **Emergency SOS**."})
 
 @feature_bp.route('/api/recommend_shelter', methods=['POST'])
 def recommend_shelter():

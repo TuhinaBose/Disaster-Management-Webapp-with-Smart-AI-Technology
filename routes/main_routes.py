@@ -83,18 +83,18 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter((User.username == username) | (User.email == username)).first()
         if user and user.check_password(password):
             session['user_id'] = user.id
             session['username'] = user.username
             session['role'] = user.role
-            flash(f'Logged in successfully as {user.username}.', 'success')
+            flash(f'Welcome back, {user.username}!', 'success')
             
             if user.role == 'admin':
                 return redirect(url_for('admin.dashboard'))
             return redirect(url_for('main.profile'))
         else:
-            flash('Invalid username or password.', 'danger')
+            flash('Invalid username or password. Please try again or create a new account.', 'danger')
 
     return render_template('login.html')
 

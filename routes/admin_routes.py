@@ -18,7 +18,7 @@ def login():
         username = request.form.get('username', '').strip()
         password = request.form.get('password', '').strip()
 
-        user = User.query.filter_by(username=username).first()
+        user = User.query.filter((User.username == username) | (User.email == username)).first()
         if user and user.check_password(password) and user.role == 'admin':
             session['user_id'] = user.id
             session['username'] = user.username
@@ -26,7 +26,7 @@ def login():
             flash('Successfully logged in as Admin.', 'success')
             return redirect(url_for('admin.dashboard'))
         else:
-            flash('Invalid admin credentials. Please try again.', 'danger')
+            flash('Invalid admin credentials. Default credentials: admin / admin123', 'danger')
 
     return render_template('admin/login.html')
 
