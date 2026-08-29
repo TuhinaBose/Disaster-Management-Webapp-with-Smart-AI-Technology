@@ -6,11 +6,11 @@
 <div class="container py-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-hospital-user text-cyan me-2"></i>Emergency Shelter Management</h3>
-            <p class="text-muted small mb-0">Add new shelters, update bed capacity, and adjust amenity badges.</p>
+            <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-hospital-user text-cyan me-2"></i>State-Wise Emergency Shelter Manager</h3>
+            <p class="text-muted small mb-0">Add new shelters using the interactive map picker, update state & district allocations, and manage bed capacity.</p>
         </div>
-        <button class="btn btn-cyan btn-sm" data-bs-toggle="modal" data-bs-target="#addShelterModal">
-            <i class="fa-solid fa-plus me-1"></i> Add New Shelter
+        <button class="btn btn-cyan btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#addShelterModal" id="openAddModalBtn">
+            <i class="fa-solid fa-map-pin me-1"></i> Add Shelter via Map Picker
         </button>
     </div>
 
@@ -22,6 +22,7 @@
                     <tr>
                         <th>ID</th>
                         <th>Shelter Name</th>
+                        <th>State</th>
                         <th>District</th>
                         <th>Total Cap.</th>
                         <th>Avail. Beds</th>
@@ -35,6 +36,7 @@
                     <tr>
                         <td>#{{ s.id }}</td>
                         <td class="fw-bold text-white">{{ s.name }}</td>
+                        <td><span class="badge bg-primary text-white">{{ s.state }}</span></td>
                         <td><span class="badge bg-dark text-cyan border border-secondary">{{ s.district }}</span></td>
                         <td>{{ s.total_capacity }}</td>
                         <td class="fw-bold {% if s.available_beds < 50 %}text-danger{% else %}text-success{% endif %}">
@@ -74,6 +76,16 @@
                                         </div>
                                         <div class="row g-2 mb-3">
                                             <div class="col-6">
+                                                <label class="form-label small">State</label>
+                                                <input type="text" name="state" class="form-control bg-dark text-white border-secondary" value="{{ s.state }}" required>
+                                            </div>
+                                            <div class="col-6">
+                                                <label class="form-label small">District</label>
+                                                <input type="text" name="district" class="form-control bg-dark text-white border-secondary" value="{{ s.district }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="row g-2 mb-3">
+                                            <div class="col-6">
                                                 <label class="form-label small">Total Capacity</label>
                                                 <input type="number" name="total_capacity" class="form-control bg-dark text-white border-secondary" value="{{ s.total_capacity }}" required>
                                             </div>
@@ -89,11 +101,11 @@
                                         <div class="d-flex gap-3">
                                             <div class="form-check">
                                                 <input type="checkbox" name="has_food" class="form-check-input" id="efood{{ s.id }}" {% if s.has_food %}checked{% endif %}>
-                                                <label class="form-check-label small" for="efood{{ s.id }}">Food Available</label>
+                                                <label class="form-check-label small" for="efood{{ s.id }}">Food</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="checkbox" name="has_water" class="form-check-input" id="ewater{{ s.id }}" {% if s.has_water %}checked{% endif %}>
-                                                <label class="form-check-label small" for="ewater{{ s.id }}">Water Available</label>
+                                                <label class="form-check-label small" for="ewater{{ s.id }}">Water</label>
                                             </div>
                                             <div class="form-check">
                                                 <input type="checkbox" name="has_medical" class="form-check-input" id="emed{{ s.id }}" {% if s.has_medical %}checked{% endif %}>
@@ -115,70 +127,154 @@
     </div>
 </div>
 
-<!-- Add Shelter Modal -->
+<!-- Add Shelter via Map Picker Modal -->
 <div class="modal fade" id="addShelterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content bg-dark text-white border-secondary">
             <div class="modal-header border-secondary">
-                <h5 class="modal-title fw-bold"><i class="fa-solid fa-plus text-cyan me-2"></i>Add New Emergency Shelter</h5>
+                <h5 class="modal-title fw-bold"><i class="fa-solid fa-map-location-dot text-cyan me-2"></i>Add Shelter - Map Location Picker</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('admin.manage_shelters') }}">
                 <div class="modal-body">
+                    <!-- Interactive Map Location Picker -->
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-cyan"><i class="fa-solid fa-hand-pointer me-1"></i> Click anywhere on the map to pinpoint shelter location:</label>
+                        <div id="admin-map-picker" style="height: 260px; border-radius: 12px; border: 1px solid var(--border-color);"></div>
+                        <small id="picker-coordinates-text" class="text-warning font-monospace small d-block mt-1">📍 Click map to set location coordinates automatically...</small>
+                    </div>
+
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label small">Shelter Name</label>
-                            <input type="text" name="name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Community Center" required>
+                            <input type="text" id="admin_shelter_name" name="name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Central Emergency Relief Camp" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label small">District</label>
-                            <input type="text" name="district" class="form-control bg-dark text-white border-secondary" placeholder="e.g. North Haven" required>
+                        <div class="col-md-3">
+                            <label class="form-label small">State</label>
+                            <select name="state" id="admin_state" class="form-select bg-dark text-white border-secondary" required>
+                                <option value="Delhi NCR">Delhi NCR</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Assam">Assam</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="form-label small">District / City</label>
+                            <input type="text" id="admin_district" name="district" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Mumbai City" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small">Full Address</label>
-                            <input type="text" name="address" class="form-control bg-dark text-white border-secondary" placeholder="e.g. 124 Main Street" required>
+                            <label class="form-label small">Full Street Address (Auto-filled on map click)</label>
+                            <input type="text" id="admin_address" name="address" class="form-control bg-dark text-white border-secondary" placeholder="Click map or type street address..." required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Latitude Coordinate</label>
-                            <input type="number" step="0.000001" name="latitude" class="form-control bg-dark text-white border-secondary" placeholder="28.6139" required>
+                            <label class="form-label small">Latitude Coordinate (Auto-filled)</label>
+                            <input type="number" step="0.000001" id="admin_latitude" name="latitude" class="form-control bg-dark text-white border-secondary" placeholder="28.6139" required readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Longitude Coordinate</label>
-                            <input type="number" step="0.000001" name="longitude" class="form-control bg-dark text-white border-secondary" placeholder="77.2090" required>
+                            <label class="form-label small">Longitude Coordinate (Auto-filled)</label>
+                            <input type="number" step="0.000001" id="admin_longitude" name="longitude" class="form-control bg-dark text-white border-secondary" placeholder="77.2090" required readonly>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small">Total Capacity</label>
                             <input type="number" name="total_capacity" class="form-control bg-dark text-white border-secondary" placeholder="500" required>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label class="form-label small">Available Beds</label>
                             <input type="number" name="available_beds" class="form-control bg-dark text-white border-secondary" placeholder="300" required>
                         </div>
-                        <div class="col-md-6">
-                            <label class="form-label small">Contact Helpline Number</label>
+                        <div class="col-md-4">
+                            <label class="form-label small">Helpline Number</label>
                             <input type="text" name="contact_number" class="form-control bg-dark text-white border-secondary" placeholder="+91-9876543210" required>
                         </div>
-                        <div class="col-md-6 d-flex align-items-center gap-3 pt-4">
+                        <div class="col-12 d-flex align-items-center gap-4 pt-2">
                             <div class="form-check">
                                 <input type="checkbox" name="has_food" class="form-check-input" id="afood" checked>
-                                <label class="form-check-label small" for="afood">Food</label>
+                                <label class="form-check-label small" for="afood">Food Supply</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" name="has_water" class="form-check-input" id="awater" checked>
-                                <label class="form-check-label small" for="awater">Water</label>
+                                <label class="form-check-label small" for="awater">Clean Water</label>
                             </div>
                             <div class="form-check">
                                 <input type="checkbox" name="has_medical" class="form-check-input" id="amed" checked>
-                                <label class="form-check-label small" for="amed">Medical</label>
+                                <label class="form-check-label small" for="amed">Medical Desk</label>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer border-secondary">
-                    <button type="submit" class="btn btn-cyan btn-sm">Add Shelter Record</button>
+                    <button type="submit" class="btn btn-cyan btn-sm fw-bold">Save Shelter to Map & Database</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let pickerMap = null;
+    let pickerMarker = null;
+
+    const modalBtn = document.getElementById('openAddModalBtn');
+    const modalEl = document.getElementById('addShelterModal');
+
+    if (modalEl) {
+        modalEl.addEventListener('shown.bs.modal', () => {
+            if (!pickerMap) {
+                // Initialize Leaflet Map Location Picker centered on India (20.5937, 78.9629)
+                pickerMap = L.map('admin-map-picker').setView([20.5937, 78.9629], 5);
+
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                    attribution: '&copy; OpenStreetMap'
+                }).addTo(pickerMap);
+
+                // Handle Click on Map
+                pickerMap.on('click', async (e) => {
+                    const lat = e.latlng.lat.toFixed(6);
+                    const lng = e.latlng.lng.toFixed(6);
+
+                    document.getElementById('admin_latitude').value = lat;
+                    document.getElementById('admin_longitude').value = lng;
+                    document.getElementById('picker-coordinates-text').textContent = `📍 Selected Location: (${lat}, ${lng})`;
+
+                    if (pickerMarker) pickerMap.removeLayer(pickerMarker);
+                    pickerMarker = L.marker([lat, lng]).addTo(pickerMap);
+
+                    // Reverse geocode via OpenStreetMap Nominatim
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`);
+                        const data = await response.json();
+                        if (data && data.display_name) {
+                            document.getElementById('admin_address').value = data.display_name;
+                            if (data.address && data.address.state) {
+                                const stateSelect = document.getElementById('admin_state');
+                                const stateVal = data.address.state;
+                                for (let i = 0; i < stateSelect.options.length; i++) {
+                                    if (stateSelect.options[i].text.toLowerCase().includes(stateVal.toLowerCase())) {
+                                        stateSelect.selectedIndex = i;
+                                        break;
+                                    }
+                                }
+                            }
+                            if (data.address && (data.address.city || data.address.state_district || data.address.county)) {
+                                document.getElementById('admin_district').value = data.address.city || data.address.state_district || data.address.county;
+                            }
+                        }
+                    } catch (err) {}
+                });
+            } else {
+                pickerMap.invalidateSize();
+            }
+        });
+    }
+});
+</script>
 {% endblock %}

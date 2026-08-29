@@ -37,16 +37,13 @@ def seed_database():
             db.session.commit()
             print("[Database Seed] Created default admin account (admin / admin123).")
         else:
-            # Re-verify password hash to ensure admin123 always works
             if not admin_user.check_password('admin123'):
                 admin_user.set_password('admin123')
                 admin_user.role = 'admin'
                 db.session.commit()
-                print("[Database Seed] Reset admin password to admin123.")
 
-        # 2. Check & Seed Rich Realistic Emergency Shelters
-        if Shelter.query.count() < 4:
-            # Clear old vague shelters if any
+        # 2. Check & Seed State-Wise Emergency Shelters
+        if Shelter.query.count() < 6:
             Shelter.query.delete()
             db.session.commit()
 
@@ -55,6 +52,7 @@ def seed_database():
                     name="Central Disaster Relief & Rescue Complex",
                     address="Sector 14, Connaught Place Avenue, Central District",
                     district="Central Delhi",
+                    state="Delhi NCR",
                     latitude=28.6139,
                     longitude=77.2090,
                     total_capacity=800,
@@ -66,8 +64,9 @@ def seed_database():
                 ),
                 Shelter(
                     name="St. Mary Emergency High Ground Shelter",
-                    address="88 Riverside Boulevard, Civil Lines, North District",
+                    address="88 Riverside Boulevard, Civil Lines",
                     district="North Delhi",
+                    state="Delhi NCR",
                     latitude=28.7041,
                     longitude=77.1025,
                     total_capacity=450,
@@ -78,87 +77,93 @@ def seed_database():
                     contact_number="+91-9876543211"
                 ),
                 Shelter(
-                    name="Metro Indoor Sports Stadium Relief Camp",
-                    address="45 Sports City Boulevard, Laxmi Nagar, East District",
-                    district="East Delhi",
-                    latitude=28.5355,
-                    longitude=77.3910,
+                    name="Mumbai Central Flood Relief Refuge Camp",
+                    address="Opposite Marine Lines Station, South Mumbai",
+                    district="Mumbai City",
+                    state="Maharashtra",
+                    latitude=18.9438,
+                    longitude=72.8229,
+                    total_capacity=1200,
+                    available_beds=850,
+                    has_food=True,
+                    has_water=True,
+                    has_medical=True,
+                    contact_number="+91-9876543220"
+                ),
+                Shelter(
+                    name="Pune Disaster Evacuation Center",
+                    address="Shivajinagar Relief Grounds, Pune",
+                    district="Pune",
+                    state="Maharashtra",
+                    latitude=18.5308,
+                    longitude=73.8474,
+                    total_capacity=900,
+                    available_beds=620,
+                    has_food=True,
+                    has_water=True,
+                    has_medical=True,
+                    contact_number="+91-9876543221"
+                ),
+                Shelter(
+                    name="Kolkata Cyclone High-Ground Refuge Shelter",
+                    address="Park Circus Indoor Complex, Salt Lake",
+                    district="Kolkata",
+                    state="West Bengal",
+                    latitude=22.5726,
+                    longitude=88.3639,
                     total_capacity=1500,
-                    available_beds=1120,
+                    available_beds=1100,
                     has_food=True,
                     has_water=True,
                     has_medical=True,
-                    contact_number="+91-9876543212"
+                    contact_number="+91-9876543230"
                 ),
                 Shelter(
-                    name="Coastal High Ground Evacuation Refuge",
-                    address="12 Beach Safety Highway, South Shore Zone",
-                    district="South Shore",
-                    latitude=28.4595,
-                    longitude=77.0266,
-                    total_capacity=600,
-                    available_beds=85,
+                    name="Sundarbans Coastal Evacuation Camp",
+                    address="Canning Safety Highway, South 24 Parganas",
+                    district="South 24 Parganas",
+                    state="West Bengal",
+                    latitude=22.3148,
+                    longitude=88.6653,
+                    total_capacity=750,
+                    available_beds=290,
                     has_food=True,
                     has_water=True,
                     has_medical=False,
-                    contact_number="+91-9876543213"
+                    contact_number="+91-9876543231"
                 ),
                 Shelter(
-                    name="Green Valley Community Relief Center",
-                    address="Plot 52, Ring Road Bypass, West District",
-                    district="West Delhi",
-                    latitude=28.6500,
-                    longitude=77.0800,
-                    total_capacity=700,
-                    available_beds=510,
-                    has_food=True,
-                    has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543214"
-                ),
-                Shelter(
-                    name="National Red Cross Flood Evacuation Camp",
-                    address="Old Cantonment Road, Riverbank Ward",
-                    district="North Haven",
-                    latitude=28.7500,
-                    longitude=77.1500,
+                    name="Chennai Coastal Flood Relief Camp",
+                    address="Marina Beach Road, Mylapore",
+                    district="Chennai",
+                    state="Tamil Nadu",
+                    latitude=13.0405,
+                    longitude=80.2707,
                     total_capacity=1000,
-                    available_beds=730,
+                    available_beds=720,
                     has_food=True,
                     has_water=True,
                     has_medical=True,
-                    contact_number="+91-9876543215"
+                    contact_number="+91-9876543240"
                 ),
                 Shelter(
-                    name="Sunrise High School Typhoon Shelter",
-                    address="44 Ocean View Avenue, Coastal Belt",
-                    district="South Shore",
-                    latitude=28.4200,
-                    longitude=77.0500,
-                    total_capacity=350,
-                    available_beds=40,
-                    has_food=True,
-                    has_water=True,
-                    has_medical=False,
-                    contact_number="+91-9876543216"
-                ),
-                Shelter(
-                    name="Apex Medical Center Relief Annex",
-                    address="10 Hospital Expressway, Knowledge Park",
-                    district="Greater Noida",
-                    latitude=28.4700,
-                    longitude=77.5000,
-                    total_capacity=500,
-                    available_beds=310,
+                    name="Bengaluru Flood & Storm Refuge Hall",
+                    address="M.G. Road Community Center, Indiranagar",
+                    district="Bengaluru Urban",
+                    state="Karnataka",
+                    latitude=12.9716,
+                    longitude=77.5946,
+                    total_capacity=650,
+                    available_beds=410,
                     has_food=True,
                     has_water=True,
                     has_medical=True,
-                    contact_number="+91-9876543217"
+                    contact_number="+91-9876543250"
                 )
             ]
             db.session.bulk_save_objects(sample_shelters)
             db.session.commit()
-            print("[Database Seed] Created 8 detailed emergency relief shelters.")
+            print("[Database Seed] Created state-wise emergency relief shelters.")
 
         # 3. Check Active Alerts Seed
         if DisasterAlert.query.count() == 0:
@@ -167,15 +172,15 @@ def seed_database():
                     title="Heavy Rainfall & Severe Flash Flood Warning",
                     disaster_type="Flood",
                     severity="Critical",
-                    location="North Haven & Riverside Lowlands",
+                    location="Mumbai Coastal & North Haven Lowlands",
                     description="Severe precipitation exceeded 195mm. Water levels in local rivers approaching critical overflow marks. Citizens in low-lying sectors advised to move to designated shelters immediately.",
                     is_active=True
                 ),
                 DisasterAlert(
-                    title="Cyclone Warning - High Wind Gusts (95 km/h)",
+                    title="Cyclone Alert - High Wind Gusts (95 km/h)",
                     disaster_type="Cyclone",
                     severity="Warning",
-                    location="South Shore Coastal Belt",
+                    location="Sundarbans & South Shore Belt",
                     description="Wind speeds recorded up to 95 km/h. Coastal communities urged to remain indoors, stay away from window glass, and secure emergency supplies.",
                     is_active=True
                 ),
@@ -183,7 +188,7 @@ def seed_database():
                     title="Heatwave Advisory - High Temperature Alert (44°C)",
                     disaster_type="Heatwave",
                     severity="Advisory",
-                    location="Central Plains & West District",
+                    location="Central Plains & Delhi NCR",
                     description="Extreme temperatures reaching 44°C. Stay hydrated, avoid outdoor activity between 12:00 PM and 4:00 PM, and keep emergency fluids ready.",
                     is_active=True
                 )

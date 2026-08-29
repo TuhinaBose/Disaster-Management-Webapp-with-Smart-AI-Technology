@@ -11,6 +11,7 @@ class Shelter(db.Model):
     name = db.Column(db.String(150), nullable=False)
     address = db.Column(db.Text, nullable=False)
     district = db.Column(db.String(100), nullable=False)
+    state = db.Column(db.String(100), nullable=False, default='Delhi NCR')
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     total_capacity = db.Column(db.Integer, nullable=False)
@@ -28,6 +29,7 @@ class Shelter(db.Model):
             'name': self.name,
             'address': self.address,
             'district': self.district,
+            'state': self.state,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'total_capacity': self.total_capacity,

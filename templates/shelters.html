@@ -7,7 +7,7 @@
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div>
             <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Emergency Shelter Locator</h2>
-            <p class="text-muted small mb-0">Search disaster relief camps, calculate real-time distance from your live position, and check bed availability.</p>
+            <p class="text-muted small mb-0">Search disaster relief camps state-wise, check real-time bed capacity, and pinpoint location on the map.</p>
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2">
@@ -15,8 +15,14 @@
                 <i class="fa-solid fa-location-crosshairs me-1"></i> Locate My Position
             </button>
 
-            <!-- District Filter Form -->
-            <form method="GET" action="{{ url_for('feature.shelters') }}" class="d-flex gap-2" style="max-width: 300px;">
+            <!-- State & District Filter Form -->
+            <form method="GET" action="{{ url_for('feature.shelters') }}" class="d-flex gap-2 flex-wrap" style="max-width: 460px;">
+                <select name="state" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <option value="">All States</option>
+                    {% for st in states %}
+                        <option value="{{ st }}" {% if current_state == st %}selected{% endif %}>{{ st }}</option>
+                    {% endfor %}
+                </select>
                 <select name="district" class="form-select form-select-sm bg-dark text-white border-secondary">
                     <option value="">All Districts</option>
                     {% for dist in districts %}
@@ -47,7 +53,10 @@
             <div class="col-md-6 col-lg-4">
                 <div class="glass-card p-4 h-100 d-flex flex-column">
                     <div class="d-flex align-items-start justify-content-between mb-2">
-                        <span class="badge bg-info text-dark font-monospace fw-bold">{{ s.district }}</span>
+                        <div>
+                            <span class="badge bg-primary text-white font-monospace fw-bold me-1">{{ s.state }}</span>
+                            <span class="badge bg-dark text-cyan border border-secondary font-monospace fw-bold">{{ s.district }}</span>
+                        </div>
                         {% if s.available_beds > 50 %}
                             <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Available</span>
                         {% elif s.available_beds > 0 %}
@@ -100,7 +109,7 @@
             {% endfor %}
         {% else %}
             <div class="col-12 text-center py-5 glass-card">
-                <p class="text-muted mb-0">No shelters found matching your search district filter.</p>
+                <p class="text-muted mb-0">No shelters found matching your search state or district filter.</p>
             </div>
         {% endif %}
     </div>

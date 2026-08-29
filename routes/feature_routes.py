@@ -70,19 +70,28 @@ def predict():
 
 @feature_bp.route('/shelters')
 def shelters():
-    """Shelter locator view with district search and filter support."""
+    """Shelter locator view with State and District search and filter support."""
+    state_query = request.args.get('state', '').strip()
     district_query = request.args.get('district', '').strip()
     
+    query = Shelter.query
+    if state_query:
+        query = query.filter(Shelter.state.ilike(f'%{state_query}%'))
     if district_query:
-        shelter_list = Shelter.query.filter(Shelter.district.ilike(f'%{district_query}%')).all()
-    else:
-        shelter_list = Shelter.query.all()
+        query = query.filter(Shelter.district.ilike(f'%{district_query}%'))
 
-    # Unique list of districts for filter dropdown
-    districts = db.session.query(Shelter.district).distinct().all()
-    districts = [d[0] for d in districts]
+    shelter_list = query.all()
 
-    return render_template('shelters.html', shelters=shelter_list, districts=districts, current_district=district_query)
+    # Unique list of states & districts for filter dropdowns
+    states = [s[0] for s in db.session.query(Shelter.state).distinct().all() if s[0]]
+    districts = [d[0] for d in db.session.query(Shelter.district).distinct().all() if d[0]]
+
+    return render_template('shelters.html',
+                           shelters=shelter_list,
+                           states=states,
+                           districts=districts,
+                           current_state=state_query,
+                           current_district=district_query)
 
 @feature_bp.route('/api/shelters')
 def api_shelters():
