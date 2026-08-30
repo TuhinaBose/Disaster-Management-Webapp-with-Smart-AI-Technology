@@ -165,7 +165,7 @@
                     <!-- Interactive Map Location Picker -->
                     <div class="mb-3">
                         <label class="form-label small fw-bold text-cyan"><i class="fa-solid fa-hand-pointer me-1"></i> Click anywhere on the map to pinpoint shelter location:</label>
-                        <div id="admin-map-picker" style="height: 250px; border-radius: 12px; border: 1px solid var(--border-color);"></div>
+                        <div id="admin-map-picker" style="height: 240px; border-radius: 12px; border: 1px solid var(--border-color);"></div>
                         <small id="picker-coordinates-text" class="text-warning font-monospace small d-block mt-1">📍 Click map to set location coordinates automatically...</small>
                     </div>
 
@@ -189,28 +189,23 @@
 
                         <div class="col-md-4">
                             <label class="form-label small">State</label>
-                            <select name="state" id="admin_state" class="form-select bg-dark text-white border-secondary" required>
-                                <option value="Delhi NCR">Delhi NCR</option>
-                                <option value="Maharashtra">Maharashtra</option>
-                                <option value="West Bengal">West Bengal</option>
-                                <option value="Tamil Nadu">Tamil Nadu</option>
-                                <option value="Karnataka">Karnataka</option>
-                                <option value="Gujarat">Gujarat</option>
-                                <option value="Kerala">Kerala</option>
-                                <option value="Uttar Pradesh">Uttar Pradesh</option>
-                                <option value="Odisha">Odisha</option>
-                                <option value="Assam">Assam</option>
+                            <select name="state" id="admin_state_select" class="form-select bg-dark text-white border-secondary" required>
+                                <option value="">Select State...</option>
                             </select>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label small">District</label>
-                            <input type="text" id="admin_district" name="district" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Mumbai City" required>
+                            <select name="district" id="admin_district_select" class="form-select bg-dark text-white border-secondary" required>
+                                <option value="">Select District...</option>
+                            </select>
                         </div>
 
                         <div class="col-md-4">
                             <label class="form-label small">City / Village / Town</label>
-                            <input type="text" id="admin_city_village" name="city_village" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Marine Lines" required>
+                            <select name="city_village" id="admin_city_select" class="form-select bg-dark text-white border-secondary" required>
+                                <option value="">Select City/Village...</option>
+                            </select>
                         </div>
 
                         <div class="col-12">
@@ -272,6 +267,53 @@ document.addEventListener('DOMContentLoaded', () => {
     let pickerMarker = null;
 
     const modalEl = document.getElementById('addShelterModal');
+    const adminStateSelect = document.getElementById('admin_state_select');
+    const adminDistrictSelect = document.getElementById('admin_district_select');
+    const adminCitySelect = document.getElementById('admin_city_select');
+
+    // Populate All States in Admin Form
+    if (typeof INDIA_GEO_DATA !== 'undefined' && adminStateSelect) {
+        Object.keys(INDIA_GEO_DATA).sort().forEach(st => {
+            const opt = document.createElement('option');
+            opt.value = st;
+            opt.textContent = st;
+            adminStateSelect.appendChild(opt);
+        });
+    }
+
+    if (adminStateSelect) {
+        adminStateSelect.addEventListener('change', () => {
+            const stVal = adminStateSelect.value;
+            adminDistrictSelect.innerHTML = '<option value="">Select District...</option>';
+            adminCitySelect.innerHTML = '<option value="">Select City/Village...</option>';
+
+            if (INDIA_GEO_DATA[stVal]) {
+                Object.keys(INDIA_GEO_DATA[stVal]).sort().forEach(dist => {
+                    const opt = document.createElement('option');
+                    opt.value = dist;
+                    opt.textContent = dist;
+                    adminDistrictSelect.appendChild(opt);
+                });
+            }
+        });
+    }
+
+    if (adminDistrictSelect) {
+        adminDistrictSelect.addEventListener('change', () => {
+            const stVal = adminStateSelect.value;
+            const distVal = adminDistrictSelect.value;
+            adminCitySelect.innerHTML = '<option value="">Select City/Village...</option>';
+
+            if (INDIA_GEO_DATA[stVal] && INDIA_GEO_DATA[stVal][distVal]) {
+                INDIA_GEO_DATA[stVal][distVal].sort().forEach(ct => {
+                    const opt = document.createElement('option');
+                    opt.value = ct;
+                    opt.textContent = ct;
+                    adminCitySelect.appendChild(opt);
+                });
+            }
+        });
+    }
 
     if (modalEl) {
         modalEl.addEventListener('shown.bs.modal', () => {
@@ -298,24 +340,6 @@ document.addEventListener('DOMContentLoaded', () => {
                         const data = await response.json();
                         if (data && data.display_name) {
                             document.getElementById('admin_address').value = data.display_name;
-                            if (data.address) {
-                                if (data.address.state) {
-                                    const stateSelect = document.getElementById('admin_state');
-                                    const stateVal = data.address.state;
-                                    for (let i = 0; i < stateSelect.options.length; i++) {
-                                        if (stateSelect.options[i].text.toLowerCase().includes(stateVal.toLowerCase())) {
-                                            stateSelect.selectedIndex = i;
-                                            break;
-                                        }
-                                    }
-                                }
-                                if (data.address.state_district || data.address.county) {
-                                    document.getElementById('admin_district').value = data.address.state_district || data.address.county;
-                                }
-                                if (data.address.city || data.address.town || data.address.village || data.address.suburb) {
-                                    document.getElementById('admin_city_village').value = data.address.city || data.address.town || data.address.village || data.address.suburb;
-                                }
-                            }
                         }
                     } catch (err) {}
                 });

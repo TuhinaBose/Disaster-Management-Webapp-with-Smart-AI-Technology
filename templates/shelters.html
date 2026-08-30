@@ -25,10 +25,7 @@
                 <div class="col-6 col-md-3">
                     <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-map me-1 text-cyan"></i>1. Select State</label>
                     <select name="state" id="filter_state" class="form-select form-select-sm bg-dark text-white border-secondary">
-                        <option value="">All States</option>
-                        {% for st in states %}
-                            <option value="{{ st }}" {% if current_state == st %}selected{% endif %}>{{ st }}</option>
-                        {% endfor %}
+                        <option value="">All States / UTs</option>
                     </select>
                 </div>
 
@@ -37,9 +34,6 @@
                     <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-building-flag me-1 text-cyan"></i>2. Select District</label>
                     <select name="district" id="filter_district" class="form-select form-select-sm bg-dark text-white border-secondary">
                         <option value="">All Districts</option>
-                        {% for dist in districts %}
-                            <option value="{{ dist }}" {% if current_district == dist %}selected{% endif %}>{{ dist }}</option>
-                        {% endfor %}
                     </select>
                 </div>
 
@@ -48,9 +42,6 @@
                     <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-city me-1 text-cyan"></i>3. City / Village</label>
                     <select name="city_village" id="filter_city" class="form-select form-select-sm bg-dark text-white border-secondary">
                         <option value="">All Cities / Villages</option>
-                        {% for ct in cities %}
-                            <option value="{{ ct }}" {% if current_city == ct %}selected{% endif %}>{{ ct }}</option>
-                        {% endfor %}
                     </select>
                 </div>
 
@@ -175,49 +166,69 @@ document.addEventListener('DOMContentLoaded', () => {
     const districtSelect = document.getElementById('filter_district');
     const citySelect = document.getElementById('filter_city');
 
-    if (stateSelect && districtSelect) {
-        stateSelect.addEventListener('change', async () => {
-            const selectedState = stateSelect.value;
-            districtSelect.innerHTML = '<option value="">All Districts</option>';
-            citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+    const selectedState = "{{ current_state|safe }}";
+    const selectedDistrict = "{{ current_district|safe }}";
+    const selectedCity = "{{ current_city|safe }}";
 
-            if (!selectedState) return;
+    // Populate All States in India
+    if (typeof INDIA_GEO_DATA !== 'undefined' && stateSelect) {
+        Object.keys(INDIA_GEO_DATA).sort().forEach(st => {
+            const opt = document.createElement('option');
+            opt.value = st;
+            opt.textContent = st;
+            if (st === selectedState) opt.selected = true;
+            stateSelect.appendChild(opt);
+        });
 
-            try {
-                const response = await fetch(`/api/location_options?state=${encodeURIComponent(selectedState)}`);
-                const data = await response.json();
-                if (data.districts) {
-                    data.districts.forEach(dist => {
-                        const opt = document.createElement('option');
-                        opt.value = dist;
-                        opt.textContent = dist;
-                        districtSelect.appendChild(opt);
-                    });
-                }
-            } catch (e) {}
+        // Initialize districts if state is selected
+        if (selectedState && INDIA_GEO_DATA[selectedState]) {
+            populateDistricts(selectedState, selectedDistrict);
+        }
+
+        // Initialize cities if state and district selected
+        if (selectedState && selectedDistrict && INDIA_GEO_DATA[selectedState] && INDIA_GEO_DATA[selectedState][selectedDistrict]) {
+            populateCities(selectedState, selectedDistrict, selectedCity);
+        }
+    }
+
+    function populateDistricts(stName, currentDist = '') {
+        districtSelect.innerHTML = '<option value="">All Districts</option>';
+        citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+
+        if (INDIA_GEO_DATA[stName]) {
+            Object.keys(INDIA_GEO_DATA[stName]).sort().forEach(dist => {
+                const opt = document.createElement('option');
+                opt.value = dist;
+                opt.textContent = dist;
+                if (dist === currentDist) opt.selected = true;
+                districtSelect.appendChild(opt);
+            });
+        }
+    }
+
+    function populateCities(stName, distName, currentCt = '') {
+        citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+
+        if (INDIA_GEO_DATA[stName] && INDIA_GEO_DATA[stName][distName]) {
+            INDIA_GEO_DATA[stName][distName].sort().forEach(ct => {
+                const opt = document.createElement('option');
+                opt.value = ct;
+                opt.textContent = ct;
+                if (ct === currentCt) opt.selected = true;
+                citySelect.appendChild(opt);
+            });
+        }
+    }
+
+    if (stateSelect) {
+        stateSelect.addEventListener('change', () => {
+            populateDistricts(stateSelect.value);
         });
     }
 
-    if (districtSelect && citySelect) {
-        districtSelect.addEventListener('change', async () => {
-            const selectedState = stateSelect ? stateSelect.value : '';
-            const selectedDistrict = districtSelect.value;
-            citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
-
-            if (!selectedDistrict) return;
-
-            try {
-                const response = await fetch(`/api/location_options?state=${encodeURIComponent(selectedState)}&district=${encodeURIComponent(selectedDistrict)}`);
-                const data = await response.json();
-                if (data.cities) {
-                    data.cities.forEach(c => {
-                        const opt = document.createElement('option');
-                        opt.value = c;
-                        opt.textContent = c;
-                        citySelect.appendChild(opt);
-                    });
-                }
-            } catch (e) {}
+    if (districtSelect) {
+        districtSelect.addEventListener('change', () => {
+            populateCities(stateSelect.value, districtSelect.value);
         });
     }
 });
