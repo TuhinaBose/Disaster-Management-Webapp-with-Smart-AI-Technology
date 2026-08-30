@@ -1,37 +1,76 @@
 {% extends 'base.html' %}
 
-{% block title %}Nearby Shelter Locator - RADAR Disaster Management{% endblock %}
+{% block title %}Cascading Shelter Locator - RADAR Disaster Management{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div>
-            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Emergency Shelter Locator</h2>
-            <p class="text-muted small mb-0">Search disaster relief camps state-wise, check real-time bed capacity, and pinpoint location on the map.</p>
+            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Cascading Shelter Locator</h2>
+            <p class="text-muted small mb-0">Select State &rarr; District &rarr; City/Village to find nearby Schools, Colleges, Hospitals & Relief Buildings.</p>
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2">
             <button id="locate-me-btn" class="btn btn-outline-cyan btn-sm text-nowrap">
                 <i class="fa-solid fa-location-crosshairs me-1"></i> Locate My Position
             </button>
-
-            <!-- State & District Filter Form -->
-            <form method="GET" action="{{ url_for('feature.shelters') }}" class="d-flex gap-2 flex-wrap" style="max-width: 460px;">
-                <select name="state" class="form-select form-select-sm bg-dark text-white border-secondary">
-                    <option value="">All States</option>
-                    {% for st in states %}
-                        <option value="{{ st }}" {% if current_state == st %}selected{% endif %}>{{ st }}</option>
-                    {% endfor %}
-                </select>
-                <select name="district" class="form-select form-select-sm bg-dark text-white border-secondary">
-                    <option value="">All Districts</option>
-                    {% for dist in districts %}
-                        <option value="{{ dist }}" {% if current_district == dist %}selected{% endif %}>{{ dist }}</option>
-                    {% endfor %}
-                </select>
-                <button type="submit" class="btn btn-cyan btn-sm text-nowrap"><i class="fa-solid fa-filter me-1"></i> Filter</button>
-            </form>
         </div>
+    </div>
+
+    <!-- Cascading Filter Bar: State -> District -> City/Village -> Facility Type -->
+    <div class="glass-card p-3 p-md-4 mb-4 border-start border-4 border-cyan">
+        <form method="GET" action="{{ url_for('feature.shelters') }}" id="cascading-filter-form">
+            <div class="row g-2 align-items-end">
+                <!-- Step 1: Select State -->
+                <div class="col-6 col-md-3">
+                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-map me-1 text-cyan"></i>1. Select State</label>
+                    <select name="state" id="filter_state" class="form-select form-select-sm bg-dark text-white border-secondary">
+                        <option value="">All States</option>
+                        {% for st in states %}
+                            <option value="{{ st }}" {% if current_state == st %}selected{% endif %}>{{ st }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Step 2: Select District (Cascading) -->
+                <div class="col-6 col-md-3">
+                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-building-flag me-1 text-cyan"></i>2. Select District</label>
+                    <select name="district" id="filter_district" class="form-select form-select-sm bg-dark text-white border-secondary">
+                        <option value="">All Districts</option>
+                        {% for dist in districts %}
+                            <option value="{{ dist }}" {% if current_district == dist %}selected{% endif %}>{{ dist }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Step 3: Select City / Village (Cascading) -->
+                <div class="col-6 col-md-3">
+                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-city me-1 text-cyan"></i>3. City / Village</label>
+                    <select name="city_village" id="filter_city" class="form-select form-select-sm bg-dark text-white border-secondary">
+                        <option value="">All Cities / Villages</option>
+                        {% for ct in cities %}
+                            <option value="{{ ct }}" {% if current_city == ct %}selected{% endif %}>{{ ct }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Step 4: Facility Type -->
+                <div class="col-6 col-md-3">
+                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-hospital-user me-1 text-cyan"></i>4. Facility Type</label>
+                    <select name="facility_type" id="filter_facility" class="form-select form-select-sm bg-dark text-white border-secondary">
+                        <option value="">All Facilities</option>
+                        {% for ft in facility_types %}
+                            <option value="{{ ft }}" {% if current_facility == ft %}selected{% endif %}>{{ ft }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="col-12 text-end mt-3">
+                    <a href="{{ url_for('feature.shelters') }}" class="btn btn-sm btn-outline-secondary me-2">Reset Filters</a>
+                    <button type="submit" class="btn btn-sm btn-cyan px-4 fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i> Search Shelters</button>
+                </div>
+            </div>
+        </form>
     </div>
 
     <!-- Live GPS Status Banner -->
@@ -45,7 +84,9 @@
     </div>
 
     <!-- Shelters List -->
-    <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-building-user text-cyan me-2"></i>Available Relief Shelters</h4>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+        <h4 class="fw-bold text-white mb-0"><i class="fa-solid fa-building-user text-cyan me-2"></i>Available Relief Shelters ({{ shelters|length }})</h4>
+    </div>
 
     <div class="row g-4">
         {% if shelters %}
@@ -53,17 +94,27 @@
             <div class="col-md-6 col-lg-4">
                 <div class="glass-card p-4 h-100 d-flex flex-column">
                     <div class="d-flex align-items-start justify-content-between mb-2">
-                        <div>
-                            <span class="badge bg-primary text-white font-monospace fw-bold me-1">{{ s.state }}</span>
-                            <span class="badge bg-dark text-cyan border border-secondary font-monospace fw-bold">{{ s.district }}</span>
-                        </div>
+                        <span class="badge bg-primary text-white font-monospace fw-bold">{{ s.state }}</span>
                         {% if s.available_beds > 50 %}
-                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Available</span>
+                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Free</span>
                         {% elif s.available_beds > 0 %}
                             <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i>Limited Beds</span>
                         {% else %}
                             <span class="badge bg-danger"><i class="fa-solid fa-ban me-1"></i>Full Capacity</span>
                         {% endif %}
+                    </div>
+
+                    <div class="mb-2">
+                        <!-- Facility Type Badge -->
+                        <span class="badge bg-dark text-cyan border border-secondary me-1">
+                            {% if s.facility_type == 'School' %}🏫 School
+                            {% elif s.facility_type == 'College' %}🎓 College
+                            {% elif s.facility_type == 'Hospital' %}🏥 Hospital
+                            {% elif s.facility_type == 'Stadium' %}🏟️ Stadium
+                            {% elif s.facility_type == 'Community Center' %}🏛️ Community Center
+                            {% else %}🏢 Building{% endif %}
+                        </span>
+                        <span class="badge bg-dark text-slate-300 border border-secondary">{{ s.district }} &bull; {{ s.city_village }}</span>
                     </div>
 
                     <h5 class="fw-bold text-white mb-1">{{ s.name }}</h5>
@@ -109,7 +160,7 @@
             {% endfor %}
         {% else %}
             <div class="col-12 text-center py-5 glass-card">
-                <p class="text-muted mb-0">No shelters found matching your search state or district filter.</p>
+                <p class="text-muted mb-0">No shelters found matching your selected State, District, City/Village, or Facility Type.</p>
             </div>
         {% endif %}
     </div>
@@ -118,4 +169,57 @@
 
 {% block extra_js %}
 <script src="{{ url_for('static', filename='js/shelter_map.js') }}"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const stateSelect = document.getElementById('filter_state');
+    const districtSelect = document.getElementById('filter_district');
+    const citySelect = document.getElementById('filter_city');
+
+    if (stateSelect && districtSelect) {
+        stateSelect.addEventListener('change', async () => {
+            const selectedState = stateSelect.value;
+            districtSelect.innerHTML = '<option value="">All Districts</option>';
+            citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+
+            if (!selectedState) return;
+
+            try {
+                const response = await fetch(`/api/location_options?state=${encodeURIComponent(selectedState)}`);
+                const data = await response.json();
+                if (data.districts) {
+                    data.districts.forEach(dist => {
+                        const opt = document.createElement('option');
+                        opt.value = dist;
+                        opt.textContent = dist;
+                        districtSelect.appendChild(opt);
+                    });
+                }
+            } catch (e) {}
+        });
+    }
+
+    if (districtSelect && citySelect) {
+        districtSelect.addEventListener('change', async () => {
+            const selectedState = stateSelect ? stateSelect.value : '';
+            const selectedDistrict = districtSelect.value;
+            citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+
+            if (!selectedDistrict) return;
+
+            try {
+                const response = await fetch(`/api/location_options?state=${encodeURIComponent(selectedState)}&district=${encodeURIComponent(selectedDistrict)}`);
+                const data = await response.json();
+                if (data.cities) {
+                    data.cities.forEach(c => {
+                        const opt = document.createElement('option');
+                        opt.value = c;
+                        opt.textContent = c;
+                        citySelect.appendChild(opt);
+                    });
+                }
+            } catch (e) {}
+        });
+    }
+});
+</script>
 {% endblock %}

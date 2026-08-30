@@ -70,28 +70,69 @@ def predict():
 
 @feature_bp.route('/shelters')
 def shelters():
-    """Shelter locator view with State and District search and filter support."""
+    """Shelter locator view with dynamic cascading State -> District -> City/Village -> Facility Type filter."""
     state_query = request.args.get('state', '').strip()
     district_query = request.args.get('district', '').strip()
+    city_query = request.args.get('city_village', '').strip()
+    facility_query = request.args.get('facility_type', '').strip()
     
     query = Shelter.query
     if state_query:
         query = query.filter(Shelter.state.ilike(f'%{state_query}%'))
     if district_query:
         query = query.filter(Shelter.district.ilike(f'%{district_query}%'))
+    if city_query:
+        query = query.filter(Shelter.city_village.ilike(f'%{city_query}%'))
+    if facility_query:
+        query = query.filter(Shelter.facility_type.ilike(f'%{facility_query}%'))
 
     shelter_list = query.all()
 
-    # Unique list of states & districts for filter dropdowns
+    # Unique list of states for initial dropdown
     states = [s[0] for s in db.session.query(Shelter.state).distinct().all() if s[0]]
-    districts = [d[0] for d in db.session.query(Shelter.district).distinct().all() if d[0]]
+
+    # Districts for selected state
+    if state_query:
+        districts = [d[0] for d in db.session.query(Shelter.district).filter(Shelter.state.ilike(f'%{state_query}%')).distinct().all() if d[0]]
+    else:
+        districts = [d[0] for d in db.session.query(Shelter.district).distinct().all() if d[0]]
+
+    # Cities/Villages for selected state & district
+    if state_query and district_query:
+        cities = [c[0] for c in db.session.query(Shelter.city_village).filter(Shelter.state.ilike(f'%{state_query}%'), Shelter.district.ilike(f'%{district_query}%')).distinct().all() if c[0]]
+    elif district_query:
+        cities = [c[0] for c in db.session.query(Shelter.city_village).filter(Shelter.district.ilike(f'%{district_query}%')).distinct().all() if c[0]]
+    else:
+        cities = [c[0] for c in db.session.query(Shelter.city_village).distinct().all() if c[0]]
+
+    facility_types = ['School', 'College', 'Hospital', 'Community Center', 'Stadium', 'Building']
 
     return render_template('shelters.html',
                            shelters=shelter_list,
                            states=states,
                            districts=districts,
+                           cities=cities,
+                           facility_types=facility_types,
                            current_state=state_query,
-                           current_district=district_query)
+                           current_district=district_query,
+                           current_city=city_query,
+                           current_facility=facility_query)
+
+@feature_bp.route('/api/location_options')
+def api_location_options():
+    """API returning cascading dropdown data (Districts for selected State, Cities for District)."""
+    state_param = request.args.get('state', '').strip()
+    district_param = request.args.get('district', '').strip()
+
+    if state_param and not district_param:
+        districts = [d[0] for d in db.session.query(Shelter.district).filter(Shelter.state.ilike(f'%{state_param}%')).distinct().all() if d[0]]
+        return jsonify({'districts': districts})
+
+    if state_param and district_param:
+        cities = [c[0] for c in db.session.query(Shelter.city_village).filter(Shelter.state.ilike(f'%{state_param}%'), Shelter.district.ilike(f'%{district_param}%')).distinct().all() if c[0]]
+        return jsonify({'cities': cities})
+
+    return jsonify({'districts': [], 'cities': []})
 
 @feature_bp.route('/api/shelters')
 def api_shelters():

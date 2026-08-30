@@ -10,8 +10,10 @@ class Shelter(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(150), nullable=False)
     address = db.Column(db.Text, nullable=False)
-    district = db.Column(db.String(100), nullable=False)
     state = db.Column(db.String(100), nullable=False, default='Delhi NCR')
+    district = db.Column(db.String(100), nullable=False)
+    city_village = db.Column(db.String(100), nullable=False, default='Central City')
+    facility_type = db.Column(db.String(50), nullable=False, default='Building') # 'School', 'College', 'Hospital', 'Community Center', 'Stadium', 'Building'
     latitude = db.Column(db.Float, nullable=False)
     longitude = db.Column(db.Float, nullable=False)
     total_capacity = db.Column(db.Integer, nullable=False)
@@ -28,8 +30,10 @@ class Shelter(db.Model):
             'id': self.id,
             'name': self.name,
             'address': self.address,
-            'district': self.district,
             'state': self.state,
+            'district': self.district,
+            'city_village': self.city_village,
+            'facility_type': self.facility_type,
             'latitude': self.latitude,
             'longitude': self.longitude,
             'total_capacity': self.total_capacity,

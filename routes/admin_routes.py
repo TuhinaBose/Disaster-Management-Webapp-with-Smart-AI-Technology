@@ -71,8 +71,10 @@ def manage_shelters():
         try:
             name = request.form.get('name')
             address = request.form.get('address')
-            district = request.form.get('district')
             state = request.form.get('state', 'Delhi NCR')
+            district = request.form.get('district')
+            city_village = request.form.get('city_village', 'Central City')
+            facility_type = request.form.get('facility_type', 'Building')
             lat = float(request.form.get('latitude', 0))
             lng = float(request.form.get('longitude', 0))
             capacity = int(request.form.get('total_capacity', 0))
@@ -83,7 +85,8 @@ def manage_shelters():
             contact = request.form.get('contact_number')
 
             new_shelter = Shelter(
-                name=name, address=address, district=district, state=state,
+                name=name, address=address, state=state, district=district,
+                city_village=city_village, facility_type=facility_type,
                 latitude=lat, longitude=lng, total_capacity=capacity,
                 available_beds=beds, has_food=food, has_water=water,
                 has_medical=medical, contact_number=contact
@@ -100,15 +103,17 @@ def manage_shelters():
 
 @admin_bp.route('/shelter/edit/<int:shelter_id>', methods=['POST'])
 def edit_shelter(shelter_id):
-    """Update shelter details, state & bed capacity."""
+    """Update shelter details, state, city/village, facility type & bed capacity."""
     if not is_admin_logged_in():
         return redirect(url_for('admin.login'))
 
     shelter = Shelter.query.get_or_404(shelter_id)
     try:
         shelter.name = request.form.get('name', shelter.name)
-        shelter.district = request.form.get('district', shelter.district)
         shelter.state = request.form.get('state', shelter.state)
+        shelter.district = request.form.get('district', shelter.district)
+        shelter.city_village = request.form.get('city_village', shelter.city_village)
+        shelter.facility_type = request.form.get('facility_type', shelter.facility_type)
         shelter.total_capacity = int(request.form.get('total_capacity', shelter.total_capacity))
         shelter.available_beds = int(request.form.get('available_beds', shelter.available_beds))
         shelter.contact_number = request.form.get('contact_number', shelter.contact_number)
