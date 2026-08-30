@@ -134,6 +134,75 @@ def api_location_options():
 
     return jsonify({'districts': [], 'cities': []})
 
+@feature_bp.route('/api/osm_facilities')
+def api_osm_facilities():
+    """
+    Live OpenStreetMap (OSM) Overpass & Nominatim API integration.
+    Fetches real-time schools, colleges, hospitals, and villages directly from OpenStreetMap without needing paid API keys.
+    """
+    import urllib.request
+    import json
+    
+    query = request.args.get('query', 'school').strip().lower()
+    city = request.args.get('city', 'Delhi').strip()
+    
+    try:
+        # Step 1: Search location bounding coordinates via OpenStreetMap Nominatim API
+        nominatim_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(city + ', India')}&format=json&limit=1"
+        req = urllib.request.Request(nominatim_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
+        
+        with urllib.request.urlopen(req) as resp:
+            nom_data = json.loads(resp.read().decode())
+            
+        if not nom_data:
+            return jsonify({'facilities': [], 'message': 'Location not found on OpenStreetMap'})
+
+        lat = nom_data[0]['lat']
+        lon = nom_data[0]['lon']
+
+        # Step 2: Query OpenStreetMap Overpass API for schools, colleges, hospitals around coordinates
+        facility_tag = "school"
+        if "college" in query or "university" in query:
+            facility_tag = "college"
+        elif "hospital" in query or "medical" in query:
+            facility_tag = "hospital"
+        elif "stadium" in query:
+            facility_tag = "stadium"
+
+        overpass_query = f"""
+        [out:json][timeout:15];
+        (
+          node["amenity"="{facility_tag}"](around:10000,{lat},{lon});
+          way["amenity"="{facility_tag}"](around:10000,{lat},{lon});
+        );
+        out center 15;
+        """
+        
+        overpass_url = "https://overpass-api.de/api/interpreter?data=" + urllib.parse.quote(overpass_query)
+        req_op = urllib.request.Request(overpass_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
+        
+        with urllib.request.urlopen(req_op) as resp_op:
+            op_data = json.loads(resp_op.read().decode())
+
+        results = []
+        for element in op_data.get('elements', []):
+            tags = element.get('tags', {})
+            name = tags.get('name') or tags.get('name:en') or f"Local {facility_tag.capitalize()} Refuge"
+            el_lat = element.get('lat') or element.get('center', {}).get('lat')
+            el_lon = element.get('lon') or element.get('center', {}).get('lon')
+            if el_lat and el_lon:
+                results.append({
+                    'name': name,
+                    'facility_type': facility_tag.capitalize(),
+                    'latitude': el_lat,
+                    'longitude': el_lon,
+                    'address': tags.get('addr:street', f"{city}, India")
+                })
+
+        return jsonify({'success': True, 'location': {'lat': lat, 'lon': lon}, 'count': len(results), 'facilities': results[:15]})
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e), 'facilities': []})
+
 @feature_bp.route('/api/shelters')
 def api_shelters():
     """JSON API endpoint returning list of all shelters for interactive map."""
