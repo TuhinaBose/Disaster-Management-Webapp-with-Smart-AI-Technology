@@ -101,11 +101,12 @@ def shelters():
 
     # Fetch Live OpenStreetMap Schools, Colleges, and Hospitals if location or search term specified
     osm_shelters = []
-    loc_target = city_query or district_query or state_query or search_keyword
+    loc_parts = [p for p in [city_query, district_query, state_query, search_keyword] if p]
 
-    if loc_target:
+    if loc_parts:
         try:
-            nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(loc_target + ', India')}&format=json&limit=1"
+            full_loc_query = ', '.join(loc_parts) + ', India'
+            nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(full_loc_query)}&format=json&limit=1"
             req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
             with urllib.request.urlopen(req) as resp:
                 nom_data = json.loads(resp.read().decode())
@@ -118,14 +119,14 @@ def shelters():
                 overpass_q = f"""
                 [out:json][timeout:10];
                 (
-                  node["amenity"="school"](around:12000,{lat},{lon});
-                  node["amenity"="college"](around:12000,{lat},{lon});
-                  node["amenity"="hospital"](around:12000,{lat},{lon});
-                  way["amenity"="school"](around:12000,{lat},{lon});
-                  way["amenity"="college"](around:12000,{lat},{lon});
-                  way["amenity"="hospital"](around:12000,{lat},{lon});
+                  node["amenity"="school"](around:15000,{lat},{lon});
+                  node["amenity"="college"](around:15000,{lat},{lon});
+                  node["amenity"="hospital"](around:15000,{lat},{lon});
+                  way["amenity"="school"](around:15000,{lat},{lon});
+                  way["amenity"="college"](around:15000,{lat},{lon});
+                  way["amenity"="hospital"](around:15000,{lat},{lon});
                 );
-                out center 15;
+                out center 25;
                 """
                 op_url = "https://overpass-api.de/api/interpreter?data=" + urllib.parse.quote(overpass_q)
                 req_op = urllib.request.Request(op_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
@@ -149,10 +150,10 @@ def shelters():
                         osm_shelters.append({
                             'id': count_id,
                             'name': name,
-                            'address': tags.get('addr:street') or f"{loc_target}, India",
-                            'state': state_query or 'India',
-                            'district': district_query or loc_target,
-                            'city_village': city_query or loc_target,
+                            'address': tags.get('addr:street') or f"{full_loc_query}",
+                            'state': state_query or 'West Bengal',
+                            'district': district_query or 'North 24 Parganas',
+                            'city_village': city_query or 'Local Area',
                             'facility_type': raw_type,
                             'latitude': el_lat,
                             'longitude': el_lon,
@@ -241,72 +242,93 @@ def api_search_facilities():
 
     # 2. Fetch Live OpenStreetMap Schools, Colleges, Hospitals if location or search term specified
     osm_results = []
-    location_target = city_q or district_q or state_q or keyword_q
+    loc_candidates = []
+    
+    if city_q:
+        if state_q:
+            loc_candidates.append(f"{city_q}, {state_q}, India")
+        if district_q:
+            loc_candidates.append(f"{city_q}, {district_q}, India")
+        loc_candidates.append(f"{city_q}, India")
 
-    if location_target:
+    if district_q:
+        if state_q:
+            loc_candidates.append(f"{district_q}, {state_q}, India")
+        loc_candidates.append(f"{district_q}, India")
+
+    if keyword_q:
+        loc_candidates.append(f"{keyword_q}, India")
+
+    nom_data = None
+    for target_query in loc_candidates:
         try:
-            # Geocode target location via OpenStreetMap Nominatim
-            nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(location_target + ', India')}&format=json&limit=1"
+            nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(target_query)}&format=json&limit=1"
             req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
             with urllib.request.urlopen(req) as resp:
-                nom_data = json.loads(resp.read().decode())
+                nom_res = json.loads(resp.read().decode())
+                if nom_res:
+                    nom_data = nom_res
+                    break
+        except Exception:
+            continue
 
-            if nom_data:
-                lat = nom_data[0]['lat']
-                lon = nom_data[0]['lon']
+    if nom_data:
+        try:
+            lat = nom_data[0]['lat']
+            lon = nom_data[0]['lon']
 
-                # Overpass API query for schools, colleges, hospitals
-                overpass_q = f"""
-                [out:json][timeout:10];
-                (
-                  node["amenity"="school"](around:12000,{lat},{lon});
-                  node["amenity"="college"](around:12000,{lat},{lon});
-                  node["amenity"="hospital"](around:12000,{lat},{lon});
-                  way["amenity"="school"](around:12000,{lat},{lon});
-                  way["amenity"="college"](around:12000,{lat},{lon});
-                  way["amenity"="hospital"](around:12000,{lat},{lon});
-                );
-                out center 20;
-                """
-                op_url = "https://overpass-api.de/api/interpreter?data=" + urllib.parse.quote(overpass_q)
-                req_op = urllib.request.Request(op_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
-                with urllib.request.urlopen(req_op) as resp_op:
-                    op_data = json.loads(resp_op.read().decode())
+            # Overpass API query for schools, colleges, hospitals
+            overpass_q = f"""
+            [out:json][timeout:10];
+            (
+              node["amenity"="school"](around:15000,{lat},{lon});
+              node["amenity"="college"](around:15000,{lat},{lon});
+              node["amenity"="hospital"](around:15000,{lat},{lon});
+              way["amenity"="school"](around:15000,{lat},{lon});
+              way["amenity"="college"](around:15000,{lat},{lon});
+              way["amenity"="hospital"](around:15000,{lat},{lon});
+            );
+            out center 30;
+            """
+            op_url = "https://overpass-api.de/api/interpreter?data=" + urllib.parse.quote(overpass_q)
+            req_op = urllib.request.Request(op_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
+            with urllib.request.urlopen(req_op) as resp_op:
+                op_data = json.loads(resp_op.read().decode())
 
-                count_id = 9000
-                for el in op_data.get('elements', []):
-                    count_id += 1
-                    tags = el.get('tags', {})
-                    raw_type = tags.get('amenity', 'building').capitalize()
-                    name = tags.get('name') or tags.get('name:en') or f"Local {raw_type} Facility"
-                    
-                    if facility_q and facility_q.lower() not in raw_type.lower():
-                        continue
+            count_id = 9000
+            for el in op_data.get('elements', []):
+                count_id += 1
+                tags = el.get('tags', {})
+                raw_type = tags.get('amenity', 'building').capitalize()
+                name = tags.get('name') or tags.get('name:en') or f"Local {raw_type} Emergency Refuge"
+                
+                if facility_q and facility_q.lower() not in raw_type.lower():
+                    continue
 
-                    el_lat = float(el.get('lat') or el.get('center', {}).get('lat', 0))
-                    el_lon = float(el.get('lon') or el.get('center', {}).get('lon', 0))
+                el_lat = float(el.get('lat') or el.get('center', {}).get('lat', 0))
+                el_lon = float(el.get('lon') or el.get('center', {}).get('lon', 0))
 
-                    if el_lat and el_lon:
-                        osm_results.append({
-                            'id': count_id,
-                            'name': name,
-                            'address': tags.get('addr:street') or f"{location_target}, India",
-                            'state': state_q or 'India',
-                            'district': district_q or location_target,
-                            'city_village': city_q or location_target,
-                            'facility_type': raw_type,
-                            'latitude': el_lat,
-                            'longitude': el_lon,
-                            'total_capacity': 500,
-                            'available_beds': 350,
-                            'occupancy_percentage': 30.0,
-                            'has_food': True,
-                            'has_water': True,
-                            'has_medical': True if raw_type == 'Hospital' else False,
-                            'contact_number': '+91-108 (Emergency)',
-                            'is_osm_live': True
-                        })
-        except Exception as e:
+                if el_lat and el_lon:
+                    osm_results.append({
+                        'id': count_id,
+                        'name': name,
+                        'address': tags.get('addr:street') or nom_data[0].get('display_name', 'India'),
+                        'state': state_q or 'West Bengal',
+                        'district': district_q or 'North 24 Parganas',
+                        'city_village': city_q or 'Local Area',
+                        'facility_type': raw_type,
+                        'latitude': el_lat,
+                        'longitude': el_lon,
+                        'total_capacity': 500,
+                        'available_beds': 350,
+                        'occupancy_percentage': 30.0,
+                        'has_food': True,
+                        'has_water': True,
+                        'has_medical': True if raw_type == 'Hospital' else False,
+                        'contact_number': '+91-108 (Emergency)',
+                        'is_osm_live': True
+                    })
+        except Exception:
             pass
 
     combined_results = db_shelters + osm_results

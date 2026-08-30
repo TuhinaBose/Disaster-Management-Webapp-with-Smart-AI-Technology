@@ -45,12 +45,24 @@
                     </select>
                 </div>
 
-                <!-- Step 3: Select City / Village (Cascading) -->
+                <!-- Step 3: Select City / Village (Cascading or Custom Type) -->
                 <div class="col-6 col-md-3">
-                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-city me-1 text-cyan"></i>3. City / Village</label>
-                    <select name="city_village" id="filter_city" class="form-select form-select-sm bg-dark text-white border-secondary">
-                        <option value="">All Cities / Villages</option>
-                    </select>
+                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-city me-1 text-cyan"></i>3. City / Village / Town</label>
+                    <input type="text" name="city_village" id="filter_city_input" list="city_datalist" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Select or type town/village (e.g. Habra, Ashoknagar)..." value="{{ current_city if current_city else '' }}">
+                    <datalist id="city_datalist">
+                        <option value="Habra">
+                        <option value="Ashoknagar">
+                        <option value="Barasat">
+                        <option value="Barrackpore">
+                        <option value="Bidhannagar">
+                        <option value="Madhyamgram">
+                        <option value="Rajarhat">
+                        <option value="Bangaon">
+                        <option value="Basirhat">
+                        <option value="Naihati">
+                        <option value="Bhatpara">
+                        <option value="Panihati">
+                    </datalist>
                 </div>
 
                 <!-- Step 4: Facility Type -->
@@ -172,7 +184,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const stateSelect = document.getElementById('filter_state');
     const districtSelect = document.getElementById('filter_district');
-    const citySelect = document.getElementById('filter_city');
+    const cityDatalist = document.getElementById('city_datalist');
 
     const selectedState = "{{ current_state|safe }}";
     const selectedDistrict = "{{ current_district|safe }}";
@@ -201,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function populateDistricts(stName, currentDist = '') {
         districtSelect.innerHTML = '<option value="">All Districts</option>';
-        citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+        cityDatalist.innerHTML = '';
 
         if (INDIA_GEO_DATA[stName]) {
             Object.keys(INDIA_GEO_DATA[stName]).sort().forEach(dist => {
@@ -215,15 +227,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function populateCities(stName, distName, currentCt = '') {
-        citySelect.innerHTML = '<option value="">All Cities / Villages</option>';
+        cityDatalist.innerHTML = '';
 
         if (INDIA_GEO_DATA[stName] && INDIA_GEO_DATA[stName][distName]) {
             INDIA_GEO_DATA[stName][distName].sort().forEach(ct => {
                 const opt = document.createElement('option');
                 opt.value = ct;
-                opt.textContent = ct;
-                if (ct === currentCt) opt.selected = true;
-                citySelect.appendChild(opt);
+                cityDatalist.appendChild(opt);
             });
         }
     }
