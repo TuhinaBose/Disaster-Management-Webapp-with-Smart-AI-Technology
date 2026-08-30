@@ -17,9 +17,17 @@
         </div>
     </div>
 
-    <!-- Cascading Filter Bar: State -> District -> City/Village -> Facility Type -->
+    <!-- Cascading Filter Bar: State -> District -> City/Village -> Facility Type + Live Keyword Search -->
     <div class="glass-card p-3 p-md-4 mb-4 border-start border-4 border-cyan">
         <form method="GET" action="{{ url_for('feature.shelters') }}" id="cascading-filter-form">
+            <div class="mb-3">
+                <label class="form-label text-cyan small fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i> Quick Search Any School, College, Hospital, Village, or City in India:</label>
+                <div class="input-group">
+                    <input type="text" name="query" class="form-control bg-dark text-white border-secondary" placeholder="Type any School, College, Hospital, Village or Town name (e.g. St. Mary School, Canning Village, Salt Lake, Marine Lines)..." value="{{ search_query if search_query else '' }}">
+                    <button type="submit" class="btn btn-cyan fw-bold px-4"><i class="fa-solid fa-search me-1"></i> Live Search</button>
+                </div>
+            </div>
+
             <div class="row g-2 align-items-end">
                 <!-- Step 1: Select State -->
                 <div class="col-6 col-md-3">
@@ -58,7 +66,7 @@
 
                 <div class="col-12 text-end mt-3">
                     <a href="{{ url_for('feature.shelters') }}" class="btn btn-sm btn-outline-secondary me-2">Reset Filters</a>
-                    <button type="submit" class="btn btn-sm btn-cyan px-4 fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i> Search Shelters</button>
+                    <button type="submit" class="btn btn-sm btn-cyan px-4 fw-bold"><i class="fa-solid fa-filter me-1"></i> Apply Filters</button>
                 </div>
             </div>
         </form>

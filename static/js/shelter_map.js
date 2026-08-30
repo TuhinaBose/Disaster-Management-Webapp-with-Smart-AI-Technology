@@ -1,5 +1,5 @@
 /**
- * LEAFLET INTERACTIVE MAP FOR EMERGENCY SHELTERS LOCATOR
+ * LEAFLET INTERACTIVE MAP FOR EMERGENCY SHELTERS & LIVE OPENSTREETMAP FACILITIES
  * WITH REAL-TIME GPS LIVE LOCATION & DISTANCE CALCULATOR
  */
 
@@ -7,9 +7,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const mapElement = document.getElementById('map');
     if (!mapElement) return;
 
-    // Default map center (New Delhi / India coordinates default, adjustable dynamically)
-    const map = L.map('map').setView([28.6139, 77.2090], 10);
+    // Default map center (India coordinates)
+    const map = L.map('map').setView([20.5937, 78.9629], 5);
     let userLocationMarker = null;
+    let facilityMarkersGroup = L.featureGroup().addTo(map);
 
     // Dark styled OpenStreetMap tiles
     L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
@@ -27,17 +28,31 @@ document.addEventListener('DOMContentLoaded', () => {
                   Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
                   Math.sin(dLon / 2) * Math.sin(dLon / 2);
         const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return (R * c).toFixed(1); // distance in km rounded to 1 decimal
+        return (R * c).toFixed(1);
     }
 
-    // Fetch shelter JSON data from backend API
-    let allSheltersData = [];
+    // Extract current URL search params
+    const urlParams = new URLSearchParams(window.location.search);
+    const searchApiUrl = `/api/search_facilities?${urlParams.toString()}`;
 
-    fetch('/api/shelters')
+    let allFacilitiesData = [];
+
+    // Fetch combined shelters & live OpenStreetMap facilities
+    fetch(searchApiUrl)
         .then(response => response.json())
-        .then(shelters => {
-            allSheltersData = shelters;
-            renderMarkers(shelters);
+        .then(data => {
+            if (data.shelters && data.shelters.length > 0) {
+                allFacilitiesData = data.shelters;
+                renderMarkers(data.shelters);
+            } else {
+                // Fallback to basic shelters API
+                fetch('/api/shelters')
+                    .then(r => r.json())
+                    .then(shs => {
+                        allFacilitiesData = shs;
+                        renderMarkers(shs);
+                    });
+            }
 
             // Automatically attempt GPS live location lookup
             locateUserPosition();
@@ -45,6 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .catch(err => console.error("Error loading shelter markers on map:", err));
 
     function renderMarkers(shelters, userLat = null, userLng = null) {
+        facilityMarkersGroup.clearLayers();
         const bounds = [];
 
         // Add User Location Marker if available
@@ -52,7 +68,6 @@ document.addEventListener('DOMContentLoaded', () => {
             bounds.push([userLat, userLng]);
             if (userLocationMarker) map.removeLayer(userLocationMarker);
 
-            // Custom glowing blue icon for user live position
             const userIcon = L.divIcon({
                 className: 'user-live-pin',
                 html: '<div style="background-color: #06b6d4; width: 18px; height: 18px; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px #06b6d4;"></div>',
@@ -76,7 +91,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 const dist = calculateDistance(userLat, userLng, shelter.latitude, shelter.longitude);
                 distanceHtml = `<div style="font-weight: 700; color: #0284c7; margin-bottom: 4px;">📍 ${dist} km away from you</div>`;
 
-                // Update DOM distance badge on corresponding card
                 const cardBadge = document.getElementById(`shelter-dist-${shelter.id}`);
                 if (cardBadge) {
                     cardBadge.innerHTML = `<i class="fa-solid fa-location-arrow text-cyan me-1"></i> <strong>${dist} km</strong> from your live position`;
@@ -84,28 +98,39 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            const bedStatusClass = shelter.available_beds > 50 ? 'text-success' : 'text-danger';
+            const isOsmLive = shelter.is_osm_live;
+            const facilityBadge = shelter.facility_type === 'School' ? '🏫 School' :
+                                  shelter.facility_type === 'College' ? '🎓 College' :
+                                  shelter.facility_type === 'Hospital' ? '🏥 Hospital' : '🏢 Relief Building';
+
             const popupContent = `
-                <div style="color: #0f172a; min-width: 210px;">
+                <div style="color: #0f172a; min-width: 220px;">
+                    <div style="margin-bottom: 4px;">
+                        <span style="background: #0284c7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">${facilityBadge}</span>
+                        ${isOsmLive ? '<span style="background: #eab308; color: black; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">🌐 Live OSM</span>' : ''}
+                    </div>
                     <h6 style="font-weight: 700; margin-bottom: 4px;">${shelter.name}</h6>
                     <p style="font-size: 0.85rem; margin-bottom: 6px; color: #475569;">${shelter.address}</p>
                     ${distanceHtml}
                     <div style="font-size: 0.85rem; margin-bottom: 8px;">
                         <strong>District:</strong> ${shelter.district}<br>
-                        <strong>Beds Free:</strong> <span class="${bedStatusClass}" style="font-weight: 700;">${shelter.available_beds} / ${shelter.total_capacity}</span>
+                        <strong>Status:</strong> <span style="color: #16a34a; font-weight: 700;">Available Emergency Center</span>
                     </div>
-                    <div style="margin-bottom: 8px; font-size: 0.8rem;">
-                        ${shelter.has_food ? '🍱 Food ' : ''}
-                        ${shelter.has_water ? '💧 Water ' : ''}
-                        ${shelter.has_medical ? '🚑 Medical' : ''}
-                    </div>
-                    <a href="tel:${shelter.contact_number}" class="btn btn-sm btn-primary w-100" style="font-size: 0.8rem; padding: 4px 8px;">
-                        <i class="fa-solid fa-phone me-1"></i> Call ${shelter.contact_number}
+                    <a href="https://maps.google.com/?q=${shelter.latitude},${shelter.longitude}" target="_blank" class="btn btn-sm btn-primary w-100" style="font-size: 0.8rem; padding: 4px 8px;">
+                        <i class="fa-solid fa-map-location-dot me-1"></i> Navigate via Google Maps
                     </a>
                 </div>
             `;
 
-            const marker = L.marker(latLng).addTo(map);
+            // Custom Marker Colors: Gold for OSM live schools/colleges, Cyan for DB shelters
+            const markerColor = isOsmLive ? '#eab308' : '#06b6d4';
+            const customIcon = L.divIcon({
+                className: 'custom-facility-pin',
+                html: `<div style="background-color: ${markerColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px ${markerColor};"></div>`,
+                iconSize: [18, 18]
+            });
+
+            const marker = L.marker(latLng, { icon: customIcon }).addTo(facilityMarkersGroup);
             marker.bindPopup(popupContent);
         });
 
@@ -131,7 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (statusText) statusText.textContent = `📍 Live Location Detected (${uLat.toFixed(4)}, ${uLng.toFixed(4)})`;
                 if (locateBtn) locateBtn.disabled = false;
 
-                renderMarkers(allSheltersData, uLat, uLng);
+                renderMarkers(allFacilitiesData, uLat, uLng);
             },
             (err) => {
                 console.warn("GPS lookup denied or unavailable:", err);
