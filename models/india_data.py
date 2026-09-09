@@ -1,6 +1,6 @@
 """
 Comprehensive Geographical Data Dictionary for India
-Contains States, Union Territories, All Districts, Tehsils, Towns, Cities, and Villages
+Contains All States, Union Territories, Hill Stations, Districts, Tehsils, Towns, Cities, and Villages
 """
 
 INDIA_GEO_DATA = {
@@ -13,14 +13,21 @@ INDIA_GEO_DATA = {
         "Kurnool": ["Kurnool City", "Nandyal", "Adoni", "Yemmiganur", "Dhone", "Allagadda", "Nandikotkur", "Atmakur", "Banaganapalle", "Pattikonda"],
         "Prakasam": ["Ongole", "Chirala", "Markapur", "Kandukur", "Giddalur", "Kanigiri", "Podili", "Addanki", "Cumbum", "Darsi"],
         "Srikakulam": ["Srikakulam Town", "Palasa", "Amadalavalasa", "Narasannapeta", "Rajam", "Ichchapuram", "Tekkali", "Sompeta", "Hiramandalam", "Ponduru"],
-        "Visakhapatnam": ["Visakhapatnam City", "Anakapalle", "Bheemunipatnam", "Gajuwaka", "Narsipatnam", "Chodavaram", "Yelamanchili", "Araku Valley", "Paderu", "Subbavaram"],
+        "Visakhapatnam": ["Visakhapatnam City", "Anakapalle", "Bheemunipatnam", "Gajuwaka", "Narsipatnam", "Chodavaram", "Yelamanchili", "Araku Valley (Hill Station)", "Paderu", "Subbavaram"],
         "Vizianagaram": ["Vizianagaram Town", "Bobbili", "Parvathipuram", "Salur", "Rajam", "Cheepurupalli", "Gajapathinagaram", "Srungavarapukota", "Kurupam", "Kothavalasa"],
         "West Godavari": ["Eluru", "Tadepalligudem", "Bhimavaram", "Tanuku", "Palakollu", "Narsapuram", "Jangareddigudem", "Kovvur", "Nidadavole", "Chintalapudi"],
         "YSR Kadapa": ["Kadapa City", "Proddatur", "Rayachoti", "Pulivendula", "Badvel", "Jammalamadugu", "Rajampet", "Kodur", "Mydukur", "Kamalapuram"]
     },
+    "Arunachal Pradesh": {
+        "Tawang": ["Tawang Town (Hill Station)", "Jang", "Lumla", "Mukto", "Zemithang"],
+        "West Kameng": ["Bomdila (Hill Station)", "Dirang", "Rupa", "Bhalukpong", "Singchung"],
+        "Lower Subansiri": ["Ziro (Hill Station)", "Hapoli", "Yachuli", "Raga"],
+        "Papum Pare": ["Itanagar (Capital)", "Naharlagun", "Doimukh", "Nirjuli", "Yupia"]
+    },
     "Assam": {
         "Cachar": ["Silchar", "Lakhipur", "Sonai", "Katigorah", "Dholai Village", "Udharbond", "Barkhola", "Bikrampur"],
         "Darrang": ["Mangaldoi", "Kharupetia", "Sipajhar", "Dalgaon", "Kalaigaon", "Patharighat", "Burha Village"],
+        "Dima Hasao": ["Haflong (Hill Station)", "Mahur", "Maibang", "Umrangso", "Harangajao"],
         "Dibrugarh": ["Dibrugarh Town", "Tinsukia Road", "Chabua", "Naharkatia", "Namrup", "Moranhat", "Duliajan", "Tengakhat"],
         "Kamrup Metropolitan": ["Guwahati City", "Dispur", "North Guwahati", "Chandrapur", "Sonapur", "Azara", "Khanapara", "Beltola"],
         "Nagaon": ["Nagaon Town", "Hojai", "Lanka", "Kharupetia", "Raha Village", "Koliabor", "Samaguri", "Doboka"],
@@ -48,21 +55,22 @@ INDIA_GEO_DATA = {
         "Gurugram (NCR)": ["DLF Phase 1-5", "Cyber City", "Sohna Road", "Manesar", "Sector 14-56", "Palam Vihar", "Golf Course Road", "Badshahpur"],
         "Noida (NCR)": ["Sector 15-137", "Greater Noida", "Noida Extension", "Dadri", "Jewar", "Surajpur", "Kasna", "Knowledge Park"]
     },
-    "Gujarat": {
-        "Ahmedabad": ["Ahmedabad City", "Navrangpura", "Maninagar", "Bodakdev", "Sanand", "Dholka", "Viramgam", "Bavla", "Dhandhuka", "Asarwa"],
-        "Amreli": ["Amreli Town", "Dhari", "Rajula", "Savarkundla", "Jafrabad", "Babra", "Lathi", "Bagasara", "Khambha"],
-        "Anand": ["Anand City", "Khambhat", "Petlad", "Borsad", "Umreth", "Karamsad", "Vallabh Vidyanagar", "Anklav", "Sojitra"],
-        "Banaskantha": ["Palanpur", "Deesa", "Dantiwada", "Tharad", "Dhanera", "Bhabhar", "Kankrej", "Vav", "Shihori"],
-        "Bharuch": ["Bharuch Town", "Ankleshwar", "Jambusar", "Hansot", "Vagra", "Jambusar Road", "Amod", "Valia"],
-        "Bhavnagar": ["Bhavnagar City", "Mahuva", "Palitana", "Talaja", "Gariadhar", "Sihor", "Ghogha", "Vallabhipur", "Umrala"],
-        "Gandhinagar": ["Gandhinagar City", "Kalol", "Dahegam", "Mansa", "Pethapur", "Chala", "Adalaj", "Kudasan"],
-        "Jamnagar": ["Jamnagar City", "Dhrol", "Jamjodhpur", "Jodiya", "Lalpur", "Kalavad", "Sikka", "Bed Village"],
-        "Junagadh": ["Junagadh City", "Keshod", "Manavadar", "Visavadar", "Mangrol", "Vanthali", "Mendarda", "Bhesan"],
-        "Kutch": ["Bhuj", "Gandhidham", "Anjar", "Mandvi", "Mundra", "Rapar", "Nakhatrana", "Bhachau", "Abdasa", "Lakhpat"],
-        "Rajkot": ["Rajkot City", "Gondal", "Jetpur", "Morbi Road", "Dhoraji", "Upleta", "Jasdan", "Kotda Sangani", "Lodhika"],
-        "Surat": ["Surat City", "Varachha", "Adajan", "Bardoli", "Kamrej", "Olpad", "Mandvi Surat", "Mahuva Surat", "Upad"],
-        "Vadodara": ["Vadodara City", "Padra", "Dabhoi", "Karjan", "Savli", "Vaghodia", "Sinor", "Desar"],
-        "Valsad": ["Valsad Town", "Vapi", "Umbergaon", "Pardi", "Dharampur", "Kaprada", "Bhilad", "Vapi East"]
+    "Himachal Pradesh (Hill State - Landslide Prone)": {
+        "Shimla": ["Shimla City (Hill Station)", "Kufri", "Mashobra", "Narkanda", "Chail", "Rampur Bushahr", "Theog", "Rohru", "Jubbal", "Kotkhai"],
+        "Kullu": ["Kullu Town", "Manali (Hill Station)", "Solang Valley", "Kasol", "Naggar", "Banjar", "Anni", "Nirmand"],
+        "Kangra": ["Dharamshala (Hill Station)", "McLeod Ganj", "Palampur", "Kangra Town", "Nurpur", "Jawali", "Dehra Gopipur", "Baijnath"],
+        "Solan": ["Solan Town", "Kasauli (Hill Station)", "Chail Road", "Kandaghat", "Arki", "Nalagarh", "Baddi"],
+        "Chamba": ["Dalhousie (Hill Station)", "Chamba Town", "Khajjiar", "Bharmour", "Pangi", "Salooni", "Chowari"],
+        "Mandi": ["Mandi City", "Sundernagar", "Jogindernagar", "Sarkaghat", "Karsog", "Pandoh", "Padhar"],
+        "Lahaul and Spiti": ["Keylong", "Kaza", "Tabo", "Udaipur Lahaul", "Sissu", "Jispa"]
+    },
+    "Jammu & Kashmir & Ladakh (Landslide Prone)": {
+        "Srinagar": ["Srinagar City", "Dal Lake Belt", "Hazratbal", "Nishat", "Shalimar", "Lal Chowk"],
+        "Anantnag": ["Pahalgam (Hill Station)", "Anantnag Town", "Bijbehara", "Kokernag", "Verinag", "Mattan"],
+        "Baramulla": ["Gulmarg (Hill Station)", "Baramulla Town", "Sopore", "Pattan", "Tangmarg", "Uri Landslide Zone"],
+        "Ganderbal": ["Sonamarg (Hill Station)", "Ganderbal Town", "Kangan", "Gund"],
+        "Leh (Ladakh)": ["Leh Town (High Altitude)", "Nubra Valley", "Diskit", "Pangong Belt", "Khardung La Route"],
+        "Kargil (Ladakh)": ["Kargil Town", "Drass (Coldest Zone)", "Zanskar", "Sanku"]
     },
     "Karnataka": {
         "Bagalkot": ["Bagalkot Town", "Badami", "Ilkal", "Jamkhandi", "Mudhol", "Hunagund", "Guledgudda", "Bilgi"],
@@ -70,167 +78,86 @@ INDIA_GEO_DATA = {
         "Belagavi": ["Belagavi City", "Gokak", "Chikkodi", "Bailhongal", "Athani", "Khanapur", "Sankeshwar", "Ramdurg", "Saundatti"],
         "Bengaluru Rural": ["Dharmapuri Road", "Devanahalli", "Doddaballapura", "Hosakote", "Nelamangala", "Vijayapura Rural"],
         "Bengaluru Urban": ["Indiranagar", "Koramangala", "Whitefield", "Jayanagar", "Electronic City", "Yelahanka", "Marathahalli", "BTM Layout", "Hebbal", "Rajajinagar", "Malleshwaram", "Banashankari"],
-        "Bidar": ["Bidar City", "Bhalki", "Basavakalyan", "Humnabad", "Aurad", "Chitguppa", "Kamalnagar"],
-        "Chamarajanagar": ["Chamarajanagar Town", "Gundlupet", "Kollegal", "Yelandur", "Hanur"],
-        "Chikmagalur": ["Chikmagalur Town", "Kadur", "Tarikere", "Mudigere", "Sringeri", "Koppa", "Narasimharajapura"],
+        "Chikmagalur (Hill Station Zone)": ["Chikmagalur Town (Hill Station)", "Kudremukh", "Mullayanagiri Slope", "Bababudangiri", "Kadur", "Tarikere", "Mudigere", "Sringeri", "Koppa"],
+        "Kodagu (Coorg - Landslide Prone)": ["Madikeri (Hill Station)", "Somwarpet", "Virajpet", "Kushalnagar", "Gonikoppal", "Bhagamandala Slope", "Talakaveri"],
         "Dakshina Kannada": ["Mangaluru City", "Bantwal", "Puttur", "Belthangady", "Sullia", "Moodabidri", "Kadaba"],
-        "Davanagere": ["Davanagere City", "Harihar", "Channagiri", "Honnali", "Jagalur", "Nyamathi"],
-        "Dharwad": ["Hubballi City", "Dharwad Town", "Navalgund", "Kalghatgi", "Kundgol", "Alnavar"],
-        "Hassan": ["Hassan Town", "Arsikere", "Channarayapatna", "Holenarasipura", "Sakleshpur", "Belur", "Alur", "Arkalgud"],
-        "Kodagu": ["Madikeri", "Somwarpet", "Virajpet", "Kushalnagar", "Gonikoppal"],
         "Mysuru": ["Mysuru City", "Nanjangud", "Hunsur", "KR Nagar", "T Narasipura", "Periyapatna", "H D Kote", "Saragur"],
-        "Shivamogga": ["Shivamogga City", "Bhadravathi", "Sagara", "Shikaripura", "Thirthahalli", "Hosangar", "Soraba"],
-        "Tumakuru": ["Tumakuru City", "Tiptur", "Sira", "Gubbi", "Kunigal", "Pavagada", "Madhugiri", "Turuvekere", "Chikkanayakanahalli"],
-        "Udupi": ["Udupi Town", "Kundapura", "Karkala", "Saligrama", "Kaup", "Brahmavar", "Byndoor"]
+        "Shivamogga": ["Shivamogga City", "Bhadravathi", "Sagara", "Shikaripura", "Thirthahalli", "Hosangar", "Soraba"]
     },
-    "Kerala": {
-        "Alappuzha": ["Alappuzha Town", "Cherthala", "Kayamkulam", "Chengannur", "Haripad", "Mavelikkara", "Ambalappuzha", "Kuttanad", "Aroor"],
-        "Ernakulam": ["Kochi City", "Aluva", "Angamaly", "Perumbavoor", "Muvattupuzha", "Tripunithura", "Kalamassery", "Kothamangalam", "North Paravur", "Fort Kochi", "Edappally"],
-        "Idukki": ["Thodupuzha", "Munnar", "Kattappana", "Adimali", "Nedumkandam", "Peermade", "Cheruthoni", "Devikulam"],
-        "Kannur": ["Kannur Town", "Thalassery", "Payyanur", "Mattannur", "Taliparamba", "Iritty", "Kuthuparamba", "Ancharakandy"],
-        "Kasaragod": ["Kasaragod Town", "Kanhangad", "Nileshwaram", "Cheruvathur", "Uppala Village", "Kumbla", "Manjeshwar", "Badiyadka"],
-        "Kollam": ["Kollam City", "Karunagappally", "Punalur", "Kottarakkara", "Paravur", "Pathanapuram", "Chathannoor", "Anchal"],
-        "Kottayam": ["Kottayam Town", "Changanassery", "Pala", "Vaikom", "Ettumanoor", "Kanjirappally", "Erattupetta", "Puthuppally"],
-        "Kozhikode": ["Kozhikode City", "Vatakara", "Koyilandy", "Thamarassery", "Ramanattukara", "Feroke", "Mukkam", "Balussery"],
-        "Malappuram": ["Malappuram Town", "Manjeri", "Tirur", "Perinthalmanna", "Ponnani", "Kottakkal", "Nilambur", "Kondotty", "Parappanangadi"],
-        "Palakkad": ["Palakkad Town", "Ottapalam", "Chittur", "Mannarkkad", "Pattambi", "Shoranur", "Alathur", "Cherpulassery"],
-        "Pathanamthitta": ["Pathanamthitta Town", "Tiruvalla", "Adoor", "Ranni", "Pandalam", "Kozhencherry", "Mallapally", "Konni"],
-        "Thiruvananthapuram": ["Thiruvananthapuram City", "Neyyattinkara", "Attingal", "Varkala", "Nedumangad", "Kazhakkoottam", "Kilimanoor", "Kattakada"],
-        "Thrissur": ["Thrissur City", "Chalakudy", "Kodungallur", "Guruvayur", "Kunamkulam", "Irinjalakuda", "Wadakkanchery", "Triprayar"],
-        "Wayanad": ["Kalpetta", "Mananthavady", "Sulthan Bathery", "Vythiri", "Meppadi", "Panamaram", "Pulpally"]
-    },
-    "Madhya Pradesh": {
-        "Bhopal": ["Bhopal City", "Bairagarh", "Berasia", "Kolar Road", "MP Nagar", "Govindpura", "Arera Colony"],
-        "Gwalior": ["Gwalior City", "Dabra", "Bhantar", "Morar", "Lashkar", "Bhitarwar", "Chinor"],
-        "Indore": ["Indore City", "Mhow", "Rau", "Depalpur", "Sanwer", "Vijay Nagar", "Palasia"],
-        "Jabalpur": ["Jabalpur City", "Sihora", "Patan", "Panagar", "Kundam", "Bargi", "Shahpura Jabalpur"],
-        "Ujjain": ["Ujjain City", "Nagda", "Khachrod", "Mahidpur", "Tarana", "Unhel", "Gharoth"],
-        "Vidisha": ["Vidisha Town", "Basoda", "Kurwai", "Sironj", "Lateri", "Gyaraspur"]
+    "Kerala (Hilly & Landslide Prone)": {
+        "Idukki (Severe Landslide Zone)": ["Munnar (Hill Station)", "Devikulam", "Kattappana", "Adimali", "Nedumkandam", "Peermade", "Cheruthoni", "Rajamala", "Vagamon (Hill Station)"],
+        "Wayanad (Severe Landslide Zone)": ["Kalpetta (Hill Station)", "Meppadi (Landslide Zone)", "Chooralmala Slope", "Mundakkai Village", "Vythiri", "Sulthan Bathery", "Lakkidi", "Mananthavady"],
+        "Ernakulam": ["Kochi City", "Aluva", "Angamaly", "Perumbavoor", "Muvattupuzha", "Tripunithura", "Kalamassery", "Kothamangalam", "North Paravur"],
+        "Pathanamthitta": ["Pathanamthitta Town", "Tiruvalla", "Adoor", "Ranni", "Pandalam", "Kozhencherry", "Sabarimala Slope Zone"],
+        "Thiruvananthapuram": ["Thiruvananthapuram City", "Ponmudi (Hill Station)", "Neyyattinkara", "Attingal", "Varkala", "Nedumangad"]
     },
     "Maharashtra": {
-        "Ahmednagar": ["Ahmednagar City", "Rahata", "Shirdi", "Sangamner", "Kopargaon", "Shrirampur", "Rahuri", "Nevasa", "Pathardi", "Parner", "Shevgaon", "Akole", "Jamkhed", "Karjat Ahmednagar"],
-        "Akola": ["Akola City", "Akot", "Murtizapur", "Telhara", "Balapur", "Patur", "Barshitakli"],
-        "Amravati": ["Amravati City", "Achalpur", "Warud", "Anjangaon", "Daryapur", "Morshi", "Chandur Bazar", "Dhamangaon Railway", "Nandgaon Khandeshwar"],
-        "Aurangabad (Chhatrapati Sambhajinagar)": ["Aurangabad City", "Paithan", "Vaijapur", "Kannad", "Gangapur", "Sillod", "Khuldabad", "Phulambri", "Soegaon"],
-        "Beed": ["Beed Town", "Parli", "Majalgaon", "Ambejogai", "Georai", "Kaij", "Ashti Beed", "Patoda", "Dharur", "Wadwani"],
-        "Bhandara": ["Bhandara Town", "Tumsar", "Sakoli", "Pauni", "Lakhani", "Mohadi", "Lakhandur"],
-        "Buldhana": ["Buldhana Town", "Khamgaon", "Malkapur", "Shegaon", "Chikhli", "Deulgaon Raja", "Mehkar", "Nandura", "Jalgaon Jamod", "Motala"],
-        "Chandrapur": ["Chandrapur City", "Warora", "Ballarpur", "Bhadravati", "Rajura", "Brahmapuri", "Nagbhid", "Mul", "Chimur", "Korpana", "Gondpipri"],
-        "Dhule": ["Dhule City", "Shirpur", "Sakri", "Sindkheda", "Dondaicha"],
-        "Gadchiroli": ["Gadchiroli Town", "Aheri", "Armori", "Warsa", "Chamorshi", "Kurkheda", "Dhanora", "Etapalli", "Sironcha"],
-        "Gondia": ["Gondia City", "Tiroda", "Arjuni Morgaon", "Deori", "Amgaon", "Salekasa", "Goregaon Gondia", "Sadak Arjuni"],
-        "Jalgaon": ["Jalgaon City", "Bhusawal", "Chalisgaon", "Amalner", "Yawal", "Erandol", "Pachora", "Jamner", "Raver", "Bhadgaon", "Chopda", "Parola", "Muktainagar"],
-        "Jalna": ["Jalna City", "Ambad", "Partur", "Bhokardan", "Jafrabad", "Ghansawangi", "Mantha", "Badnapur"],
-        "Kolhapur": ["Kolhapur City", "Ichalkaranji", "Kagal", "Jaysingpur", "Gadhinglaj", "Radhanagari", "Shahuwadi", "Panhala", "Shirol", "Ajara", "Bhudargad", "Chandgad"],
-        "Latur": ["Latur City", "Udgir", "Ahmedpur", "Ausa", "Nilanga", "Renapur", "Chakur", "Shirur Anantpal", "Deoni", "Jalkot"],
-        "Mumbai City": ["Marine Lines", "Colaba", "Fort", "Dadra", "Byculla", "Worli", "Dharavi", "Girgaon", "Parel", "Sion", "Wadala", "Tardeo", "Mahalaxmi"],
-        "Mumbai Suburban": ["Andheri West", "Andheri East", "Bandra East", "Bandra West", "Borivali", "Goregaon", "Juhu", "Malad", "Kurla", "Ghatkopar", "Mulund", "Chembur", "Powai", "Kandivali", "Dahisar", "Vile Parle", "Santacruz", "Saki Naka", "Mankhurd"],
-        "Nagpur": ["Nagpur City", "Kamptee", "Umred", "Katol", "Ramtek", "Hingna", "Saoner", "Kalameshwar", "Narkhed", "Kuhi", "Parseoni", "Bhiwapur", "Moulzari"],
-        "Nanded": ["Nanded City", "Kinwat", "Degloor", "Mukhed", "Hadgaon", "Bhokar", "Kandhar", "Loha", "Mudkhed", "Naigaon", "Umri", "Dharmabad", "Himayatnagar", "Mahoor"],
-        "Nandurbar": ["Nandurbar Town", "Shahada", "Navapur", "Taloda", "Akkalkuwa", "Akani"],
-        "Nashik": ["Nashik City", "Malegaon", "Sinnar", "Niphad", "Yeola", "Igatpuri", "Satana (Baglan)", "Kalwan", "Peth", "Dindori Nashik", "Chandwad", "Deola", "Surgana", "Trimbakeshwar"],
-        "Navi Mumbai": ["Vashi", "Nerul", "Belapur", "Kharghar", "Panvel", "Airoli", "Ghansoli", "Koparkhairane", "Seawoods", "Kamothe", "Kalamboli", "Ulwe"],
-        "Osmanabad (Dharashiv)": ["Osmanabad Town", "Tuljapur", "Omerga", "Paranda", "Bhoom", "Kalamb Dharashiv", "Washi Dharashiv", "Lohara"],
-        "Palghar": ["Palghar Town", "Vasai-Virar", "Dahanu", "Wada", "Jawhar", "Vikramgad", "Mokhada", "Talasari", "Nalasopara", "Boisar", "Manor", "Kasa", "Saphale"],
-        "Parbhani": ["Parbhani City", "Gangakhed", "Pathri", "Jintur", "Sailu", "Manwath", "Palam Parbhani", "Purna", "Sonpeth"],
-        "Pune": ["Shivajinagar", "Kothrud", "Hadapsar", "Viman Nagar", "Pimpri-Chinchwad", "Baramati", "Lonavala", "Chakan", "Talegaon", "Daund", "Shirur", "Indapur", "Junar", "Manchar", "Bhor", "Saswad", "Velhe", "Mulshi", "Pauvel Pune"],
-        "Raigad": ["Alibag", "Panvel", "Karjat", "Mahad", "Mangaon", "Roha", "Pen", "Murud", "Shrivardhan", "Poladpur", "Tala", "Khopoli", "Uran", "Matheran"],
-        "Ratnagiri": ["Ratnagiri Town", "Chiplun", "Khed", "Rajapur", "Guhagar", "Dapoli", "Lanja", "Sangameshwar", "Mandangad"],
-        "Sangli": ["Sangli City", "Miraj", "Vita", "Islampur", "Tasgaon", "Jath", "Kavathe Mahankal", "Khanapur Vita", "Shirala", "Palus", "Atpadi"],
-        "Satara": ["Satara City", "Karad", "Wai", "Mahabaleshwar", "Phaltan", "Patan Satara", "Koregaon", "Khatav", "Man Dahiwadi", "Khandala Satara"],
-        "Sindhudurg": ["Sawantwadi", "Malvan", "Kankavli", "Vengurla", "Kudal", "Devgad", "Dodamarg", "Vaibhavwadi"],
-        "Solapur": ["Solapur City", "Pandharpur", "Barshi", "Sangola", "Akkalkot", "Mohol", "Karmala", "Madha", "Mangalwedha", "Malshiras"],
-        "Thane": ["Thane City", "Kalyan-Dombivli", "Bhiwandi", "Ulhasnagar", "Ambernath", "Murbad", "Shahapur", "Badlapur", "Titwala", "Kalwa", "Mumbra", "Diva"],
-        "Wardha": ["Wardha City", "Hinganghat", "Arvi", "Deoli", "Pulgaon", "Seloo", "Samudrapur", "Ashti Wardha", "Karanja Wardha"],
-        "Yavatmal": ["Yavatmal City", "Pusad", "Umarkhed", "Wani", "Digras", "Darwha", "Pandharkawada (Kelapur)", "Ghatanji", "Arni", "Maregaon", "Ralegaon", "Zari Jamani", "Nerd"]
+        "Ahmednagar": ["Ahmednagar City", "Rahata", "Shirdi", "Sangamner", "Kopargaon", "Shrirampur", "Rahuri", "Nevasa", "Pathardi", "Parner", "Akole"],
+        "Kolhapur": ["Kolhapur City", "Ichalkaranji", "Kagal", "Jaysingpur", "Gadhinglaj", "Radhanagari", "Panhala (Hill Station)", "Shahuwadi"],
+        "Mumbai City": ["Marine Lines", "Colaba", "Fort", "Dadra", "Byculla", "Worli", "Dharavi", "Girgaon", "Parel", "Sion", "Wadala"],
+        "Mumbai Suburban": ["Andheri West", "Bandra East", "Borivali", "Goregaon", "Juhu", "Malad", "Kurla", "Ghatkopar", "Mulund", "Chembur", "Powai"],
+        "Nashik": ["Nashik City", "Malegaon", "Sinnar", "Igatpuri (Hill Station)", "Trimbakeshwar", "Satana", "Kalwan"],
+        "Navi Mumbai": ["Vashi", "Nerul", "Belapur", "Kharghar", "Panvel", "Airoli", "Ghansoli", "Seawoods", "Kamothe"],
+        "Pune (Ghats & Landslide Prone)": ["Shivajinagar", "Lonavala (Hill Station)", "Khandala (Hill Station)", "Lavasa", "Kothrud", "Hadapsar", "Pimpri-Chinchwad", "Baramati", "Bhor Ghat"],
+        "Raigad (Ghats & Landslide Prone)": ["Alibag", "Matheran (Hill Station)", "Mahad (Irshalwadi Slope Zone)", "Karjat", "Mangaon", "Roha", "Pen", "Khopoli"],
+        "Ratnagiri": ["Ratnagiri Town", "Chiplun", "Khed", "Rajapur", "Guhagar", "Dapoli (Hill Station)"],
+        "Satara (Ghats & Landslide Prone)": ["Satara City", "Mahabaleshwar (Hill Station)", "Panchgani (Hill Station)", "Karad", "Wai", "Patan Satara", "Koregaon"],
+        "Sindhudurg": ["Sawantwadi", "Amboli (Hill Station - High Rainfall)", "Malvan", "Kankavli", "Vengurla", "Kudal"],
+        "Thane": ["Thane City", "Kalyan-Dombivli", "Bhiwandi", "Ulhasnagar", "Ambernath", "Murbad", "Shahapur Ghat Zone"]
+    },
+    "Meghalaya (High Rainfall & Landslide Prone)": {
+        "East Khasi Hills": ["Shillong (Capital Hill Station)", "Cherrapunji / Sohra (Extreme Rain)", "Mawsynram (Highest Rainfall Zone)", "Pynursla", "Smit"],
+        "West Jaintia Hills": ["Jowai", "Dawki", "Amlarem", "Thadlaskein"],
+        "Ri-Bhoi": ["Nongpoh", "Umsning", "Byrnihat"],
+        "West Garo Hills": ["Tura", "Phulbari", "Dalu", "Rongram"]
     },
     "Odisha": {
-        "Balasore": ["Balasore Town", "Bhadrak Border", "Jaleswar", "Soro", "Nilagiri", "Basta", "Bhograi", "Jharpokharia"],
-        "Cuttack": ["Cuttack City", "Choudwar", "Banki", "Athagarh", "Salepur", "Tangi Cuttack", "Nischintakoili", "Narsinghpur"],
-        "Ganjam": ["Berhampur City", "Chhatrapur", "Hinjilicut", "Aska", "Bhanjanagar", "Gopalpur", "Kallikote", "Polasara", "Surada"],
-        "Khordha": ["Bhubaneswar City", "Jatni", "Khordha Town", "Banapur", "Tangi Khordha", "Balipatna", "Balianta", "Begunia"],
-        "Puri": ["Puri City", "Konark", "Nimapada", "Pipili", "Kakatpur", "Satyabadi", "Brahmagiri", "Gop", "Delanga"],
-        "Sambalpur": ["Sambalpur City", "Burla", "Hirakud", "Rairakhol", "Kuchinda", "Bamra", "Jujomura", "Jamankira"]
-    },
-    "Punjab": {
-        "Amritsar": ["Amritsar City", "Attari", "Ajnala", "Baba Bakala", "Jandiala", "Majitha", "Raja Sansi", "Ramdas"],
-        "Bathinda": ["Bathinda City", "Rampura Phul", "Talwandi Sabo", "Mauri", "Bhai Rupa", "Bhucho Mandi", "Gonate"],
-        "Jalandhar": ["Jalandhar City", "Nakodar", "Phillaur", "Shahkot", "Goraya", "Bhogpur", "Adampur Jalandhar", "Kartarpur"],
-        "Ludhiana": ["Ludhiana City", "Khanna", "Jagraon", "Samrala", "Raikot", "Doraha", "Payal", "Mullanpur"],
-        "Mohali (SAS Nagar)": ["Mohali City", "Kharar", "Zirakpur", "Dera Bassi", "Kurali", "Lalru", "Banur", "Naya Gaon"],
-        "Patiala": ["Patiala City", "Rajpura", "Nabha", "Samana", "Patran", "Ghanaur", "Devigarh", "Shutrana"]
+        "Balasore": ["Balasore Town", "Bhadrak Border", "Jaleswar", "Soro", "Nilagiri"],
+        "Cuttack": ["Cuttack City", "Choudwar", "Banki", "Athagarh", "Salepur"],
+        "Ganjam": ["Berhampur City", "Chhatrapur", "Hinjilicut", "Aska", "Bhanjanagar", "Gopalpur"],
+        "Koraput (Hilly Zone)": ["Koraput Town (Hill Station)", "Jeypore", "Sunabeda", "Damanjodi", "Semiliguda"],
+        "Puri": ["Puri City", "Konark", "Nimapada", "Pipili", "Kakatpur"]
     },
     "Rajasthan": {
-        "Ajmer": ["Ajmer City", "Beawar", "Kishangarh", "Kekri", "Pushkar", "Nasirabad", "Sarwar", "Bijainagar"],
-        "Alwar": ["Alwar City", "Bhiwadi", "Neemrana", "Behror", "Tijara", "Rajgarh Alwar", "Kishangarh Bas", "Thanagazi", "Bansur"],
-        "Bikaner": ["Bikaner City", "Nokha", "Dungargarh", "Lunkaransar", "Khajuwala", "Deshnoke", "Kolayat", "Poogal"],
-        "Jaipur": ["Jaipur City", "Sanganer", "Amer", "Chomu", "Bagru", "Kotputli", "Shahpura Jaipur", "Phulera", "Sambhar", "Chaksu", "Basssi", "Jamwa Ramgarh"],
-        "Jodhpur": ["Jodhpur City", "Pali Road", "Phalodi", "Piparcity", "Bilara", "Osian", "Shergarh", "Luni", "Bhopalgarh"],
-        "Kota": ["Kota City", "Ramganj Mandi", "Sangod", "Itawa", "Digod", "Chechat", "Modak", "Sultanpur Kota"],
-        "Udaipur": ["Udaipur City", "Salumbar", "Fatehnagar", "Mavli", "Bhindar", "Kherwara", "Jhadol", "Gogunda", "Kotra Udaipur"]
+        "Sirohi (Hill Station Zone)": ["Mount Abu (Hill Station)", "Sirohi Town", "Abu Road", "Sheoganj", "Reodar"],
+        "Jaipur": ["Jaipur City", "Sanganer", "Amer", "Chomu", "Bagru", "Kotputli"],
+        "Udaipur": ["Udaipur City", "Salumbar", "Fatehnagar", "Mavli", "Gogunda"]
+    },
+    "Sikkim (Severe Landslide Prone Hill State)": {
+        "East Sikkim": ["Gangtok (Capital Hill Station)", "Ranipool", "Singtam", "Rongli", "Pakyong"],
+        "West Sikkim": ["Pelling (Hill Station)", "Geyzing", "Soreng", "Yuksom", "Dentam"],
+        "North Sikkim (Severe Landslides)": ["Lachung (Hill Station)", "Lachen", "Mangan", "Chungthang", "Dzongu"],
+        "South Sikkim": ["Namchi (Hill Station)", "Ravangla", "Jorethang", "Melli"]
     },
     "Tamil Nadu": {
-        "Chennai": ["Mylapore", "T. Nagar", "Velachery", "Adyar", "Anna Nagar", "Tambaram", "Chromepet", "Guindy", "Royapettah", "Egmore", "Perambur", "Kodambakkam", "Porur", "Madipakkam", "Avadi", "Sholinganallur"],
-        "Coimbatore": ["Coimbatore City", "Pollachi", "Mettupalayam", "Sulur", "Valparai", "Annur", "Kinathukadavu", "Perur", "Thondamuthur"],
-        "Cuddalore": ["Cuddalore Town", "Chidambaram", "Panruti", "Virudhachalam", "Neyveli", "Kurinjipadi", "Tittakudi", "Kattumannarkoil", "Bhuvanagiri"],
-        "Dindigul": ["Dindigul Town", "Palani", "Kodaikanal", "Oddanchatram", "Nattam", "Nilakottai", "Vedasandur", "Nannilam Dindigul"],
-        "Erode": ["Erode City", "Gobichettipalayam", "Sathyamangalam", "Bhavani", "Perundurai", "Anthiyur", "Kodumudi", "Modakurichi"],
-        "Kanchipuram": ["Kanchipuram Town", "Sriperumbudur", "Chengalpattu", "Uttiramerur", "Walajabad", "Kundrathur", "Madurantakam"],
-        "Kanyakumari": ["Nagercoil", "Kanyakumari Town", "Thuckalay", "Padmanabhapuram", "Colachel", "Kuzhithurai", "Killiyoor", "Agastheeswaram"],
-        "Madurai": ["Madurai City", "Melur", "Thirumangalam", "Usilampatti", "Vadipatti", "Thiruparankundram", "Sholavandan", "Peraiyur"],
-        "Nagapattinam": ["Nagapattinam Town", "Velankanni", "Vedaranyam", "Mayiladuthurai", "Sirkazhi", "Tharangambadi", "Keezhaiyur"],
-        "Salem": ["Salem City", "Attur", "Mettur", "Omalur", "Edappadi", "Yercaud", "Sankari", "Gangavalli", "Thalaivasal"],
-        "Thanjavur": ["Thanjavur City", "Kumbakonam", "Pattukkottai", "Orathanadu", "Thiruvaiyaru", "Peravurani", "Papanasam", "Thirupanandal"],
-        "Tiruchirappalli": ["Tiruchirappalli City", "Srirangam", "Lalgudi", "Manapparai", "Thuraiyur", "Musiri", "Thottiyam", "Manachanallur"],
-        "Tirunelveli": ["Tirunelveli City", "Palayamkottai", "Ambasamudram", "Tenkasi", "Nanguneri", "Radhapuram", "Cheranmahadevi", "Sankarankovil"],
-        "Vellore": ["Vellore City", "Gudiyatham", "Katpadi", "Vaniyambadi", "Ambur", "Tirupattur Vellore", "Ranipet", "Arcot", "Arakkonam"]
+        "Nilgiris (Severe Landslide Zone)": ["Ooty / Udhagamandalam (Hill Station)", "Coonoor (Hill Station)", "Kotagiri (Hill Station)", "Gudalur", "Wellington", "Manjoor"],
+        "Dindigul (Hill Station Zone)": ["Kodaikanal (Hill Station)", "Dindigul Town", "Palani", "Oddanchatram", "Nattam"],
+        "Chennai": ["Mylapore", "T. Nagar", "Velachery", "Adyar", "Anna Nagar", "Tambaram", "Avadi"],
+        "Coimbatore": ["Coimbatore City", "Pollachi", "Valparai (Hill Station)", "Mettupalayam", "Sulur"]
     },
-    "Telangana": {
-        "Hyderabad": ["Banjara Hills", "Jubilee Hills", "Secunderabad", "HITEC City", "Kukatpally", "Charminar", "Ameerpet", "Begumpet", "Madhapur", "Gachibowli", "Dilsukhnagar", "LB Nagar"],
-        "Karimnagar": ["Karimnagar City", "Ramagundam", "Jagtial", "Peddapalli", "Huzurabad", "Choppadandi", "Manakondur", "Jammikunta"],
-        "Khammam": ["Khammam City", "Sathupally", "Kothagudem", "Yellandu", "Madhira", "Palwancha", "Wyra", "Kalluru"],
-        "Medchal-Malkajgiri": ["Malkajgiri", "Kukatapally", "Quthbullapur", "Uppal", "Medchal", "Alwal", "Kompally", "Ghatkesar", "Keesara"],
-        "Nalgonda": ["Nalgonda Town", "Miryalaguda", "Suryapet", "Devarakonda", "Bhongir", "Nakerakal", "Huzurnagar", "Kodad"],
-        "Rangareddy": ["Gachibowli", "Shamshabad", "Rajendranagar", "Ibrahimpatnam", "Vikarabad", "Shadnagar", "Chevella", "Maheshwaram", "Hayathnagar"],
-        "Warangal": ["Warangal City", "Hanamkonda", "Kazipet", "Jangaon", "Mahabubabad", "Narsampet", "Parkal", "Station Ghanpur"]
-    },
-    "Uttar Pradesh": {
-        "Agra": ["Agra City", "Fatehpur Sikri", "Kheragarh", "Fatehabad", "Etmadpur", "Bah", "Shamsabad Agra", "Jagner"],
-        "Aligarh": ["Aligarh City", "Hathras Road", "Khair", "Atrali", "Iglas", "Gabhana", "Jawan Sikandarpur"],
-        "Prayagraj (Allahabad)": ["Prayagraj City", "Naini", "Phulpur", "Handia", "Karchhana", "Soraon", "Meja", "Mau Aima", "Shringverpur"],
-        "Bareilly": ["Bareilly City", "Aonla", "Baheri", "Faridpur", "Nawabganj", "Mirganj", "Richha", "Fatehganj West"],
-        "Ghaziabad": ["Ghaziabad City", "Indirapuram", "Vaishali", "Modinagar", "Loni", "Muradnagar", "Vasundhara", "Crossings Republik", "Sahibabad"],
-        "Gorakhpur": ["Gorakhpur City", "Sahjanwa", "Bansgaon", "Campierganj", "Chauri Chaura", "Khajni", "Gola Bazar", "Pipraich"],
-        "Jhansi": ["Jhansi City", "Mauranipur", "Babina", "Garautha", "Moth", "Ranipur Jhansi", "Baragaon"],
-        "Kanpur Nagar": ["Kanpur City", "Kalyanpur", "Govind Nagar", "Bilhaur", "Ghatampur", "Bidhunu", "Sarsaul", "Chakeri"],
-        "Lucknow": ["Lucknow City", "Hazratganj", "Gomti Nagar", "Alambagh", "Indira Nagar", "Malihabad", "Bakshi Ka Talab", "Mohanlalganj", "Chinhat", "Kakori", "Charbagh"],
-        "Mathura": ["Mathura City", "Vrindavan", "Goverdhan", "Chhata", "Raya", "Baldeo", "Nandgaon", "Barsana"],
-        "Meerut": ["Meerut City", "Sardhana", "Mawana", "Modipuram", "Hastinapur", "Kithore", "Rohta", "Parikshitgarh"],
-        "Moradabad": ["Moradabad City", "Chandausi", "Thakurdwara", "Bilari", "Kanth", "Kundarki", "Bhojpur Moradabad"],
-        "Noida / Gautam Buddha Nagar": ["Noida Sector 1-150", "Greater Noida", "Dadri", "Jewar", "Dankaur", "Surajpur", "Noida Extension", "Rabupura"],
-        "Varanasi": ["Varanasi City", "Sarnath", "Ramnagar", "Pindra", "Rohaniya", "Sewapuri", "Cholapur", "Kashi"]
+    "Uttarakhand (Severe Landslide Prone Hill State)": {
+        "Dehradun": ["Mussoorie (Hill Station)", "Dehradun City", "Rishikesh", "Vikasnagar", "Chakrata (Hill Station)", "Clement Town"],
+        "Nainital": ["Nainital (Hill Station)", "Haldwani", "Ramnagar", "Bhowali", "Bhimtal", "Mukteshwar (Hill Station)"],
+        "Almora": ["Almora Town (Hill Station)", "Ranikhet (Hill Station)", "Kausani (Hill Station)", "Dwarahat", "Chaukhutia"],
+        "Chamoli (Severe Landslide Zone)": ["Joshimath (Landslide Subsidence Zone)", "Gopeshwar", "Badrinath Route", "Auli (Hill Station)", "Karnaprayag", "Pipalkoti"],
+        "Uttarkashi": ["Uttarkashi Town", "Barkot", "Gangotri Route", "Yamunotri Route", "Purola"],
+        "Pithoragarh": ["Pithoragarh Town", "Dharchula (Landslide Zone)", "Didihat", "Munsiyari (Hill Station)", "Berinag"],
+        "Tehri Garhwal": ["New Tehri", "Dhanaulti (Hill Station)", "Narendra Nagar", "Chamba Tehri", "Devprayag"]
     },
     "West Bengal": {
-        "Bankura": ["Bankura Town", "Bishnupur", "Khatra", "Sonamukhi", "Ranibandh Village", "Taldangra", "Barjora", "Onda", "Indas", "Kotulpur", "Gangajalghati"],
-        "Birbhum": ["Suri", "Bolpur Shantiniketan", "Rampurhat", "Sainthia", "Dubrajpur", "Nalhati", "Murarai", "Illambazar", "Labpur", "Mayureswar"],
-        "Cooch Behar": ["Cooch Behar Town", "Dinhata", "Mathabhanga", "Tufanganj", "Mekhliganj", "Sitalkuchi", "Sitai", "Haldibari"],
-        "Darjeeling": ["Darjeeling Town", "Siliguri City", "Kurseong", "Mirik", "Sukhiapokhri", "Bijanbari", "Takdah", "Matigara", "Naxalbari"],
-        "Hooghly": ["Chinsurah", "Chandannagar", "Serampore", "Arambagh", "Singur", "Tarkeshwar", "Rishra", "Konnagar", "Bhadreswar", "Bandel", "Dankuni", "Pandua", "Balagarh", "Haripal", "Ghatal Border", "Khanakul"],
-        "Howrah": ["Howrah City", "Bally Town", "Uluberia", "Amta", "Bagnan", "Shibpur", "Domjur", "Panchla", "Sankrail", "Bauri", "Jagatballavpur", "Shyampur"],
-        "Jalpaiguri": ["Jalpaiguri Town", "Dhupguri", "Malbazar", "Mainaguri", "Banarhat", "Nagrakata", "Rajganj", "Matiali"],
-        "Kolkata": ["Salt Lake City", "Park Circus", "Alipore", "Tollygunge", "Dum Dum", "Behala", "Jadavpur", "Garia", "Bhowanipore", "Shyambazar", "Sealdah", "Howrah Bridge West", "New Town Kolkata", "Kasba Kolkata", "Beliaghata"],
-        "Malda": ["English Bazar (Malda Town)", "Old Malda", "Chanchal", "Gazoie", "Kaliachak", "Ratua", "Harischandrapur", "Manikchak", "Habibpur Malda"],
-        "Murshidabad": ["Baharampur", "Jiaganj", "Lalbagh", "Kandi", "Jangipur", "Domkal", "Lalgola", "Dhulian", "Beldanga", "Raghunathganj", "Raninagar", "Farakka", "Hariharpara"],
-        "Nadia": ["Krishnanagar", "Nabadwip", "Ranaghat", "Kalyani", "Tehatta", "Chakdaha", "Shantipur", "Haringhata", "Kaliganj Nadia", "Nakashipara", "Chapra Nadia", "Karimpur"],
+        "Darjeeling (Severe Landslide Prone Hill District)": [
+            "Darjeeling Town (Hill Station)", "Kalimpong (Hill Station)", "Kurseong (Hill Station)", 
+            "Mirik (Hill Station)", "Sukhiapokhri", "Ghoom (High Altitude)", "Lava", "Lolegaon", 
+            "Pedong", "Rimbick", "Bijanbari", "Sukna Slope Zone"
+        ],
+        "Jalpaiguri (Dooars & Foothills)": ["Jalpaiguri Town", "Dhupguri", "Malbazar", "Mainaguri", "Banarhat", "Nagrakata Foothills", "Matiali"],
+        "Kolkata": ["Salt Lake City", "Park Circus", "Alipore", "Tollygunge", "Dum Dum", "Behala", "Jadavpur", "Garia", "Bhowanipore"],
         "North 24 Parganas": [
             "Habra", "Ashoknagar", "Barasat", "Barrackpore", "Bidhannagar (Salt Lake)", "Rajarhat / New Town", "Madhyamgram", 
             "Bangaon", "Basirhat", "Kanchrapara", "Naihati", "Bhatpara", "Panihati", "Khardaha", "Halisahar", "Garulia", 
             "North Barrackpore", "Titagarh", "Kamarhati", "Baranagar", "New Barrackpore", "Deganga", "Baduria", "Gaighata", 
             "Amdanga", "Minakhan", "Haroa", "Hingalganj", "Hasnabad", "Swarupnagar", "Sandeshkhali"
         ],
-        "Paschim Medinipur": ["Kharagpur", "Midnapore Town", "Ghatal", "Jhargram Border", "Debra", "Dantan", "Belda", "Narayangarh", "Sabang", "Keshiary", "Pingla", "Garhbeta"],
-        "Purba Medinipur": ["Haldia", "Tamluk", "Contai", "Digha Coastal Town", "Egra", "Mandarmani", "Kolaghat", "Mahishadal", "Nandigram", "Ramnagar Medinipur", "Sutahata", "Panskura"],
-        "Purulia": ["Purulia Town", "Raghunathpur", "Jhalda", "Balarampur", "Manbazar", "Adra", "Kashipur", "Para Purulia", "Baghmundi", "Arsha", "Hura"],
         "South 24 Parganas": [
             "Canning Village", "Diamond Harbour", "Kakdwip", "Baruipur", "Sonarpur", "Gosaba Island", "Bhangar", 
             "Kulpi", "Namkhana", "Budge Budge", "Pujali", "Maheshtala", "Bishnupur S24P", "Magrahat", "Jaynagar", 
