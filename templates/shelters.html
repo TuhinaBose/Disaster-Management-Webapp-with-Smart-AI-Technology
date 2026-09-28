@@ -1,30 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %}Cascading Shelter Locator - RADAR Disaster Management{% endblock %}
+{% block title %}Cascading Shelter & POI Locator - RADAR Disaster Management{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div>
-            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Cascading Shelter Locator</h2>
-            <p class="text-muted small mb-0">Select State &rarr; District &rarr; City/Village to find nearby Schools, Colleges, Hospitals & Relief Buildings.</p>
+            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Cascading Shelter & POI Locator</h2>
+            <p class="text-muted small mb-0">Select State &rarr; District &rarr; City/Village to locate Verified Disaster Shelters, Schools, Colleges, Hospitals, Police & Fire Stations.</p>
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2">
             <button id="locate-me-btn" class="btn btn-outline-cyan btn-sm text-nowrap">
-                <i class="fa-solid fa-location-crosshairs me-1"></i> Locate My Position
+                <i class="fa-solid fa-location-crosshairs me-1"></i> Locate My GPS Position
             </button>
         </div>
     </div>
 
-    <!-- Cascading Filter Bar: State -> District -> City/Village -> Facility Type + Live Keyword Search -->
+    <!-- Cascading Filter Bar: State -> District -> City/Village -> Facility Type + Keyword Search -->
     <div class="glass-card p-3 p-md-4 mb-4 border-start border-4 border-cyan">
         <form method="GET" action="{{ url_for('feature.shelters') }}" id="cascading-filter-form">
             <div class="mb-3">
-                <label class="form-label text-cyan small fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i> Quick Search Any School, College, Hospital, Village, or City in India:</label>
+                <label class="form-label text-cyan small fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i> Search Verified Shelters & Local Facilities across India:</label>
                 <div class="input-group">
-                    <input type="text" name="query" class="form-control bg-dark text-white border-secondary" placeholder="Type any School, College, Hospital, Village or Town name (e.g. St. Mary School, Canning Village, Salt Lake, Marine Lines)..." value="{{ search_query if search_query else '' }}">
-                    <button type="submit" class="btn btn-cyan fw-bold px-4"><i class="fa-solid fa-search me-1"></i> Live Search</button>
+                    <input type="text" name="query" class="form-control bg-dark text-white border-secondary" placeholder="Type Shelter, School, College, Hospital, Police Station, Town, or Village name..." value="{{ search_query if search_query else '' }}">
+                    <button type="submit" class="btn btn-cyan fw-bold px-4"><i class="fa-solid fa-search me-1"></i> Search Places</button>
                 </div>
             </div>
 
@@ -48,21 +48,8 @@
                 <!-- Step 3: Select City / Village (Cascading or Custom Type) -->
                 <div class="col-6 col-md-3">
                     <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-city me-1 text-cyan"></i>3. City / Village / Town</label>
-                    <input type="text" name="city_village" id="filter_city_input" list="city_datalist" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Select or type town/village (e.g. Habra, Ashoknagar)..." value="{{ current_city if current_city else '' }}">
-                    <datalist id="city_datalist">
-                        <option value="Habra">
-                        <option value="Ashoknagar">
-                        <option value="Barasat">
-                        <option value="Barrackpore">
-                        <option value="Bidhannagar">
-                        <option value="Madhyamgram">
-                        <option value="Rajarhat">
-                        <option value="Bangaon">
-                        <option value="Basirhat">
-                        <option value="Naihati">
-                        <option value="Bhatpara">
-                        <option value="Panihati">
-                    </datalist>
+                    <input type="text" name="city_village" id="filter_city_input" list="city_datalist" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Select or type town/village..." value="{{ current_city if current_city else '' }}">
+                    <datalist id="city_datalist"></datalist>
                 </div>
 
                 <!-- Step 4: Facility Type -->
@@ -94,21 +81,35 @@
         <div id="map"></div>
     </div>
 
-    <!-- Shelters List -->
+    <!-- Verified Disaster Shelters Section -->
     <div class="d-flex align-items-center justify-content-between mb-3">
-        <h4 class="fw-bold text-white mb-0"><i class="fa-solid fa-building-user text-cyan me-2"></i>Available Relief Shelters ({{ shelters|length }})</h4>
+        <h4 class="fw-bold text-white mb-0">
+            <i class="fa-solid fa-shield-check text-success me-2"></i>Verified Disaster Shelters ({{ shelters|length }})
+        </h4>
+        <span class="badge bg-success font-monospace">Official Registered Relieflist</span>
     </div>
 
-    <div class="row g-4">
+    <!-- No Verified Shelter Found Alert Message -->
+    {% if no_verified_shelter_message %}
+        <div class="alert alert-warning border-0 shadow-sm mb-4 d-flex align-items-center gap-3">
+            <i class="fa-solid fa-triangle-exclamation fs-3 text-warning"></i>
+            <div>
+                <h6 class="fw-bold mb-0 text-dark">No Verified Disaster Shelter Found Nearby</h6>
+                <p class="small mb-0 text-dark opacity-90">{{ no_verified_shelter_message }} You can view nearby general public facilities (schools, colleges, hospitals, police stations) listed below.</p>
+            </div>
+        </div>
+    {% endif %}
+
+    <div class="row g-4 mb-5">
         {% if shelters %}
             {% for s in shelters %}
             <div class="col-md-6 col-lg-4">
-                <div class="glass-card p-4 h-100 d-flex flex-column">
+                <div class="glass-card p-4 h-100 d-flex flex-column border-start border-4 border-success">
                     <div class="d-flex align-items-start justify-content-between mb-2">
-                        <span class="badge bg-primary text-white font-monospace fw-bold">{{ s.state }}</span>
-                        {% if s.available_beds > 50 %}
-                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Free</span>
-                        {% elif s.available_beds > 0 %}
+                        <span class="badge bg-success text-white font-monospace fw-bold"><i class="fa-solid fa-check-double me-1"></i>Verified Shelter</span>
+                        {% if s.available_capacity > 50 %}
+                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Available</span>
+                        {% elif s.available_capacity > 0 %}
                             <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i>Limited Beds</span>
                         {% else %}
                             <span class="badge bg-danger"><i class="fa-solid fa-ban me-1"></i>Full Capacity</span>
@@ -116,14 +117,8 @@
                     </div>
 
                     <div class="mb-2">
-                        <!-- Facility Type Badge -->
                         <span class="badge bg-dark text-cyan border border-secondary me-1">
-                            {% if s.facility_type == 'School' %}🏫 School
-                            {% elif s.facility_type == 'College' %}🎓 College
-                            {% elif s.facility_type == 'Hospital' %}🏥 Hospital
-                            {% elif s.facility_type == 'Stadium' %}🏟️ Stadium
-                            {% elif s.facility_type == 'Community Center' %}🏛️ Community Center
-                            {% else %}🏢 Building{% endif %}
+                            🏢 {{ s.facility_type }}
                         </span>
                         <span class="badge bg-dark text-slate-300 border border-secondary">{{ s.district }} &bull; {{ s.city_village }}</span>
                     </div>
@@ -134,14 +129,18 @@
                     <!-- Dynamic Live GPS Distance Badge -->
                     <div id="shelter-dist-{{ s.id }}" class="small text-cyan mb-3 d-none"></div>
 
-                    <!-- Bed Occupancy Bar -->
-                    <div class="mb-3">
+                    <!-- Bed Occupancy & Capacity Bar -->
+                    <div class="mb-3 p-2 bg-dark rounded border border-secondary">
                         <div class="d-flex justify-content-between small text-muted mb-1">
-                            <span>Bed Capacity</span>
-                            <span class="fw-bold text-white">{{ s.available_beds }} / {{ s.total_capacity }} Beds Free</span>
+                            <span>Capacity Breakdown</span>
+                            <span class="fw-bold text-white">{{ s.available_capacity }} Free / {{ s.total_capacity }} Total</span>
                         </div>
-                        <div class="progress" style="height: 10px; background-color: rgba(255,255,255,0.1);">
-                            <div class="progress-bar {% if s.available_beds < 50 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ s.occupancy_percentage }}%;"></div>
+                        <div class="progress mb-1" style="height: 10px; background-color: rgba(255,255,255,0.1);">
+                            <div class="progress-bar {% if s.available_capacity < 50 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ s.occupancy_percentage }}%;"></div>
+                        </div>
+                        <div class="d-flex justify-content-between small text-slate-400" style="font-size: 0.75rem;">
+                            <span>Occupancy: {{ s.current_occupancy }} beds</span>
+                            <span>Available: {{ s.available_capacity }} beds</span>
                         </div>
                     </div>
 
@@ -159,8 +158,8 @@
                     </div>
 
                     <div class="mt-auto d-flex gap-2">
-                        <a href="tel:{{ s.contact_number }}" class="btn btn-cyan btn-sm flex-fill fw-bold">
-                            <i class="fa-solid fa-phone me-1"></i> Call Shelter
+                        <a href="tel:{{ s.contact }}" class="btn btn-cyan btn-sm flex-fill fw-bold">
+                            <i class="fa-solid fa-phone me-1"></i> {{ s.contact }}
                         </a>
                         <a href="https://maps.google.com/?q={{ s.latitude }},{{ s.longitude }}" target="_blank" class="btn btn-outline-light btn-sm" title="Open in Google Maps">
                             <i class="fa-solid fa-map-location-dot"></i>
@@ -170,11 +169,51 @@
             </div>
             {% endfor %}
         {% else %}
-            <div class="col-12 text-center py-5 glass-card">
-                <p class="text-muted mb-0">No shelters found matching your selected State, District, City/Village, or Facility Type.</p>
+            <div class="col-12 text-center py-4 glass-card">
+                <p class="text-warning mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>No verified disaster shelter found nearby matching your selected location filters.</p>
             </div>
         {% endif %}
     </div>
+
+    <!-- General Public Facilities Section (Schools, Colleges, Hospitals, Police, Fire Stations) -->
+    {% if general_facilities %}
+    <div class="d-flex align-items-center justify-content-between mb-3 pt-3 border-top border-secondary">
+        <h4 class="fw-bold text-white mb-0">
+            <i class="fa-solid fa-building text-warning me-2"></i>General Facilities in Region ({{ general_facilities|length }})
+        </h4>
+        <span class="badge bg-warning text-dark font-monospace">Schools, Colleges, Hospitals & Helplines</span>
+    </div>
+
+    <div class="row g-4">
+        {% for f in general_facilities %}
+        <div class="col-md-6 col-lg-4">
+            <div class="glass-card p-4 h-100 d-flex flex-column border-start border-4 border-warning">
+                <div class="d-flex align-items-start justify-content-between mb-2">
+                    <span class="badge bg-warning text-dark font-monospace fw-bold">{{ f.facility_type }}</span>
+                    <span class="badge bg-dark text-warning border border-secondary">Unverified Facility</span>
+                </div>
+
+                <h5 class="fw-bold text-white mb-1">{{ f.name }}</h5>
+                <p class="small text-muted mb-3"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ f.address }}</p>
+
+                <div class="small text-slate-300 mb-3">
+                    <strong>Category:</strong> {{ f.facility_category }}<br>
+                    <strong>Contact:</strong> {{ f.contact }}
+                </div>
+
+                <div class="mt-auto d-flex gap-2">
+                    <a href="tel:{{ f.contact }}" class="btn btn-outline-warning btn-sm flex-fill fw-bold">
+                        <i class="fa-solid fa-phone me-1"></i> Call Facility
+                    </a>
+                    <a href="https://maps.google.com/?q={{ f.latitude }},{{ f.longitude }}" target="_blank" class="btn btn-outline-light btn-sm" title="Open in Google Maps">
+                        <i class="fa-solid fa-map-location-dot"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
 </div>
 {% endblock %}
 
@@ -200,12 +239,10 @@ document.addEventListener('DOMContentLoaded', () => {
             stateSelect.appendChild(opt);
         });
 
-        // Initialize districts if state is selected
         if (selectedState && INDIA_GEO_DATA[selectedState]) {
             populateDistricts(selectedState, selectedDistrict);
         }
 
-        // Initialize cities if state and district selected
         if (selectedState && selectedDistrict && INDIA_GEO_DATA[selectedState] && INDIA_GEO_DATA[selectedState][selectedDistrict]) {
             populateCities(selectedState, selectedDistrict, selectedCity);
         }

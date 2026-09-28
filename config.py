@@ -1,7 +1,11 @@
 import os
+from dotenv import load_dotenv
 
 # Base Directory of Application
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+
+# Load Environment Variables from .env
+load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 class Config:
     """
@@ -11,6 +15,10 @@ class Config:
     """
     SECRET_KEY = os.environ.get('SECRET_KEY') or 'disaster-management-secret-key-2026-super-secure'
     
+    # API Keys & Third Party Credentials
+    GEMINI_API_KEY = os.environ.get('GEMINI_API_KEY', '')
+    WEATHER_API_KEY = os.environ.get('WEATHER_API_KEY', '')
+
     # MySQL Database Connection String Example:
     # MYSQL_URI = 'mysql+pymysql://root:password@localhost/disaster_db'
     # To switch to MySQL, set USE_MYSQL = True and update database URI below.
@@ -31,3 +39,4 @@ class Config:
     
     # Path to serialized Machine Learning Model
     MODEL_PATH = os.path.join(BASE_DIR, 'static', 'model', 'disaster_model.joblib')
+

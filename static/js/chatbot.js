@@ -1,5 +1,5 @@
 /**
- * AI RESCUBOT FLOATING CHATBOT WIDGET SCRIPT
+ * ASK GEMINI FLOATING CHATBOT WIDGET SCRIPT
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
             chatInput.value = '';
 
             // Show Typing Indicator
-            const typingMsg = appendMessage('RescuBot is thinking...', 'bot', true);
+            const typingMsg = appendMessage('Ask Gemini is thinking...', 'bot', true);
 
             try {
                 const response = await fetch('/api/chatbot', {
@@ -48,10 +48,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 typingMsg.remove();
-                appendMessage(data.reply || "I am here to help. How can I assist?", 'bot');
+                appendMessage(data.reply || "I am here to assist with disaster management and safety guidance.", 'bot');
             } catch (err) {
                 typingMsg.remove();
-                appendMessage("Sorry, I could not process your request at this moment.", 'bot');
+                appendMessage("Sorry, Ask Gemini service is currently unreachable. Please try again later.", 'bot');
             }
         });
     }
@@ -61,7 +61,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msgDiv.className = `chat-msg ${sender === 'user' ? 'chat-msg-user' : 'chat-msg-bot'}`;
         if (isTyping) msgDiv.classList.add('fst-italic', 'opacity-75');
 
-        // Simple markdown-style links parsing
+        // Markdown-style links and bold parsing
         let formattedText = text.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" class="text-info fw-bold">$1</a>');
         formattedText = formattedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
         formattedText = formattedText.replace(/\n/g, '<br>');

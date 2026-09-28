@@ -21,15 +21,20 @@ CREATE TABLE IF NOT EXISTS shelters (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(150) NOT NULL,
     address TEXT NOT NULL,
+    state VARCHAR(100) NOT NULL DEFAULT 'Delhi NCR',
     district VARCHAR(100) NOT NULL,
+    city_village VARCHAR(100) NOT NULL DEFAULT 'Central City',
+    facility_type VARCHAR(50) NOT NULL DEFAULT 'Shelter',
     latitude FLOAT NOT NULL,
     longitude FLOAT NOT NULL,
     total_capacity INT NOT NULL,
-    available_beds INT NOT NULL,
+    current_occupancy INT NOT NULL DEFAULT 0,
+    available_capacity INT NOT NULL DEFAULT 0,
+    contact VARCHAR(50) NOT NULL DEFAULT '+91-108',
+    verification_status VARCHAR(20) NOT NULL DEFAULT 'Verified',
     has_food BOOLEAN DEFAULT TRUE,
     has_water BOOLEAN DEFAULT TRUE,
     has_medical BOOLEAN DEFAULT TRUE,
-    contact_number VARCHAR(20) NOT NULL,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -81,12 +86,12 @@ CREATE TABLE IF NOT EXISTS predictions (
 INSERT IGNORE INTO users (id, username, email, password_hash, role) VALUES
 (1, 'admin', 'admin@disasterapp.org', 'scrypt:32768:8:1$7fM3zQ4s1L!pbkdf2:sha256:600000$default_admin_hash_placeholder', 'admin');
 
--- Sample Emergency Shelters
-INSERT IGNORE INTO shelters (id, name, address, district, latitude, longitude, total_capacity, available_beds, has_food, has_water, has_medical, contact_number) VALUES
-(1, 'Central Relief & Rescue Community Hall', '124 Station Road, Central District', 'Central', 28.6139, 77.2090, 500, 320, 1, 1, 1, '+91-9876543210'),
-(2, 'St. Mary High School Emergency Complex', '88 Riverside Drive, North Haven', 'North Haven', 28.7041, 77.1025, 300, 145, 1, 1, 1, '+91-9876543211'),
-(3, 'Metro Indoor Stadium Shelter', '45 Sports City Boulevard, East Zone', 'East Zone', 28.5355, 77.3910, 1200, 890, 1, 1, 1, '+91-9876543212'),
-(4, 'Coastal High Ground Refuge Camp', '12 Beach Safety Highway, South Shore', 'South Shore', 28.4595, 77.0266, 400, 50, 1, 1, 0, '+91-9876543213');
+-- Sample Verified Emergency Shelters
+INSERT IGNORE INTO shelters (id, name, address, state, district, city_village, facility_type, latitude, longitude, total_capacity, current_occupancy, available_capacity, contact, verification_status, has_food, has_water, has_medical) VALUES
+(1, 'Central Disaster Relief & Rescue Complex', 'Sector 14, Connaught Place Avenue, Central District', 'Delhi NCR', 'Central Delhi', 'Connaught Place', 'Community Center', 28.6139, 77.2090, 800, 320, 480, '+91-9876543210', 'Verified', 1, 1, 1),
+(2, 'St. Mary Emergency Shelter Hub', '88 Riverside Boulevard, Civil Lines', 'Delhi NCR', 'North Delhi', 'Civil Lines', 'School', 28.7041, 77.1025, 450, 255, 195, '+91-9876543211', 'Verified', 1, 1, 1),
+(3, 'Metro Indoor Sports Stadium Relief Camp', '45 Sports City Boulevard, Laxmi Nagar', 'Delhi NCR', 'East Delhi', 'Laxmi Nagar', 'Stadium', 28.5355, 77.3910, 1500, 380, 1120, '+91-9876543212', 'Verified', 1, 1, 1),
+(4, 'Apex Medical Relief Facility Annex', '10 District Hospital Road, Saket', 'Delhi NCR', 'South Delhi', 'Saket', 'Hospital', 28.5244, 77.2100, 500, 190, 310, '+91-9876543213', 'Verified', 1, 1, 1);
 
 -- Sample Active Disaster Alerts
 INSERT IGNORE INTO disaster_alerts (id, title, disaster_type, severity, location, description, is_active) VALUES

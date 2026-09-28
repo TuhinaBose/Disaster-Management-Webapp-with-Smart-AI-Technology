@@ -1,8 +1,15 @@
+import os
+import math
+import json
+import urllib.request
+import urllib.parse
+from datetime import datetime
+import requests
 from flask import Blueprint, render_template, request, jsonify, current_app
 from database import db
 from models import Shelter, EmergencyRequest, RiskPrediction, DisasterAlert
 from models.ai_model import DisasterPredictor
-import math
+from models.india_data import INDIA_GEO_DATA, FACILITY_TYPES
 
 feature_bp = Blueprint('feature', __name__)
 
@@ -15,6 +22,19 @@ def get_predictor():
         model_path = current_app.config.get('MODEL_PATH')
         _predictor = DisasterPredictor(model_path)
     return _predictor
+
+def haversine_distance(lat1, lon1, lat2, lon2):
+    """Computes exact geodesic distance in kilometers between two GPS coordinates."""
+    R = 6371.0 # Radius of Earth in km
+    dlat = math.radians(lat2 - lat1)
+    dlon = math.radians(lon2 - lon1)
+    a = (math.sin(dlat / 2) ** 2 +
+         math.cos(math.radians(lat1)) * math.cos(math.radians(lat2)) *
+         math.sin(dlon / 2) ** 2)
+    c = 2 * math.atan2(math.sqrt(a), math.sqrt(1 - a))
+    return round(R * c, 2)
+
+# ================= AI DISASTER RISK PREDICTION =================
 
 @feature_bp.route('/predict', methods=['GET', 'POST'])
 def predict():
@@ -68,19 +88,52 @@ def predict():
 
     return render_template('predict.html')
 
+
+# ================= CASCADING GEOGRAPHIC LOCATION ENGINE =================
+
+@feature_bp.route('/api/location_options')
+def api_location_options():
+    """
+    Independent cascading dropdown data provider (State -> District -> City/Village)
+    Uses INDIA_GEO_DATA dictionary so locations exist independently of shelters in DB.
+    """
+    state_param = request.args.get('state', '').strip()
+    district_param = request.args.get('district', '').strip()
+
+    if not state_param:
+        states = sorted(list(INDIA_GEO_DATA.keys()))
+        return jsonify({'states': states})
+
+    if state_param in INDIA_GEO_DATA:
+        districts = sorted(list(INDIA_GEO_DATA[state_param].keys()))
+        if not district_param:
+            return jsonify({'state': state_param, 'districts': districts})
+        
+        if district_param in INDIA_GEO_DATA[state_param]:
+            cities = sorted(INDIA_GEO_DATA[state_param][district_param])
+            return jsonify({'state': state_param, 'district': district_param, 'cities': cities})
+
+    # Fallback to DB distinct query if state not in hardcoded dict
+    districts = [d[0] for d in db.session.query(Shelter.district).filter(Shelter.state.ilike(f'%{state_param}%')).distinct().all() if d[0]]
+    cities = [c[0] for c in db.session.query(Shelter.city_village).filter(Shelter.state.ilike(f'%{state_param}%')).distinct().all() if c[0]]
+    return jsonify({'districts': districts, 'cities': cities})
+
+
+# ================= SHELTERS & NEARBY POI SEARCH =================
+
 @feature_bp.route('/shelters')
 def shelters():
-    """Shelter locator view with dynamic cascading State -> District -> City/Village -> Facility Type filter + Live OSM Schools/Colleges."""
-    import urllib.request
-    import json
-
+    """
+    Shelter locator view with dynamic cascading filters and verified shelter separation.
+    """
     state_query = request.args.get('state', '').strip()
     district_query = request.args.get('district', '').strip()
     city_query = request.args.get('city_village', '').strip()
     facility_query = request.args.get('facility_type', '').strip()
     search_keyword = request.args.get('query', '').strip()
     
-    query = Shelter.query
+    # 1. Fetch Verified Disaster Shelters from DB
+    query = Shelter.query.filter(Shelter.verification_status == 'Verified')
     if state_query:
         query = query.filter(Shelter.state.ilike(f'%{state_query}%'))
     if district_query:
@@ -98,90 +151,105 @@ def shelters():
         )
 
     db_shelters = [s.to_dict() for s in query.all()]
+    for s in db_shelters:
+        s['facility_category'] = 'Verified Disaster Shelter'
+        s['is_verified_shelter'] = True
 
-    # Fetch Live OpenStreetMap Schools, Colleges, and Hospitals if location or search term specified
-    osm_shelters = []
+    no_verified_shelter_message = None
+    if len(db_shelters) == 0 and (state_query or district_query or city_query or search_keyword):
+        no_verified_shelter_message = "No verified disaster shelter found nearby for your selected search criteria."
+
+    # 2. Fetch General Facilities (OSM Schools, Colleges, Hospitals, Police Stations, Fire Stations)
+    general_facilities = []
     loc_parts = [p for p in [city_query, district_query, state_query, search_keyword] if p]
 
     if loc_parts:
         try:
             full_loc_query = ', '.join(loc_parts) + ', India'
             nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(full_loc_query)}&format=json&limit=1"
-            req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
-            with urllib.request.urlopen(req) as resp:
+            req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-Disaster-App/2.0'})
+            with urllib.request.urlopen(req, timeout=5) as resp:
                 nom_data = json.loads(resp.read().decode())
 
             if nom_data:
-                lat = nom_data[0]['lat']
-                lon = nom_data[0]['lon']
+                lat = float(nom_data[0]['lat'])
+                lon = float(nom_data[0]['lon'])
 
-                # Overpass API query for schools, colleges, hospitals
                 overpass_q = f"""
                 [out:json][timeout:10];
                 (
-                  node["amenity"="school"](around:15000,{lat},{lon});
-                  node["amenity"="college"](around:15000,{lat},{lon});
-                  node["amenity"="hospital"](around:15000,{lat},{lon});
-                  way["amenity"="school"](around:15000,{lat},{lon});
-                  way["amenity"="college"](around:15000,{lat},{lon});
-                  way["amenity"="hospital"](around:15000,{lat},{lon});
+                  node["amenity"="school"](around:10000,{lat},{lon});
+                  node["amenity"="college"](around:10000,{lat},{lon});
+                  node["amenity"="hospital"](around:10000,{lat},{lon});
+                  node["amenity"="police"](around:10000,{lat},{lon});
+                  node["amenity"="fire_station"](around:10000,{lat},{lon});
                 );
-                out center 25;
+                out center 20;
                 """
                 op_url = "https://overpass-api.de/api/interpreter?data=" + urllib.parse.quote(overpass_q)
-                req_op = urllib.request.Request(op_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
-                with urllib.request.urlopen(req_op) as resp_op:
+                req_op = urllib.request.Request(op_url, headers={'User-Agent': 'RADAR-Disaster-App/2.0'})
+                with urllib.request.urlopen(req_op, timeout=8) as resp_op:
                     op_data = json.loads(resp_op.read().decode())
 
                 count_id = 9000
                 for el in op_data.get('elements', []):
                     count_id += 1
                     tags = el.get('tags', {})
-                    raw_type = tags.get('amenity', 'building').capitalize()
-                    name = tags.get('name') or tags.get('name:en') or f"Local {raw_type} Emergency Refuge"
+                    raw_amenity = tags.get('amenity', 'building')
                     
-                    if facility_query and facility_query.lower() not in raw_type.lower():
+                    facility_type_map = {
+                        'school': 'School',
+                        'college': 'College',
+                        'hospital': 'Hospital',
+                        'police': 'Police Station',
+                        'fire_station': 'Fire Station'
+                    }
+                    facility_type_name = facility_type_map.get(raw_amenity, 'General Building')
+                    name = tags.get('name') or tags.get('name:en') or f"Local {facility_type_name}"
+                    
+                    if facility_query and facility_query.lower() not in facility_type_name.lower():
                         continue
 
                     el_lat = float(el.get('lat') or el.get('center', {}).get('lat', 0))
                     el_lon = float(el.get('lon') or el.get('center', {}).get('lon', 0))
 
                     if el_lat and el_lon:
-                        osm_shelters.append({
+                        general_facilities.append({
                             'id': count_id,
                             'name': name,
-                            'address': tags.get('addr:street') or f"{full_loc_query}",
-                            'state': state_query or 'West Bengal',
-                            'district': district_query or 'North 24 Parganas',
+                            'address': tags.get('addr:street') or full_loc_query,
+                            'state': state_query or 'India',
+                            'district': district_query or 'Local District',
                             'city_village': city_query or 'Local Area',
-                            'facility_type': raw_type,
+                            'facility_type': facility_type_name,
+                            'facility_category': f"General Facility ({facility_type_name})",
                             'latitude': el_lat,
                             'longitude': el_lon,
-                            'total_capacity': 500,
-                            'available_beds': 350,
-                            'occupancy_percentage': 30.0,
-                            'has_food': True,
+                            'total_capacity': 0,
+                            'current_occupancy': 0,
+                            'available_capacity': 0,
+                            'available_beds': 0,
+                            'occupancy_percentage': 0,
+                            'has_food': False,
                             'has_water': True,
-                            'has_medical': True if raw_type == 'Hospital' else False,
-                            'contact_number': '+91-108 (Emergency)',
+                            'has_medical': True if facility_type_name == 'Hospital' else False,
+                            'contact': tags.get('phone') or '+91-112 (Emergency)',
+                            'contact_number': tags.get('phone') or '+91-112 (Emergency)',
+                            'verification_status': 'Unverified',
+                            'is_verified_shelter': False,
                             'is_osm_live': True
                         })
         except Exception:
             pass
 
-    shelter_list = db_shelters + osm_shelters
-
-    # Unique list of states for initial dropdown
-    states = [s[0] for s in db.session.query(Shelter.state).distinct().all() if s[0]]
-    districts = [d[0] for d in db.session.query(Shelter.district).distinct().all() if d[0]]
-    cities = [c[0] for c in db.session.query(Shelter.city_village).distinct().all() if c[0]]
-    facility_types = ['School', 'College', 'Hospital', 'Community Center', 'Stadium', 'Building']
+    states = sorted(list(INDIA_GEO_DATA.keys()))
+    facility_types = ['Shelter', 'School', 'College', 'Hospital', 'Police Station', 'Fire Station', 'Community Center', 'Stadium', 'Building']
 
     return render_template('shelters.html',
-                           shelters=shelter_list,
+                           shelters=db_shelters,
+                           general_facilities=general_facilities,
+                           no_verified_shelter_message=no_verified_shelter_message,
                            states=states,
-                           districts=districts,
-                           cities=cities,
                            facility_types=facility_types,
                            current_state=state_query,
                            current_district=district_query,
@@ -189,46 +257,33 @@ def shelters():
                            current_facility=facility_query,
                            search_query=search_keyword)
 
-@feature_bp.route('/api/location_options')
-def api_location_options():
-    """API returning cascading dropdown data (Districts for selected State, Cities for District)."""
-    state_param = request.args.get('state', '').strip()
-    district_param = request.args.get('district', '').strip()
-
-    if state_param and not district_param:
-        districts = [d[0] for d in db.session.query(Shelter.district).filter(Shelter.state.ilike(f'%{state_param}%')).distinct().all() if d[0]]
-        return jsonify({'districts': districts})
-
-    if state_param and district_param:
-        cities = [c[0] for c in db.session.query(Shelter.city_village).filter(Shelter.state.ilike(f'%{state_param}%'), Shelter.district.ilike(f'%{district_param}%')).distinct().all() if c[0]]
-        return jsonify({'cities': cities})
-
-    return jsonify({'districts': [], 'cities': []})
 
 @feature_bp.route('/api/search_facilities')
+@feature_bp.route('/api/nearby_places')
 def api_search_facilities():
     """
-    Unified Live Search API combining local DB shelters with live OpenStreetMap (OSM)
-    Schools, Colleges, Hospitals, and Buildings.
+    Unified Nearby Search API returning verified shelters and general facilities (schools, colleges, hospitals, police, fire) separately.
+    Sorts all results by Haversine distance if lat & lng parameters are provided.
     """
-    import urllib.request
-    import json
-
+    user_lat = request.args.get('lat', type=float)
+    user_lng = request.args.get('lng', type=float)
+    radius_km = request.args.get('radius', default=25.0, type=float)
+    
     state_q = request.args.get('state', '').strip()
     district_q = request.args.get('district', '').strip()
     city_q = request.args.get('city_village', '').strip()
     facility_q = request.args.get('facility_type', '').strip()
     keyword_q = request.args.get('query', '').strip()
 
-    # 1. Fetch DB Shelters
-    query = Shelter.query
+    # 1. Fetch Verified DB Shelters
+    query = Shelter.query.filter_by(verification_status='Verified')
     if state_q:
         query = query.filter(Shelter.state.ilike(f'%{state_q}%'))
     if district_q:
         query = query.filter(Shelter.district.ilike(f'%{district_q}%'))
     if city_q:
         query = query.filter(Shelter.city_village.ilike(f'%{city_q}%'))
-    if facility_q:
+    if facility_q and facility_q.lower() != 'all':
         query = query.filter(Shelter.facility_type.ilike(f'%{facility_q}%'))
     if keyword_q:
         query = query.filter(
@@ -238,113 +293,186 @@ def api_search_facilities():
             (Shelter.facility_type.ilike(f'%{keyword_q}%'))
         )
 
-    db_shelters = [s.to_dict() for s in query.all()]
+    verified_shelters = []
+    for s in query.all():
+        s_dict = s.to_dict()
+        s_dict['facility_category'] = 'Verified Disaster Shelter'
+        s_dict['is_verified_shelter'] = True
+        
+        if user_lat is not None and user_lng is not None:
+            dist = haversine_distance(user_lat, user_lng, s.latitude, s.longitude)
+            s_dict['distance_km'] = dist
+            if dist <= radius_km:
+                verified_shelters.append(s_dict)
+        else:
+            s_dict['distance_km'] = None
+            verified_shelters.append(s_dict)
 
-    # 2. Fetch Live OpenStreetMap Schools, Colleges, Hospitals if location or search term specified
-    osm_results = []
-    loc_candidates = []
-    
-    if city_q:
-        if state_q:
-            loc_candidates.append(f"{city_q}, {state_q}, India")
-        if district_q:
-            loc_candidates.append(f"{city_q}, {district_q}, India")
-        loc_candidates.append(f"{city_q}, India")
+    if user_lat is not None and user_lng is not None:
+        verified_shelters.sort(key=lambda x: x['distance_km'])
 
-    if district_q:
-        if state_q:
-            loc_candidates.append(f"{district_q}, {state_q}, India")
-        loc_candidates.append(f"{district_q}, India")
+    # Message if no verified shelter exists
+    no_verified_shelter_msg = None
+    if len(verified_shelters) == 0:
+        no_verified_shelter_msg = "No verified disaster shelter found nearby."
 
-    if keyword_q:
-        loc_candidates.append(f"{keyword_q}, India")
-
-    nom_data = None
-    for target_query in loc_candidates:
-        try:
-            nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(target_query)}&format=json&limit=1"
-            req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
-            with urllib.request.urlopen(req) as resp:
-                nom_res = json.loads(resp.read().decode())
-                if nom_res:
-                    nom_data = nom_res
-                    break
-        except Exception:
-            continue
-
-    if nom_data:
-        try:
-            lat = nom_data[0]['lat']
-            lon = nom_data[0]['lon']
-
-            # Overpass API query for schools, colleges, hospitals
-            overpass_q = f"""
-            [out:json][timeout:10];
-            (
-              node["amenity"="school"](around:15000,{lat},{lon});
-              node["amenity"="college"](around:15000,{lat},{lon});
-              node["amenity"="hospital"](around:15000,{lat},{lon});
-              way["amenity"="school"](around:15000,{lat},{lon});
-              way["amenity"="college"](around:15000,{lat},{lon});
-              way["amenity"="hospital"](around:15000,{lat},{lon});
-            );
-            out center 30;
-            """
-            op_url = "https://overpass-api.de/api/interpreter?data=" + urllib.parse.quote(overpass_q)
-            req_op = urllib.request.Request(op_url, headers={'User-Agent': 'RADAR-Disaster-App/1.0'})
-            with urllib.request.urlopen(req_op) as resp_op:
-                op_data = json.loads(resp_op.read().decode())
-
-            count_id = 9000
-            for el in op_data.get('elements', []):
-                count_id += 1
-                tags = el.get('tags', {})
-                raw_type = tags.get('amenity', 'building').capitalize()
-                name = tags.get('name') or tags.get('name:en') or f"Local {raw_type} Emergency Refuge"
-                
-                if facility_q and facility_q.lower() not in raw_type.lower():
-                    continue
-
-                el_lat = float(el.get('lat') or el.get('center', {}).get('lat', 0))
-                el_lon = float(el.get('lon') or el.get('center', {}).get('lon', 0))
-
-                if el_lat and el_lon:
-                    osm_results.append({
-                        'id': count_id,
-                        'name': name,
-                        'address': tags.get('addr:street') or nom_data[0].get('display_name', 'India'),
-                        'state': state_q or 'West Bengal',
-                        'district': district_q or 'North 24 Parganas',
-                        'city_village': city_q or 'Local Area',
-                        'facility_type': raw_type,
-                        'latitude': el_lat,
-                        'longitude': el_lon,
-                        'total_capacity': 500,
-                        'available_beds': 350,
-                        'occupancy_percentage': 30.0,
-                        'has_food': True,
-                        'has_water': True,
-                        'has_medical': True if raw_type == 'Hospital' else False,
-                        'contact_number': '+91-108 (Emergency)',
-                        'is_osm_live': True
-                    })
-        except Exception:
-            pass
-
-    combined_results = db_shelters + osm_results
     return jsonify({
         'success': True,
-        'count': len(combined_results),
-        'db_count': len(db_shelters),
-        'osm_count': len(osm_results),
-        'shelters': combined_results
+        'verified_shelters_count': len(verified_shelters),
+        'no_verified_shelter_message': no_verified_shelter_msg,
+        'shelters': verified_shelters
     })
+
 
 @feature_bp.route('/api/shelters')
 def api_shelters():
-    """JSON API endpoint returning list of all shelters for interactive map."""
-    shelter_list = Shelter.query.all()
+    """JSON API endpoint returning list of all registered verified shelters."""
+    shelter_list = Shelter.query.filter_by(verification_status='Verified').all()
     return jsonify([s.to_dict() for s in shelter_list])
+
+
+# ================= REAL-TIME WEATHER MODULE =================
+
+WEATHER_CONDITION_MAP = {
+    0: "Clear Sky",
+    1: "Mainly Clear", 2: "Partly Cloudy", 3: "Overcast",
+    45: "Foggy", 48: "Depositing Rime Fog",
+    51: "Light Drizzle", 53: "Moderate Drizzle", 55: "Dense Drizzle",
+    61: "Slight Rain", 63: "Moderate Rain", 65: "Heavy Rain",
+    71: "Slight Snow", 73: "Moderate Snow", 75: "Heavy Snow",
+    80: "Slight Rain Showers", 81: "Moderate Rain Showers", 82: "Violent Rain Showers",
+    95: "Thunderstorm", 96: "Thunderstorm with Hail", 99: "Heavy Thunderstorm with Hail"
+}
+
+@feature_bp.route('/api/weather')
+def api_weather():
+    """
+    Real-Time Weather API endpoint.
+    Retrieves weather based on lat/lng or location name.
+    Uses Open-Meteo API (free, open-access, keyless) as primary/fallback,
+    or OpenWeatherMap API if WEATHER_API_KEY environment variable is configured.
+    """
+    lat = request.args.get('lat', type=float)
+    lng = request.args.get('lng', type=float)
+    location_name = request.args.get('location', '').strip()
+
+    # 1. Geocode location name if lat/lng not supplied directly
+    if (lat is None or lng is None) and location_name:
+        try:
+            nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(location_name + ', India')}&format=json&limit=1"
+            req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-Disaster-App/2.0'})
+            with urllib.request.urlopen(req, timeout=5) as resp:
+                geo_data = json.loads(resp.read().decode())
+                if geo_data:
+                    lat = float(geo_data[0]['lat'])
+                    lng = float(geo_data[0]['lon'])
+                    if not location_name:
+                        location_name = geo_data[0].get('display_name', 'Selected Location').split(',')[0]
+        except Exception:
+            pass
+
+    # Default fallback to Delhi NCR if no location/coords provided
+    if lat is None or lng is None:
+        lat, lng = 28.6139, 77.2090
+        if not location_name:
+            location_name = "New Delhi, Delhi NCR"
+
+    weather_key = current_app.config.get('WEATHER_API_KEY') or os.environ.get('WEATHER_API_KEY')
+    
+    # 2. Try OpenWeatherMap API if API key exists
+    if weather_key:
+        try:
+            owm_url = f"https://api.openweathermap.org/data/2.5/weather?lat={lat}&lon={lng}&appid={weather_key}&units=metric"
+            resp = requests.get(owm_url, timeout=5)
+            if resp.status_code == 200:
+                data = resp.json()
+                return jsonify({
+                    'success': True,
+                    'location': data.get('name') or location_name,
+                    'latitude': lat,
+                    'longitude': lng,
+                    'temperature': round(data['main']['temp'], 1),
+                    'humidity': data['main']['humidity'],
+                    'rainfall': round(data.get('rain', {}).get('1h', 0.0), 1),
+                    'wind_speed': round(data['wind']['speed'] * 3.6, 1), # m/s to km/h
+                    'weather_condition': data['weather'][0]['description'].title() if data.get('weather') else 'Clear',
+                    'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    'provider': 'OpenWeatherMap'
+                })
+        except Exception:
+            pass
+
+    # 3. Open-Meteo API (Free, keyless, global live telemetry)
+    try:
+        om_url = f"https://api.open-meteo.com/v1/forecast?latitude={lat}&longitude={lng}&current=temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m,weather_code"
+        resp = requests.get(om_url, timeout=6)
+        if resp.status_code == 200:
+            data = resp.json()
+            curr = data.get('current', {})
+            w_code = curr.get('weather_code', 0)
+            w_cond = WEATHER_CONDITION_MAP.get(w_code, "Partly Cloudy")
+
+            return jsonify({
+                'success': True,
+                'location': location_name or f"GPS ({lat:.2f}, {lng:.2f})",
+                'latitude': lat,
+                'longitude': lng,
+                'temperature': round(curr.get('temperature_2m', 26.5), 1),
+                'humidity': round(curr.get('relative_humidity_2m', 72), 1),
+                'rainfall': round(curr.get('precipitation', 0.0), 1),
+                'wind_speed': round(curr.get('wind_speed_10m', 14.5), 1),
+                'weather_condition': w_cond,
+                'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                'provider': 'Open-Meteo (Live)'
+            })
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': f"Weather telemetry unavailable: {str(e)}",
+            'location': location_name,
+            'temperature': '--',
+            'humidity': '--',
+            'rainfall': '--',
+            'wind_speed': '--',
+            'weather_condition': 'Unavailable',
+            'timestamp': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        }), 500
+
+
+# ================= SHELTER CAPACITY / UPDATE BED MODULE =================
+
+@feature_bp.route('/api/shelter/<int:shelter_id>/update_occupancy', methods=['POST'])
+def api_update_occupancy(shelter_id):
+    """
+    API endpoint to update shelter occupancy / beds capacity.
+    Recalculates available capacity: available_capacity = total_capacity - current_occupancy.
+    Enforces validation: 0 <= current_occupancy <= total_capacity.
+    """
+    shelter = Shelter.query.get_or_404(shelter_id)
+    try:
+        data = request.get_json() or request.form
+        new_occ = int(data.get('current_occupancy', shelter.current_occupancy))
+
+        if new_occ < 0:
+            return jsonify({'success': False, 'message': 'Occupancy cannot be negative.'}), 400
+        if new_occ > shelter.total_capacity:
+            return jsonify({'success': False, 'message': f'Occupancy ({new_occ}) cannot exceed total capacity ({shelter.total_capacity}).'}), 400
+
+        shelter.current_occupancy = new_occ
+        shelter.recalculate_capacity()
+        db.session.commit()
+
+        return jsonify({
+            'success': True,
+            'message': f'Shelter "{shelter.name}" capacity updated successfully.',
+            'shelter': shelter.to_dict()
+        })
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'success': False, 'message': f'Failed to update capacity: {str(e)}'}), 500
+
+
+# ================= EMERGENCY SOS DISPATCH =================
 
 @feature_bp.route('/sos', methods=['GET', 'POST'])
 def sos():
@@ -381,85 +509,132 @@ def sos():
 
     return render_template('sos.html')
 
+
+# ================= ASK GEMINI ASSISTANT MODULE =================
+
 @feature_bp.route('/api/chatbot', methods=['POST'])
 def chatbot_api():
     """
-    AI Chatbot API ('RescuBot') for automated disaster assistance, shelter queries, and emergency advice.
+    'Ask Gemini' AI Assistant API for disaster preparedness, safety advice, live shelter queries, and weather.
+    Grounded in actual application data to avoid hallucinating shelters or weather.
     """
     try:
         data = request.get_json(silent=True) or request.form or {}
-        message = data.get('message', '').lower().strip()
+        user_query = data.get('message', '').strip()
 
-        if not message:
-            return jsonify({'reply': "👋 Hello! I am **RescuBot**, your RADAR AI Emergency Assistant. How can I help you today?"})
+        if not user_query:
+            return jsonify({'reply': "👋 Hello! I am **Ask Gemini**, your AI Disaster Management Assistant. How can I assist you with safety guidelines, shelter locations, weather alerts, or emergency procedures today?"})
 
-        # Rule-based natural language intent parser with live DB telemetry
-        if any(k in message for k in ['shelter', 'refuge', 'bed', 'camp', 'stay', 'where', 'location', 'accommodation']):
-            available_shelters = Shelter.query.filter(Shelter.available_beds > 0).order_by(Shelter.available_beds.desc()).all()
-            if available_shelters:
-                top_s = available_shelters[0]
-                reply = f"🏠 **Shelter Update**: We currently have **{len(available_shelters)} shelters** open. Recommended: **{top_s.name}** in *{top_s.district}* with **{top_s.available_beds} free beds** remaining. Call: {top_s.contact_number}. View map at [Shelter Locator](/shelters)."
-            else:
-                reply = "🏠 All shelters are currently monitored. Please visit our [Shelter Locator](/shelters) for live capacity updates."
+        # 1. Fetch live system context from DB to ground Gemini's answer
+        verified_shelters = Shelter.query.filter_by(verification_status='Verified').all()
+        total_shelters = len(verified_shelters)
+        total_free_beds = sum(s.available_capacity for s in verified_shelters) if verified_shelters else 0
+        active_alerts = DisasterAlert.query.filter_by(is_active=True).all()
+        alerts_summary = "; ".join([f"{a.title} ({a.severity} in {a.location})" for a in active_alerts]) if active_alerts else "No active critical alerts broadcasted currently."
 
-        elif any(k in message for k in ['flood', 'water', 'submerged', 'drowning', 'rain', 'river']):
-            reply = "🌊 **Flood Emergency Tip**: Move immediately to higher ground! Avoid walking or driving through moving flood water. Call **108** for emergency medical/rescue support. Check real-time weather at [Live Alerts](/alerts)."
+        top_shelter_info = ""
+        if verified_shelters:
+            top_s = max(verified_shelters, key=lambda s: s.available_capacity)
+            top_shelter_info = f"Top Recommended Verified Shelter: {top_s.name} in {top_s.district}, {top_s.city_village} with {top_s.available_capacity} available capacity remaining out of {top_s.total_capacity} total capacity. Contact: {top_s.contact}."
 
-        elif any(k in message for k in ['earthquake', 'tremor', 'quake', 'shaking']):
-            reply = "🧱 **Earthquake Emergency Tip**: DROP, COVER, and HOLD ON! Take shelter under a sturdy table. Stay away from glass windows, heavy furniture, and power lines."
+        gemini_key = current_app.config.get('GEMINI_API_KEY') or os.environ.get('GEMINI_API_KEY')
 
-        elif any(k in message for k in ['cyclone', 'wind', 'storm', 'hurricane', 'gust']):
-            reply = "🌪️ **Cyclone Warning Tip**: Stay indoors away from windows! Secure loose items outside, keep emergency torchlight ready, and monitor local warning broadcasts."
+        # 2. If Gemini API Key exists, call Gemini API
+        if gemini_key:
+            system_prompt = f"""
+            You are 'Ask Gemini', an official AI Assistant for RADAR - Smart AI Disaster Management Web Application.
+            Answer the user's question clearly, supportively, and accurately regarding disaster safety, emergency preparedness, shelters, weather, and application features.
+            
+            IMPORTANT GROUNDING DATA (STRICTLY USE THIS REAL-TIME APPLICATION TELEMETRY):
+            - Registered Verified Disaster Shelters in System: {total_shelters} shelters.
+            - Total Available Capacity in System: {total_free_beds} beds free.
+            - {top_shelter_info}
+            - Current Active Disaster Bulletins: {alerts_summary}
+            - National Helplines: 108 (Ambulance), 100/112 (Police), 101 (Fire), 1078 (NDRF Disaster Response).
+            
+            RULES:
+            - Do NOT invent fake disaster shelters, unverified phone numbers, or fabricated weather reports.
+            - Format your response nicely using Markdown (bold text, bullet points).
+            """
+            
+            full_prompt = f"{system_prompt}\n\nUser Question: {user_query}"
 
-        elif any(k in message for k in ['fire', 'flame', 'smoke', 'burn']):
-            reply = "🔥 **Fire Emergency Tip**: GET OUT, STAY OUT! Crawl low under smoke to avoid toxic gas. Call Fire Brigade **101** immediately. Remember: STOP, DROP, and ROLL if clothes catch fire."
+            try:
+                # Try google-genai SDK first if installed
+                try:
+                    from google import genai
+                    client = genai.Client(api_key=gemini_key)
+                    response = client.models.generate_content(
+                        model='gemini-2.5-flash',
+                        contents=full_prompt,
+                    )
+                    if response and response.text:
+                        return jsonify({'reply': response.text, 'provider': 'Gemini 2.5 Flash'})
+                except Exception:
+                    pass
 
-        elif any(k in message for k in ['heatwave', 'heat', 'sun', 'temperature']):
-            reply = "☀️ **Heatwave Advisory**: Stay hydrated with water and ORS. Avoid outdoor exposure between 12:00 PM and 4:00 PM. Wear light cotton clothes."
+                # Fallback to direct HTTP Gemini API endpoint
+                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
+                payload = {
+                    "contents": [{"parts": [{"text": full_prompt}]}]
+                }
+                resp = requests.post(url, json=payload, timeout=8)
+                if resp.status_code == 200:
+                    res_json = resp.json()
+                    candidates = res_json.get('candidates', [])
+                    if candidates and 'content' in candidates[0]:
+                        parts = candidates[0]['content'].get('parts', [])
+                        if parts and 'text' in parts[0]:
+                            return jsonify({'reply': parts[0]['text'], 'provider': 'Gemini API'})
+            except Exception as gem_err:
+                print(f"[Ask Gemini API Error]: {gem_err}")
 
-        elif any(k in message for k in ['sos', 'help', 'danger', 'rescue', 'distress', 'emergency', 'trapped', 'stuck']):
-            reply = "🚨 **Emergency SOS**: If you are in immediate danger, hit the red [Emergency SOS Button](/sos) to broadcast your live GPS coordinates to rescue teams! Helplines: **108** (Ambulance) / **100** (Police) / **1078** (NDRF)."
+        # 3. Intelligent Data-Backed Fallback if Gemini Key is unconfigured or call times out
+        msg_lower = user_query.lower()
+        if any(k in msg_lower for k in ['shelter', 'refuge', 'bed', 'camp', 'stay', 'where', 'location', 'capacity']):
+            reply = f"🏠 **Ask Gemini Shelter Status**:\nWe currently have **{total_shelters} verified disaster shelters** active with **{total_free_beds} available beds**. {top_shelter_info}\n\nSearch all verified shelters on our [Shelter Locator](/shelters)."
 
-        elif any(k in message for k in ['helpline', 'number', 'contact', 'phone', 'police', 'ambulance', 'ndrf', 'call']):
-            reply = "📞 **National Emergency Helplines (24x7)**:\n- NDRF Disaster Support: **1078** / **011-24363260**\n- Ambulance Services: **108**\n- Police Operations: **100** / **112**\n- Fire Station: **101**"
+        elif any(k in msg_lower for k in ['flood', 'water', 'submerged', 'drowning', 'rain', 'river']):
+            reply = "🌊 **Flood Safety Guidelines**:\n- Move immediately to higher ground or designated shelters.\n- Never walk or drive through flowing water.\n- Disconnect electrical appliances.\n- Call **108** for emergency rescue support.\nCheck real-time precipitation at [Live Weather & Alerts](/alerts)."
 
-        elif any(k in message for k in ['predict', 'risk', 'ai', 'level', 'forecast', 'calculate']):
-            reply = "⚡ **AI Risk Predictor**: Calculate real-time flood, cyclone & earthquake risk using our Scikit-Learn ML engine! [Click here to analyze risk](/predict)."
+        elif any(k in msg_lower for k in ['earthquake', 'tremor', 'quake', 'shaking']):
+            reply = "🧱 **Earthquake Safety Guidelines**:\n- **DROP, COVER, and HOLD ON!** Take refuge under a sturdy table.\n- Stay away from windows, outer walls, and hanging fixtures.\n- If outdoors, move to an open area away from power lines and tall buildings."
 
-        elif any(k in message for k in ['login', 'admin', 'account', 'password', 'sign in', 'register']):
-            reply = "🔐 **Account Access**:\n- Citizen Sign In: [User Login](/login)\n- New Account: [Register](/register)\n- Admin Operations Portal: [Admin Login](/admin/login) *(Default Admin: admin / admin123)*."
+        elif any(k in msg_lower for k in ['cyclone', 'wind', 'storm', 'hurricane']):
+            reply = "🌪️ **Cyclone Safety Advisory**:\n- Stay indoors away from windows and glass doors.\n- Keep battery torches, emergency kits, and clean drinking water ready.\n- Follow official advisories on [Live Alerts](/alerts)."
+
+        elif any(k in msg_lower for k in ['fire', 'flame', 'smoke', 'burn']):
+            reply = "🔥 **Fire Emergency Action**:\n- **GET OUT AND STAY OUT!** Crawl low under smoke.\n- Call Fire Brigade **101** immediately.\n- Use **STOP, DROP, and ROLL** if clothing catches fire."
+
+        elif any(k in msg_lower for k in ['helpline', 'number', 'contact', 'phone', 'police', 'ndrf', 'ambulance']):
+            reply = "📞 **24x7 National Emergency Helplines**:\n- NDRF Disaster Response: **1078**\n- Ambulance Services: **108**\n- Police Operations: **100** / **112**\n- Fire Station: **101**"
 
         else:
-            reply = "🤖 I am **RescuBot**! You can ask me about **Shelters**, **Flood/Earthquake/Cyclone Safety**, **Emergency Helplines**, **AI Risk Predictor**, or **User Login**."
+            reply = f"✨ **Ask Gemini Assistant**:\nI am your AI Disaster Assistant! You can ask me about **Verified Shelters**, **Flood / Earthquake / Cyclone Safety**, **Live Weather Updates**, or **Emergency Helplines**.\n\n*(Currently operating with verified live telemetry. Configure `GEMINI_API_KEY` in `.env` to enable full Gemini LLM intelligence).* "
 
-        return jsonify({'reply': reply})
+        return jsonify({'reply': reply, 'provider': 'RADAR Telemetry System'})
+
     except Exception as e:
-        return jsonify({'reply': f"🤖 I am RescuBot! You can ask me about **Shelters**, **Safety Tips**, or **Emergency SOS**."})
+        return jsonify({'reply': f"✨ **Ask Gemini**: I can assist you with emergency shelters, weather reports, and safety advice. Please try again or visit [Shelter Locator](/shelters)."})
+
 
 @feature_bp.route('/api/recommend_shelter', methods=['POST'])
 def recommend_shelter():
-    """Smart shelter recommendation based on user latitude & longitude and bed capacity."""
+    """Smart verified shelter recommendation based on user latitude & longitude and capacity."""
     data = request.get_json() or {}
     user_lat = data.get('latitude')
     user_lng = data.get('longitude')
 
-    shelters = Shelter.query.filter(Shelter.available_beds > 0).all()
-    if not shelters:
-        return jsonify({'success': False, 'message': 'No available shelters found.'})
+    shelters_list = Shelter.query.filter(Shelter.verification_status == 'Verified', Shelter.available_capacity > 0).all()
+    if not shelters_list:
+        return jsonify({'success': False, 'message': 'No verified shelters with available capacity found.'})
 
     if user_lat and user_lng:
         try:
             ulat, ulng = float(user_lat), float(user_lng)
-            # Calculate distance using Haversine formula
-            def get_dist(s):
-                dlat = math.radians(s.latitude - ulat)
-                dlng = math.radians(s.longitude - ulng)
-                a = math.sin(dlat/2)**2 + math.cos(math.radians(ulat)) * math.cos(math.radians(s.latitude)) * math.sin(dlng/2)**2
-                return 6371 * 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
-
-            sorted_shelters = sorted(shelters, key=get_dist)
+            sorted_shelters = sorted(shelters_list, key=lambda s: haversine_distance(ulat, ulng, s.latitude, s.longitude))
             best_shelter = sorted_shelters[0]
-            dist_km = round(get_dist(best_shelter), 2)
+            dist_km = haversine_distance(ulat, ulng, best_shelter.latitude, best_shelter.longitude)
             
             return jsonify({
                 'success': True,
@@ -469,8 +644,7 @@ def recommend_shelter():
         except Exception:
             pass
 
-    # Fallback to shelter with highest available beds
-    best_shelter = max(shelters, key=lambda s: s.available_beds)
+    best_shelter = max(shelters_list, key=lambda s: s.available_capacity)
     return jsonify({
         'success': True,
         'shelter': best_shelter.to_dict(),

@@ -103,27 +103,28 @@
         {% block content %}{% endblock %}
     </main>
 
-    <!-- Floating AI RescuBot Widget -->
-    <div id="chatbot-launcher" title="Chat with RescuBot AI">
-        <i class="fa-solid fa-robot"></i>
+    <!-- Floating AI Ask Gemini Widget -->
+    <div id="chatbot-launcher" title="Ask Gemini Assistant">
+        <i class="fa-solid fa-sparkles"></i>
     </div>
 
     <div id="chatbot-window" class="d-none">
         <div class="chat-header">
             <div class="d-flex align-items-center gap-2">
-                <i class="fa-solid fa-robot text-cyan fs-5"></i>
-                <h6 class="mb-0 text-white fw-bold">RescuBot AI Assistant</h6>
+                <i class="fa-solid fa-sparkles text-cyan fs-5"></i>
+                <h6 class="mb-0 text-white fw-bold">Ask Gemini Assistant</h6>
+                <span class="badge bg-cyan text-dark font-monospace" style="font-size: 0.65rem;">AI</span>
             </div>
             <button id="close-chatbot" class="btn-close btn-close-white btn-sm"></button>
         </div>
         <div class="chat-body" id="chat-body">
             <div class="chat-msg chat-msg-bot">
-                👋 Hello! I am <strong>RescuBot</strong>. How can I assist you with emergency response or safety information today?
+                ✨ Hello! I am <strong>Ask Gemini</strong>, your AI Disaster Assistant. How can I help you with disaster safety, verified shelters, live weather, or helplines today?
             </div>
         </div>
         <div class="chat-footer">
             <form id="chat-form" class="d-flex gap-2">
-                <input type="text" id="chat-input" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ask RescuBot anything..." required>
+                <input type="text" id="chat-input" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Ask Gemini anything..." required>
                 <button type="submit" class="btn btn-sm btn-cyan"><i class="fa-solid fa-paper-plane"></i></button>
             </form>
         </div>

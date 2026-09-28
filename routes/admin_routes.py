@@ -69,32 +69,50 @@ def manage_shelters():
 
     if request.method == 'POST':
         try:
-            name = request.form.get('name')
-            address = request.form.get('address')
-            state = request.form.get('state', 'Delhi NCR')
-            district = request.form.get('district')
-            city_village = request.form.get('city_village', 'Central City')
-            facility_type = request.form.get('facility_type', 'Building')
+            name = request.form.get('name', '').strip()
+            address = request.form.get('address', '').strip()
+            state = request.form.get('state', 'Delhi NCR').strip()
+            district = request.form.get('district', '').strip()
+            city_village = request.form.get('city_village', 'Central City').strip()
+            facility_type = request.form.get('facility_type', 'Shelter').strip()
             lat = float(request.form.get('latitude', 0))
             lng = float(request.form.get('longitude', 0))
             capacity = int(request.form.get('total_capacity', 0))
-            beds = int(request.form.get('available_beds', 0))
+            
+            # Form may provide either current_occupancy directly or available_beds
+            if 'current_occupancy' in request.form:
+                occupancy = int(request.form.get('current_occupancy', 0))
+            elif 'available_beds' in request.form:
+                beds = int(request.form.get('available_beds', capacity))
+                occupancy = capacity - beds
+            else:
+                occupancy = 0
+
+            if occupancy < 0 or occupancy > capacity:
+                flash(f'Occupancy ({occupancy}) cannot be negative or exceed total capacity ({capacity}).', 'danger')
+                return redirect(url_for('admin.manage_shelters'))
+
+            contact = request.form.get('contact_number') or request.form.get('contact') or '+91-108'
+            verification_status = request.form.get('verification_status', 'Verified')
             food = 'has_food' in request.form
             water = 'has_water' in request.form
             medical = 'has_medical' in request.form
-            contact = request.form.get('contact_number')
 
             new_shelter = Shelter(
                 name=name, address=address, state=state, district=district,
                 city_village=city_village, facility_type=facility_type,
                 latitude=lat, longitude=lng, total_capacity=capacity,
-                available_beds=beds, has_food=food, has_water=water,
-                has_medical=medical, contact_number=contact
+                current_occupancy=occupancy, available_capacity=capacity - occupancy,
+                contact=contact, verification_status=verification_status,
+                has_food=food, has_water=water, has_medical=medical
             )
+            new_shelter.recalculate_capacity()
+
             db.session.add(new_shelter)
             db.session.commit()
-            flash('New shelter added successfully!', 'success')
+            flash('New verified shelter added successfully!', 'success')
         except Exception as e:
+            db.session.rollback()
             flash(f'Error adding shelter: {str(e)}', 'danger')
         return redirect(url_for('admin.manage_shelters'))
 
@@ -103,20 +121,32 @@ def manage_shelters():
 
 @admin_bp.route('/shelter/edit/<int:shelter_id>', methods=['POST'])
 def edit_shelter(shelter_id):
-    """Update shelter details, state, city/village, facility type & bed capacity."""
+    """Update shelter details, state, city/village, facility type & capacity/occupancy."""
     if not is_admin_logged_in():
         return redirect(url_for('admin.login'))
 
     shelter = Shelter.query.get_or_404(shelter_id)
     try:
-        shelter.name = request.form.get('name', shelter.name)
-        shelter.state = request.form.get('state', shelter.state)
-        shelter.district = request.form.get('district', shelter.district)
-        shelter.city_village = request.form.get('city_village', shelter.city_village)
-        shelter.facility_type = request.form.get('facility_type', shelter.facility_type)
+        shelter.name = request.form.get('name', shelter.name).strip()
+        shelter.state = request.form.get('state', shelter.state).strip()
+        shelter.district = request.form.get('district', shelter.district).strip()
+        shelter.city_village = request.form.get('city_village', shelter.city_village).strip()
+        shelter.facility_type = request.form.get('facility_type', shelter.facility_type).strip()
         shelter.total_capacity = int(request.form.get('total_capacity', shelter.total_capacity))
-        shelter.available_beds = int(request.form.get('available_beds', shelter.available_beds))
-        shelter.contact_number = request.form.get('contact_number', shelter.contact_number)
+        
+        if 'current_occupancy' in request.form:
+            shelter.current_occupancy = int(request.form.get('current_occupancy', shelter.current_occupancy))
+        elif 'available_beds' in request.form:
+            beds = int(request.form.get('available_beds', shelter.available_capacity))
+            shelter.current_occupancy = shelter.total_capacity - beds
+
+        if shelter.current_occupancy < 0 or shelter.current_occupancy > shelter.total_capacity:
+            flash(f'Occupancy ({shelter.current_occupancy}) cannot be negative or exceed total capacity ({shelter.total_capacity}).', 'danger')
+            return redirect(url_for('admin.manage_shelters'))
+
+        shelter.recalculate_capacity()
+        shelter.contact = request.form.get('contact_number', shelter.contact).strip()
+        shelter.verification_status = request.form.get('verification_status', shelter.verification_status).strip()
         shelter.has_food = 'has_food' in request.form
         shelter.has_water = 'has_water' in request.form
         shelter.has_medical = 'has_medical' in request.form
@@ -124,6 +154,7 @@ def edit_shelter(shelter_id):
         db.session.commit()
         flash(f'Shelter "{shelter.name}" updated successfully.', 'success')
     except Exception as e:
+        db.session.rollback()
         flash(f'Update failed: {str(e)}', 'danger')
 
     return redirect(url_for('admin.manage_shelters'))

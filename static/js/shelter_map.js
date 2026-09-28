@@ -1,6 +1,6 @@
 /**
- * LEAFLET INTERACTIVE MAP FOR EMERGENCY SHELTERS & LIVE OPENSTREETMAP FACILITIES
- * WITH REAL-TIME GPS LIVE LOCATION & DISTANCE CALCULATOR
+ * LEAFLET INTERACTIVE MAP FOR VERIFIED EMERGENCY SHELTERS & GENERAL POI FACILITIES
+ * WITH REAL-TIME GPS LIVE LOCATION & GEODESIC DISTANCE CALCULATOR
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let allFacilitiesData = [];
 
-    // Fetch combined shelters & live OpenStreetMap facilities
+    // Fetch verified shelters & general facilities
     fetch(searchApiUrl)
         .then(response => response.json())
         .then(data => {
@@ -45,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 allFacilitiesData = data.shelters;
                 renderMarkers(data.shelters);
             } else {
-                // Fallback to basic shelters API
                 fetch('/api/shelters')
                     .then(r => r.json())
                     .then(shs => {
@@ -54,7 +53,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     });
             }
 
-            // Automatically attempt GPS live location lookup
+            // Attempt automatic GPS location lookup
             locateUserPosition();
         })
         .catch(err => console.error("Error loading shelter markers on map:", err));
@@ -98,23 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             }
 
-            const isOsmLive = shelter.is_osm_live;
-            const facilityBadge = shelter.facility_type === 'School' ? '🏫 School' :
-                                  shelter.facility_type === 'College' ? '🎓 College' :
-                                  shelter.facility_type === 'Hospital' ? '🏥 Hospital' : '🏢 Relief Building';
+            const isVerified = shelter.verification_status === 'Verified' || shelter.is_verified_shelter;
+            const facilityBadge = isVerified ? '✅ Verified Disaster Shelter' : `🏢 General Facility (${shelter.facility_type})`;
 
             const popupContent = `
-                <div style="color: #0f172a; min-width: 220px;">
-                    <div style="margin-bottom: 4px;">
-                        <span style="background: #0284c7; color: white; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">${facilityBadge}</span>
-                        ${isOsmLive ? '<span style="background: #eab308; color: black; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">🌐 Live OSM</span>' : ''}
+                <div style="color: #0f172a; min-width: 230px;">
+                    <div style="margin-bottom: 6px;">
+                        <span style="background: ${isVerified ? '#10b981' : '#f59e0b'}; color: white; padding: 3px 8px; border-radius: 4px; font-size: 0.75rem; font-weight: 700;">${facilityBadge}</span>
                     </div>
                     <h6 style="font-weight: 700; margin-bottom: 4px;">${shelter.name}</h6>
                     <p style="font-size: 0.85rem; margin-bottom: 6px; color: #475569;">${shelter.address}</p>
                     ${distanceHtml}
                     <div style="font-size: 0.85rem; margin-bottom: 8px;">
                         <strong>District:</strong> ${shelter.district}<br>
-                        <strong>Status:</strong> <span style="color: #16a34a; font-weight: 700;">Available Emergency Center</span>
+                        <strong>Capacity / Occupancy:</strong> ${shelter.total_capacity > 0 ? `${shelter.available_capacity || shelter.available_beds} free / ${shelter.total_capacity} total` : 'N/A (General POI)'}<br>
+                        <strong>Contact:</strong> ${shelter.contact || shelter.contact_number}
                     </div>
                     <a href="https://maps.google.com/?q=${shelter.latitude},${shelter.longitude}" target="_blank" class="btn btn-sm btn-primary w-100" style="font-size: 0.8rem; padding: 4px 8px;">
                         <i class="fa-solid fa-map-location-dot me-1"></i> Navigate via Google Maps
@@ -122,8 +119,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 </div>
             `;
 
-            // Custom Marker Colors: Gold for OSM live schools/colleges, Cyan for DB shelters
-            const markerColor = isOsmLive ? '#eab308' : '#06b6d4';
+            // Custom Marker Colors: Cyan for Verified Shelters, Amber for General Facilities
+            const markerColor = isVerified ? '#10b981' : '#f59e0b';
             const customIcon = L.divIcon({
                 className: 'custom-facility-pin',
                 html: `<div style="background-color: ${markerColor}; width: 16px; height: 16px; border-radius: 50%; border: 2px solid white; box-shadow: 0 0 10px ${markerColor};"></div>`,
@@ -140,12 +137,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function locateUserPosition() {
-        if (!navigator.geolocation) return;
+        if (!navigator.geolocation) {
+            updateGpsStatus("Geolocation is not supported by your browser.", "warning");
+            return;
+        }
 
         const locateBtn = document.getElementById('locate-me-btn');
-        const statusText = document.getElementById('gps-status-text');
-
-        if (statusText) statusText.textContent = "Locating your live GPS position...";
+        updateGpsStatus("Locating your live GPS coordinates...", "info");
         if (locateBtn) locateBtn.disabled = true;
 
         navigator.geolocation.getCurrentPosition(
@@ -153,18 +151,29 @@ document.addEventListener('DOMContentLoaded', () => {
                 const uLat = pos.coords.latitude;
                 const uLng = pos.coords.longitude;
 
-                if (statusText) statusText.textContent = `📍 Live Location Detected (${uLat.toFixed(4)}, ${uLng.toFixed(4)})`;
+                updateGpsStatus(`📍 Live GPS Detected: (${uLat.toFixed(4)}, ${uLng.toFixed(4)})`, "success");
                 if (locateBtn) locateBtn.disabled = false;
 
                 renderMarkers(allFacilitiesData, uLat, uLng);
             },
             (err) => {
-                console.warn("GPS lookup denied or unavailable:", err);
-                if (statusText) statusText.textContent = "GPS access disabled. Showing default map view.";
+                let msg = "GPS lookup denied or unavailable. Showing default map.";
+                if (err.code === err.PERMISSION_DENIED) msg = "⚠️ GPS location permission denied. Showing default region.";
+                elif (err.code === err.POSITION_UNAVAILABLE) msg = "⚠️ Location position unavailable.";
+                elif (err.code === err.TIMEOUT) msg = "⚠️ GPS position lookup timed out.";
+
+                updateGpsStatus(msg, "warning");
                 if (locateBtn) locateBtn.disabled = false;
             },
             { enableHighAccuracy: true, timeout: 10000 }
         );
+    }
+
+    function updateGpsStatus(text, type = "cyan") {
+        const statusText = document.getElementById('gps-status-text');
+        if (statusText) {
+            statusText.textContent = text;
+        }
     }
 
     const locateBtn = document.getElementById('locate-me-btn');

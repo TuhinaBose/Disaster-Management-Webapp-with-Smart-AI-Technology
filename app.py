@@ -59,11 +59,13 @@ def seed_database():
                     latitude=28.6139,
                     longitude=77.2090,
                     total_capacity=800,
-                    available_beds=480,
+                    current_occupancy=320,
+                    available_capacity=480,
+                    contact="+91-9876543210",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543210"
+                    has_medical=True
                 ),
                 Shelter(
                     name="St. Mary Emergency High School Shelter",
@@ -75,11 +77,13 @@ def seed_database():
                     latitude=28.7041,
                     longitude=77.1025,
                     total_capacity=450,
-                    available_beds=195,
+                    current_occupancy=255,
+                    available_capacity=195,
+                    contact="+91-9876543211",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543211"
+                    has_medical=True
                 ),
                 Shelter(
                     name="Metro Indoor Sports Stadium Relief Camp",
@@ -91,11 +95,13 @@ def seed_database():
                     latitude=28.5355,
                     longitude=77.3910,
                     total_capacity=1500,
-                    available_beds=1120,
+                    current_occupancy=380,
+                    available_capacity=1120,
+                    contact="+91-9876543212",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543212"
+                    has_medical=True
                 ),
                 Shelter(
                     name="Apex Medical Relief Facility",
@@ -107,11 +113,13 @@ def seed_database():
                     latitude=28.5244,
                     longitude=77.2100,
                     total_capacity=500,
-                    available_beds=310,
+                    current_occupancy=190,
+                    available_capacity=310,
+                    contact="+91-9876543213",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543213"
+                    has_medical=True
                 ),
 
                 # ===== MAHARASHTRA =====
@@ -125,11 +133,13 @@ def seed_database():
                     latitude=18.9438,
                     longitude=72.8229,
                     total_capacity=1200,
-                    available_beds=850,
+                    current_occupancy=350,
+                    available_capacity=850,
+                    contact="+91-9876543220",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543220"
+                    has_medical=True
                 ),
                 Shelter(
                     name="Andheri Municipal Relief Building",
@@ -141,11 +151,13 @@ def seed_database():
                     latitude=19.1197,
                     longitude=72.8464,
                     total_capacity=700,
-                    available_beds=410,
+                    current_occupancy=290,
+                    available_capacity=410,
+                    contact="+91-9876543221",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543221"
+                    has_medical=True
                 ),
                 Shelter(
                     name="Pune Model High School Relief Camp",
@@ -157,11 +169,13 @@ def seed_database():
                     latitude=18.5308,
                     longitude=73.8474,
                     total_capacity=900,
-                    available_beds=620,
+                    current_occupancy=280,
+                    available_capacity=620,
+                    contact="+91-9876543222",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543222"
+                    has_medical=True
                 ),
 
                 # ===== WEST BENGAL =====
@@ -175,11 +189,13 @@ def seed_database():
                     latitude=22.5726,
                     longitude=88.3639,
                     total_capacity=1500,
-                    available_beds=1100,
+                    current_occupancy=400,
+                    available_capacity=1100,
+                    contact="+91-9876543230",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543230"
+                    has_medical=True
                 ),
                 Shelter(
                     name="Sundarbans Coastal Village Primary School Shelter",
@@ -191,11 +207,13 @@ def seed_database():
                     latitude=22.3148,
                     longitude=88.6653,
                     total_capacity=750,
-                    available_beds=290,
+                    current_occupancy=460,
+                    available_capacity=290,
+                    contact="+91-9876543231",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=False,
-                    contact_number="+91-9876543231"
+                    has_medical=False
                 ),
                 Shelter(
                     name="Howrah Engineering College Relief Refuge",
@@ -207,11 +225,13 @@ def seed_database():
                     latitude=22.6500,
                     longitude=88.3400,
                     total_capacity=600,
-                    available_beds=380,
+                    current_occupancy=220,
+                    available_capacity=380,
+                    contact="+91-9876543232",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543232"
+                    has_medical=True
                 ),
 
                 # ===== TAMIL NADU =====
@@ -225,11 +245,13 @@ def seed_database():
                     latitude=13.0405,
                     longitude=80.2707,
                     total_capacity=1000,
-                    available_beds=720,
+                    current_occupancy=280,
+                    available_capacity=720,
+                    contact="+91-9876543240",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543240"
+                    has_medical=True
                 ),
 
                 # ===== KARNATAKA =====
@@ -243,16 +265,18 @@ def seed_database():
                     latitude=12.9716,
                     longitude=77.5946,
                     total_capacity=650,
-                    available_beds=410,
+                    current_occupancy=240,
+                    available_capacity=410,
+                    contact="+91-9876543250",
+                    verification_status="Verified",
                     has_food=True,
                     has_water=True,
-                    has_medical=True,
-                    contact_number="+91-9876543250"
+                    has_medical=True
                 )
             ]
             db.session.bulk_save_objects(sample_shelters)
             db.session.commit()
-            print("[Database Seed] Created 12 state/district/city/facility structured shelters.")
+            print("[Database Seed] Created 12 verified state/district/city/facility structured shelters.")
 
         # 3. Check Active Alerts Seed
         if DisasterAlert.query.count() == 0:
