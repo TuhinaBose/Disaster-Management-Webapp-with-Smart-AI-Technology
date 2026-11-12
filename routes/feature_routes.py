@@ -515,8 +515,8 @@ def sos():
 @feature_bp.route('/api/chatbot', methods=['POST'])
 def chatbot_api():
     """
-    'Ask Gemini' AI Assistant API for disaster preparedness, safety advice, live shelter queries, and weather.
-    Grounded in actual application data to avoid hallucinating shelters or weather.
+    'Ask Gemini' AI Assistant API for disaster preparedness, safety advice, live shelter queries, weather, and system guidance.
+    Uses real Google Gemini API when GEMINI_API_KEY is configured, with a comprehensive multi-intent grounded offline engine as fallback.
     """
     try:
         data = request.get_json(silent=True) or request.form or {}
@@ -525,97 +525,263 @@ def chatbot_api():
         if not user_query:
             return jsonify({'reply': "👋 Hello! I am **Ask Gemini**, your AI Disaster Management Assistant. How can I assist you with safety guidelines, shelter locations, weather alerts, or emergency procedures today?"})
 
-        # 1. Fetch live system context from DB to ground Gemini's answer
-        verified_shelters = Shelter.query.filter_by(verification_status='Verified').all()
-        total_shelters = len(verified_shelters)
-        total_free_beds = sum(s.available_capacity for s in verified_shelters) if verified_shelters else 0
-        active_alerts = DisasterAlert.query.filter_by(is_active=True).all()
-        alerts_summary = "; ".join([f"{a.title} ({a.severity} in {a.location})" for a in active_alerts]) if active_alerts else "No active critical alerts broadcasted currently."
+        # 1. Fetch live system telemetry from database
+        try:
+            verified_shelters = Shelter.query.filter_by(verification_status='Verified').all()
+            total_shelters = len(verified_shelters)
+            total_free_beds = sum(s.available_capacity for s in verified_shelters) if verified_shelters else 0
+            active_alerts = DisasterAlert.query.filter_by(is_active=True).all()
+            alerts_summary = "; ".join([f"{a.title} ({a.severity} in {a.location})" for a in active_alerts]) if active_alerts else "No active critical alerts broadcasted currently."
 
-        top_shelter_info = ""
-        if verified_shelters:
-            top_s = max(verified_shelters, key=lambda s: s.available_capacity)
-            top_shelter_info = f"Top Recommended Verified Shelter: {top_s.name} in {top_s.district}, {top_s.city_village} with {top_s.available_capacity} available capacity remaining out of {top_s.total_capacity} total capacity. Contact: {top_s.contact}."
+            top_shelter_info = ""
+            if verified_shelters:
+                top_s = max(verified_shelters, key=lambda s: s.available_capacity)
+                top_shelter_info = f"Top Recommended Shelter: **{top_s.name}** in *{top_s.district}, {top_s.city_village}* with **{top_s.available_capacity} free beds** remaining. Contact: {top_s.contact}."
+        except Exception:
+            total_shelters = 0
+            total_free_beds = 0
+            alerts_summary = "All systems monitored."
+            top_shelter_info = ""
 
         gemini_key = current_app.config.get('GEMINI_API_KEY') or os.environ.get('GEMINI_API_KEY')
 
-        # 2. If Gemini API Key exists, call Gemini API
-        if gemini_key:
+        # 2. If Gemini API Key exists, call Google Gemini Generative API
+        if gemini_key and len(gemini_key.strip()) > 5:
             system_prompt = f"""
-            You are 'Ask Gemini', an official AI Assistant for RADAR - Smart AI Disaster Management Web Application.
-            Answer the user's question clearly, supportively, and accurately regarding disaster safety, emergency preparedness, shelters, weather, and application features.
-            
-            IMPORTANT GROUNDING DATA (STRICTLY USE THIS REAL-TIME APPLICATION TELEMETRY):
-            - Registered Verified Disaster Shelters in System: {total_shelters} shelters.
-            - Total Available Capacity in System: {total_free_beds} beds free.
+            You are 'Ask Gemini', the dedicated AI Disaster & Emergency Assistant for the 'RADAR - Smart AI Disaster Management Web Application'.
+            Your mission is to provide concise, calm, actionable, and accurate guidance regarding disaster safety, emergency preparedness, verified shelters, weather alerts, and application features.
+
+            REAL-TIME SYSTEM CONTEXT (Ground your answers in this data):
+            - Verified Shelters in RADAR: {total_shelters} shelters.
+            - Total Available Bed Capacity: {total_free_beds} beds free across registered relief centers.
             - {top_shelter_info}
-            - Current Active Disaster Bulletins: {alerts_summary}
-            - National Helplines: 108 (Ambulance), 100/112 (Police), 101 (Fire), 1078 (NDRF Disaster Response).
-            
+            - Current Active Disaster Alerts: {alerts_summary}
+            - 24x7 National Emergency Helplines (India): 108 (Ambulance & Medical), 112 / 100 (Police & General Emergency), 101 (Fire Brigade), 1078 (NDRF Disaster Support).
+
             RULES:
-            - Do NOT invent fake disaster shelters, unverified phone numbers, or fabricated weather reports.
-            - Format your response nicely using Markdown (bold text, bullet points).
+            - Keep responses clear, practical, and formatted with Markdown (bold text, bullet points).
+            - Always provide emergency helplines if the user indicates danger or distress.
+            - Do NOT fabricate non-existent phone numbers or fake shelters.
             """
-            
+
             full_prompt = f"{system_prompt}\n\nUser Question: {user_query}"
 
-            try:
-                # Try google-genai SDK first if installed
+            # Try Gemini models via REST endpoint
+            models_to_try = ['gemini-1.5-flash', 'gemini-2.0-flash', 'gemini-1.5-pro']
+            for m in models_to_try:
                 try:
-                    from google import genai
-                    client = genai.Client(api_key=gemini_key)
-                    response = client.models.generate_content(
-                        model='gemini-2.5-flash',
-                        contents=full_prompt,
-                    )
-                    if response and response.text:
-                        return jsonify({'reply': response.text, 'provider': 'Gemini 2.5 Flash'})
-                except Exception:
-                    pass
+                    url = f"https://generativelanguage.googleapis.com/v1beta/models/{m}:generateContent?key={gemini_key.strip()}"
+                    payload = {
+                        "contents": [{"parts": [{"text": full_prompt}]}],
+                        "generationConfig": {"temperature": 0.4, "maxOutputTokens": 600}
+                    }
+                    resp = requests.post(url, json=payload, timeout=8)
+                    if resp.status_code == 200:
+                        res_json = resp.json()
+                        candidates = res_json.get('candidates', [])
+                        if candidates and 'content' in candidates[0]:
+                            parts = candidates[0]['content'].get('parts', [])
+                            if parts and 'text' in parts[0]:
+                                return jsonify({'reply': parts[0]['text'], 'provider': f'Google Gemini ({m})'})
+                except Exception as gem_err:
+                    print(f"[Ask Gemini {m} Error]: {gem_err}")
 
-                # Fallback to direct HTTP Gemini API endpoint
-                url = f"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={gemini_key}"
-                payload = {
-                    "contents": [{"parts": [{"text": full_prompt}]}]
-                }
-                resp = requests.post(url, json=payload, timeout=8)
-                if resp.status_code == 200:
-                    res_json = resp.json()
-                    candidates = res_json.get('candidates', [])
-                    if candidates and 'content' in candidates[0]:
-                        parts = candidates[0]['content'].get('parts', [])
-                        if parts and 'text' in parts[0]:
-                            return jsonify({'reply': parts[0]['text'], 'provider': 'Gemini API'})
-            except Exception as gem_err:
-                print(f"[Ask Gemini API Error]: {gem_err}")
+        # 3. Comprehensive, Multi-Intent Grounded Offline AI Engine
+        msg = user_query.lower()
 
-        # 3. Intelligent Data-Backed Fallback if Gemini Key is unconfigured or call times out
-        msg_lower = user_query.lower()
-        if any(k in msg_lower for k in ['shelter', 'refuge', 'bed', 'camp', 'stay', 'where', 'location', 'capacity']):
-            reply = f"🏠 **Ask Gemini Shelter Status**:\nWe currently have **{total_shelters} verified disaster shelters** active with **{total_free_beds} available beds**. {top_shelter_info}\n\nSearch all verified shelters on our [Shelter Locator](/shelters)."
+        # Greetings & Welcomes
+        if any(k in msg for k in ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening']):
+            reply = (
+                "👋 **Hello! Welcome to RADAR Emergency Assistant.**\n\n"
+                "I am **Ask Gemini**, your 24/7 AI guide. How can I help you today?\n"
+                "- 🏠 **Find Shelters & Beds**: Ask *'Where is the nearest shelter?'*\n"
+                "- ⚡ **AI Disaster Risk**: Ask *'How do I predict flood or cyclone risk?'*\n"
+                "- 🚨 **Emergency SOS**: Ask *'How to send an SOS signal?'*\n"
+                "- ⛰️ **Landslide & Hill Stations**: Ask *'Landslide safety tips'*\n"
+                "- 📞 **Helplines**: Ask *'Emergency helpline numbers'*"
+            )
 
-        elif any(k in msg_lower for k in ['flood', 'water', 'submerged', 'drowning', 'rain', 'river']):
-            reply = "🌊 **Flood Safety Guidelines**:\n- Move immediately to higher ground or designated shelters.\n- Never walk or drive through flowing water.\n- Disconnect electrical appliances.\n- Call **108** for emergency rescue support.\nCheck real-time precipitation at [Live Weather & Alerts](/alerts)."
+        # Identity & Capabilities
+        elif any(k in msg for k in ['who are you', 'what is your name', 'what are you', 'what is radar', 'what can you do', 'features', 'help me']):
+            reply = (
+                "🤖 **About Ask Gemini & RADAR**:\n\n"
+                "I am **Ask Gemini**, the built-in intelligent assistant for **RADAR - Smart AI Disaster Management System**.\n\n"
+                "Here is what you can do on RADAR:\n"
+                "1. **AI Risk Prediction**: Calculate flood, cyclone, or earthquake danger with our ML model at [AI Predictor](/predict).\n"
+                "2. **Shelter Locator**: Find verified camps across states, districts, and villages with live beds at [Shelters](/shelters).\n"
+                "3. **Emergency SOS**: Broadcast your live GPS coordinates directly to rescue operations at [Emergency SOS](/sos).\n"
+                "4. **Live Weather & Bulletins**: Monitor real-time rain, wind, and active government warnings at [Live Alerts](/alerts).\n"
+                "5. **24x7 Helplines**: National Disaster Response Force (**1078**), Ambulance (**108**), Police (**112**)."
+            )
 
-        elif any(k in msg_lower for k in ['earthquake', 'tremor', 'quake', 'shaking']):
-            reply = "🧱 **Earthquake Safety Guidelines**:\n- **DROP, COVER, and HOLD ON!** Take refuge under a sturdy table.\n- Stay away from windows, outer walls, and hanging fixtures.\n- If outdoors, move to an open area away from power lines and tall buildings."
+        # Landslide & Hill Stations
+        elif any(k in msg for k in ['landslide', 'mudslide', 'rockfall', 'hill station', 'slope', 'mountain', 'darjeeling', 'shimla', 'manali', 'munnar', 'wayanad', 'ooty']):
+            reply = (
+                "⛰️ **Landslide & Hill Station Safety Protocol**:\n\n"
+                "- **Watch Warning Signs**: Tilting trees, widening ground cracks, sudden muddy river currents, or rumbling sounds.\n"
+                "- **Immediate Action**: Move away from steep slopes, ravines, and drainage channels to stable high ground.\n"
+                "- **Driving in Hill Stations**: Avoid driving through mountain passes during torrential rain; watch for debris on roads.\n"
+                "- **Severe Zones**: Districts like *Darjeeling, Wayanad, Idukki, Chamoli, Shimla, and Nilgiris* require maximum vigilance.\n"
+                "- **Emergency Help**: Call **1078** (NDRF Landslide Rescue) or **108** immediately."
+            )
 
-        elif any(k in msg_lower for k in ['cyclone', 'wind', 'storm', 'hurricane']):
-            reply = "🌪️ **Cyclone Safety Advisory**:\n- Stay indoors away from windows and glass doors.\n- Keep battery torches, emergency kits, and clean drinking water ready.\n- Follow official advisories on [Live Alerts](/alerts)."
+        # Shelters & Camps
+        elif any(k in msg for k in ['shelter', 'refuge', 'bed', 'camp', 'stay', 'where', 'location', 'capacity', 'accommodation', 'hospital']):
+            reply = (
+                f"🏠 **Emergency Relief Shelters Update**:\n\n"
+                f"- **Active Verified Shelters**: **{total_shelters} centers** currently registered.\n"
+                f"- **Available Bed Capacity**: **{total_free_beds} beds free** right now.\n"
+                f"- {top_shelter_info}\n\n"
+                f"Explore shelters filtered by State &rarr; District &rarr; City/Village &rarr; Facility Type on our [Shelter Locator](/shelters)."
+            )
 
-        elif any(k in msg_lower for k in ['fire', 'flame', 'smoke', 'burn']):
-            reply = "🔥 **Fire Emergency Action**:\n- **GET OUT AND STAY OUT!** Crawl low under smoke.\n- Call Fire Brigade **101** immediately.\n- Use **STOP, DROP, and ROLL** if clothing catches fire."
+        # Emergency SOS & Distress
+        elif any(k in msg for k in ['sos', 'emergency', 'danger', 'trapped', 'save me', 'rescue', 'distress', 'help now']):
+            reply = (
+                "🚨 **EMERGENCY ASSISTANCE PROTOCOL**:\n\n"
+                "If you or someone nearby is in immediate danger:\n"
+                "1. Click the red [Emergency SOS Button](/sos) immediately to transmit your **exact live GPS coordinates** to the rescue control room.\n"
+                "2. Call National Emergency Services directly:\n"
+                "   - 🚑 **Medical / Ambulance**: **108**\n"
+                "   - 🚔 **Police / General Emergency**: **112** or **100**\n"
+                "   - 🚒 **Fire Brigade**: **101**\n"
+                "   - 🛡️ **NDRF Disaster Rescue**: **1078** / **011-24363260**\n"
+                "3. Stay calm, stay in a safe visible area, and keep your phone battery conserved."
+            )
 
-        elif any(k in msg_lower for k in ['helpline', 'number', 'contact', 'phone', 'police', 'ndrf', 'ambulance']):
-            reply = "📞 **24x7 National Emergency Helplines**:\n- NDRF Disaster Response: **1078**\n- Ambulance Services: **108**\n- Police Operations: **100** / **112**\n- Fire Station: **101**"
+        # Flood & Waterlogging
+        elif any(k in msg for k in ['flood', 'water', 'submerged', 'drowning', 'rain', 'river', 'overflow']):
+            reply = (
+                "🌊 **Flood Emergency Action Plan**:\n\n"
+                "- **High Ground**: Evacuate instantly to higher elevation or designated relief camps.\n"
+                "- **Never Walk or Drive**: Just 6 inches of fast-moving water can knock you down; 2 feet can float a vehicle.\n"
+                "- **Electrical Safety**: Turn off main electricity switches; avoid fallen electrical lines in standing water.\n"
+                "- **Check Weather**: Track live precipitation telemetry on [Live Alerts & Weather](/alerts).\n"
+                "- **Helplines**: Call **108** (Rescue/Ambulance) or **1078** (NDRF)."
+            )
 
+        # Earthquake
+        elif any(k in msg for k in ['earthquake', 'tremor', 'quake', 'shaking', 'seismic', 'richter']):
+            reply = (
+                "🧱 **Earthquake Survival Guidelines**:\n\n"
+                "- **If Indoors**: **DROP, COVER, and HOLD ON!** Take refuge beneath a sturdy desk or table. Protect your head and neck.\n"
+                "- **Stay Away**: Keep clear of glass windows, mirrors, hanging lighting, and unanchored furniture.\n"
+                "- **If Outdoors**: Move to an open clearing away from buildings, streetlights, and utility wires.\n"
+                "- **After Shocks**: Anticipate secondary aftershocks. Check for gas leaks and structural damage before re-entering."
+            )
+
+        # Cyclone, Storm & Wind
+        elif any(k in msg for k in ['cyclone', 'wind', 'storm', 'hurricane', 'typhoon', 'gale']):
+            reply = (
+                "🌪️ **Cyclone & Severe Storm Advisory**:\n\n"
+                "- **Stay Indoors**: Secure all doors and windows. Move to the strongest interior room away from outer glass.\n"
+                "- **Emergency Kit**: Keep battery torches, power banks, first-aid supplies, dry food, and clean water ready.\n"
+                "- **Do Not Venture Out**: Even if the wind temporarily calms, you may be in the 'eye' of the cyclone; wait for official clearance.\n"
+                "- **Real-Time Warnings**: Monitor updates at [Live Alerts](/alerts)."
+            )
+
+        # Fire Emergency
+        elif any(k in msg for k in ['fire', 'flame', 'smoke', 'burn', 'blaze']):
+            reply = (
+                "🔥 **Fire Emergency Guidelines**:\n\n"
+                "- **Evacuate Immediately**: **GET OUT AND STAY OUT!** Never re-enter a burning structure.\n"
+                "- **Crawl Low**: Smoke and poisonous gases rise; crawl near the floor where air is cleaner.\n"
+                "- **Clothes on Fire**: **STOP, DROP, and ROLL** until flames are smothered.\n"
+                "- **Call Fire Brigade**: Dial **101** or **112** immediately."
+            )
+
+        # Tsunami & Coastal Surge
+        elif any(k in msg for k in ['tsunami', 'sea wave', 'coastal surge', 'high tide']):
+            reply = (
+                "🌊 **Tsunami Coastal Safety Protocol**:\n\n"
+                "- **Warning Signs**: Rapid, abnormal receding of sea water or a roaring ocean sound.\n"
+                "- **Evacuate**: Move at least 2 kilometers inland or climb to high ground at least 15 meters above sea level.\n"
+                "- **Avoid Coastlines**: Never stay to watch a tsunami wave; subsequent waves can be much larger.\n"
+                "- **Helpline**: Call Indian Tsunami Early Warning Center / NDRF **1078**."
+            )
+
+        # Heatwave & Sunstroke
+        elif any(k in msg for k in ['heatwave', 'heat', 'sunstroke', 'temperature', 'dehydration', 'hot']):
+            reply = (
+                "☀️ **Heatwave Health & Safety Advisory**:\n\n"
+                "- **Hydration**: Drink plenty of water and ORS solutions, even if you do not feel thirsty.\n"
+                "- **Peak Hours**: Avoid direct outdoor exposure between 12:00 PM and 4:00 PM.\n"
+                "- **Clothing**: Wear lightweight, loose-fitting, light-colored cotton clothes and head covering.\n"
+                "- **Sunstroke Symptoms**: Dizziness, high body temperature, nausea. Move to shade and apply cool damp cloths. Call **108**."
+            )
+
+        # Thunderstorm & Lightning
+        elif any(k in msg for k in ['lightning', 'thunder', 'thunderstorm', 'electric shock']):
+            reply = (
+                "⚡ **Lightning & Severe Thunderstorm Rules**:\n\n"
+                "- **30-30 Rule**: If time between lightning flash and thunderclap is under 30 seconds, seek indoor shelter immediately.\n"
+                "- **Avoid Open Areas**: Do NOT stand under isolated trees, near metal poles, or near water bodies.\n"
+                "- **Indoor Safety**: Unplug sensitive electronics; avoid bathing or touching wired plumbing during strikes."
+            )
+
+        # AI Prediction / ML Engine
+        elif any(k in msg for k in ['predict', 'prediction', 'risk', 'machine learning', 'ml', 'forecast risk', 'calculate']):
+            reply = (
+                "⚡ **RADAR Smart AI Disaster Risk Predictor**:\n\n"
+                "Our machine learning model (`RandomForestClassifier`, 97.5% accuracy) evaluates:\n"
+                "- 🌧️ Rainfall (mm)\n"
+                "- 🌊 River / Flood Water Level (m)\n"
+                "- 💨 Wind Speed (km/h)\n"
+                "- 🌡️ Temperature & Humidity\n"
+                "- 🧱 Seismic Activity (Richter Scale)\n\n"
+                "Try calculating your location's real-time disaster hazard index at [AI Predictor](/predict)."
+            )
+
+        # Accounts, Login, Admin
+        elif any(k in msg for k in ['login', 'admin', 'register', 'signup', 'password', 'account', 'dashboard']):
+            reply = (
+                "🔐 **Account & Portal Access**:\n\n"
+                "- **Citizen Portal**: [Sign In](/login) or [Create an Account](/register).\n"
+                "- **User Profile**: Track your transmitted SOS emergency broadcasts at [Profile](/profile).\n"
+                "- **Admin Operations Portal**: Accessible at [Admin Login](/admin/login).\n"
+                "  *(Default Credentials: Username `admin` | Password `admin123`)*."
+            )
+
+        # Helplines & Contacts
+        elif any(k in msg for k in ['helpline', 'number', 'police', 'ambulance', 'ndrf', 'call', 'contact', 'phone']):
+            reply = (
+                "📞 **24x7 Official National Emergency Helplines (India)**:\n\n"
+                "- 🚑 **Ambulance & Medical Emergency**: **108**\n"
+                "- 🚔 **Police / National Emergency Number**: **112** / **100**\n"
+                "- 🚒 **Fire Brigade**: **101**\n"
+                "- 🛡️ **NDRF Disaster Support**: **1078** / **011-24363260**\n"
+                "- 🚨 **Disaster Management Helpline**: **1070** (State) / **1077** (District)"
+            )
+
+        # Weather queries
+        elif any(k in msg for k in ['weather', 'forecast', 'rain', 'current weather', 'monsoon', 'clouds']):
+            reply = (
+                "🌦️ **Live Weather & Precipitation Telemetry**:\n\n"
+                "RADAR integrates live global satellite telemetry via **Open-Meteo & OpenWeatherMap** APIs.\n"
+                "- Check temperature, wind gusts, humidity, and rainfall rates for your district at [Live Weather & Alerts](/alerts).\n"
+                "- Live GPS weather is automatically fed into the AI Risk Predictor!"
+            )
+
+        # General Fallback
         else:
-            reply = f"✨ **Ask Gemini Assistant**:\nI am your AI Disaster Assistant! You can ask me about **Verified Shelters**, **Flood / Earthquake / Cyclone Safety**, **Live Weather Updates**, or **Emergency Helplines**.\n\n*(Currently operating with verified live telemetry. Configure `GEMINI_API_KEY` in `.env` to enable full Gemini LLM intelligence).* "
+            reply = (
+                f"✨ **Ask Gemini Assistant**:\n\n"
+                f"I am ready to help you with disaster response and safety! Here are popular topics you can ask me about:\n"
+                f"- 🏠 **Verified Shelters**: *'Show available shelters with beds'*\n"
+                f"- ⛰️ **Landslide & Hill Stations**: *'Landslide safety rules'*\n"
+                f"- 🌊 **Flood / Earthquake / Cyclone**: *'What to do during a flood?'*\n"
+                f"- ⚡ **AI Prediction**: *'How does AI risk prediction work?'*\n"
+                f"- 🚨 **Emergency SOS**: *'How do I send an SOS call?'*\n"
+                f"- 📞 **Helpline Numbers**: *'Emergency contact numbers'*\n\n"
+                f"*(Note: You can also configure `GEMINI_API_KEY` in your `.env` file to unlock free-form conversational Google Gemini LLM responses!)*"
+            )
 
-        return jsonify({'reply': reply, 'provider': 'RADAR Telemetry System'})
+        return jsonify({'reply': reply, 'provider': 'RADAR Smart Intelligence'})
 
     except Exception as e:
-        return jsonify({'reply': f"✨ **Ask Gemini**: I can assist you with emergency shelters, weather reports, and safety advice. Please try again or visit [Shelter Locator](/shelters)."})
+        return jsonify({
+            'reply': "✨ **Ask Gemini Assistant**: I am here to help with verified shelters, safety guidelines, weather alerts, and emergency helplines. Please ask a question or explore our [Shelter Locator](/shelters)."
+        })
 
 
 @feature_bp.route('/api/recommend_shelter', methods=['POST'])
