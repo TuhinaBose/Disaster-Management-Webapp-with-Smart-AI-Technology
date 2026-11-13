@@ -1,55 +1,66 @@
 {% extends 'base.html' %}
 
-{% block title %}Emergency SOS & Helplines - Disaster Management Application{% endblock %}
+{% block title %}Emergency SOS & Helplines - Smart Disaster Management System{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <!-- SOS Title Banner -->
     <div class="text-center mb-5">
-        <span class="badge bg-danger text-white px-3 py-2 fw-bold font-monospace mb-2"><i class="fa-solid fa-tower-broadcast me-1"></i> DISTRESS DISPATCH CENTER</span>
-        <h2 class="fw-extrabold text-white">Emergency SOS Broadcast</h2>
-        <p class="text-muted mx-auto" style="max-width: 650px;">
-            If you are stranded, injured, or in immediate life-threatening danger, submit your SOS request below. Your exact GPS coordinates will be dispatched to disaster command control rooms.
+        <span class="badge badge-pastel-pink px-3 py-2 fw-bold mb-2"><i class="fa-solid fa-tower-broadcast me-1"></i> DISTRESS DISPATCH CENTER</span>
+        <h2 class="fw-bold" style="color: var(--text-primary);"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Emergency SOS Broadcast</h2>
+        <p class="text-secondary mx-auto" style="max-width: 650px;">
+            If you are stranded, injured, or in immediate life-threatening danger, submit your SOS request below. Your exact GPS coordinates will be dispatched immediately to disaster command control rooms.
         </p>
     </div>
 
     <!-- National Helplines Directory Quick Cards -->
     <div class="mb-5">
-        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-phone-volume text-cyan me-2"></i>National Emergency Helplines (24x7)</h4>
+        <div class="d-flex align-items-center justify-content-between mb-3">
+            <h4 class="fw-bold mb-0" style="color: var(--text-primary);"><i class="fa-solid fa-phone-volume text-danger me-2"></i>National Emergency Helplines (24/7)</h4>
+            <span class="badge badge-pastel-purple">Toll-Free in India</span>
+        </div>
         <div class="row g-3">
             <div class="col-6 col-md-3">
                 <a href="tel:108" class="text-decoration-none">
-                    <div class="glass-card p-3 text-center border-start border-4 border-danger h-100">
-                        <i class="fa-solid fa-truck-medical text-danger fs-2 mb-2"></i>
-                        <h4 class="fw-bold text-white mb-0">108</h4>
-                        <span class="small text-muted">Ambulance & Medical</span>
+                    <div class="stat-card-pastel p-3 text-center h-100 border-start border-4" style="border-left-color: #F43F5E !important;">
+                        <div class="stat-icon-wrap icon-pink mb-2" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                            <i class="fa-solid fa-truck-medical"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" style="color: var(--text-primary);">108</h4>
+                        <span class="small text-secondary fw-semibold">Ambulance & Medical</span>
                     </div>
                 </a>
             </div>
             <div class="col-6 col-md-3">
-                <a href="tel:100" class="text-decoration-none">
-                    <div class="glass-card p-3 text-center border-start border-4 border-primary h-100">
-                        <i class="fa-solid fa-user-shield text-primary fs-2 mb-2"></i>
-                        <h4 class="fw-bold text-white mb-0">100 / 112</h4>
-                        <span class="small text-muted">Police Operations</span>
+                <a href="tel:112" class="text-decoration-none">
+                    <div class="stat-card-pastel p-3 text-center h-100 border-start border-4" style="border-left-color: #3B82F6 !important;">
+                        <div class="stat-icon-wrap icon-blue mb-2" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                            <i class="fa-solid fa-user-shield"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" style="color: var(--text-primary);">112 / 100</h4>
+                        <span class="small text-secondary fw-semibold">Police & Emergency</span>
                     </div>
                 </a>
             </div>
             <div class="col-6 col-md-3">
                 <a href="tel:101" class="text-decoration-none">
-                    <div class="glass-card p-3 text-center border-start border-4 border-warning h-100">
-                        <i class="fa-solid fa-fire-extinguisher text-warning fs-2 mb-2"></i>
-                        <h4 class="fw-bold text-white mb-0">101</h4>
-                        <span class="small text-muted">Fire Rescue Service</span>
+                    <div class="stat-card-pastel p-3 text-center h-100 border-start border-4" style="border-left-color: #F59E0B !important;">
+                        <div class="stat-icon-wrap icon-peach mb-2" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                            <i class="fa-solid fa-fire-extinguisher"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" style="color: var(--text-primary);">101</h4>
+                        <span class="small text-secondary fw-semibold">Fire Rescue Service</span>
                     </div>
                 </a>
             </div>
             <div class="col-6 col-md-3">
                 <a href="tel:1078" class="text-decoration-none">
-                    <div class="glass-card p-3 text-center border-start border-4 border-info h-100">
-                        <i class="fa-solid fa-helmet-safety text-info fs-2 mb-2"></i>
-                        <h4 class="fw-bold text-white mb-0">1078</h4>
-                        <span class="small text-muted">NDRF Disaster Helpline</span>
+                    <div class="stat-card-pastel p-3 text-center h-100 border-start border-4" style="border-left-color: #8B5CF6 !important;">
+                        <div class="stat-icon-wrap icon-lavender mb-2" style="width: 48px; height: 48px; font-size: 1.3rem;">
+                            <i class="fa-solid fa-helmet-safety"></i>
+                        </div>
+                        <h4 class="fw-bold mb-0" style="color: var(--text-primary);">1078</h4>
+                        <span class="small text-secondary fw-semibold">NDRF Disaster Help</span>
                     </div>
                 </a>
             </div>
@@ -59,29 +70,29 @@
     <!-- SOS Form & Instructions -->
     <div class="row g-4 justify-content-center">
         <div class="col-lg-8">
-            <div class="glass-card p-4 p-md-5 border-start border-5 border-danger">
+            <div class="glass-card p-4 p-md-5 border-start border-5" style="border-left-color: #E11D48 !important;">
                 {% if success %}
-                    <div class="alert alert-success text-white bg-success border-0 p-4 mb-4 rounded-3 text-center">
-                        <i class="fa-solid fa-circle-check fs-1 mb-2 d-block"></i>
+                    <div class="alert alert-success border-0 p-4 mb-4 rounded-4 text-center" style="background-color: #D1FAE5; color: #065F46;">
+                        <i class="fa-solid fa-circle-check fs-1 mb-2 d-block text-success"></i>
                         <h4 class="fw-bold mb-2">SOS Request Transmitted!</h4>
                         <p class="mb-0">{{ success }}</p>
                     </div>
                 {% endif %}
 
                 {% if error %}
-                    <div class="alert alert-danger text-white bg-danger border-0 p-3 mb-4 rounded-3">
+                    <div class="alert alert-danger border-0 p-3 mb-4 rounded-4" style="background-color: #FFE4E6; color: #9F1239;">
                         <i class="fa-solid fa-circle-exclamation me-2"></i>{{ error }}
                     </div>
                 {% endif %}
 
                 <div class="d-flex align-items-center justify-content-between mb-4">
-                    <h3 class="fw-bold text-white mb-0"><i class="fa-solid fa-tower-cell text-danger me-2"></i>Submit Emergency Request</h3>
-                    <button type="button" id="get-location-btn" class="btn btn-sm btn-outline-cyan">
+                    <h3 class="fw-bold mb-0" style="color: var(--text-primary);"><i class="fa-solid fa-tower-cell text-danger me-2"></i>Submit Emergency Request</h3>
+                    <button type="button" id="get-location-btn" class="btn btn-sm btn-pastel-purple">
                         <i class="fa-solid fa-location-crosshairs me-1"></i> Auto-Detect GPS
                     </button>
                 </div>
 
-                <p id="location-status" class="small text-cyan mb-3"></p>
+                <p id="location-status" class="small fw-semibold mb-3" style="color: var(--pastel-lavender-deep);"></p>
 
                 <form method="POST" action="{{ url_for('feature.sos') }}">
                     <input type="hidden" id="latitude" name="latitude">
@@ -89,28 +100,28 @@
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label text-slate-300 small fw-semibold">Your Full Name</label>
-                            <input type="text" name="sender_name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Rahul Sharma" required>
+                            <label class="form-label">Your Full Name</label>
+                            <input type="text" name="sender_name" class="form-control" placeholder="e.g. Rahul Sharma" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-slate-300 small fw-semibold">Contact Phone Number</label>
-                            <input type="tel" name="contact_phone" class="form-control bg-dark text-white border-secondary" placeholder="e.g. +91 98765 43210" required>
+                            <label class="form-label">Contact Phone Number</label>
+                            <input type="tel" name="contact_phone" class="form-control" placeholder="e.g. +91 98765 43210" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label text-slate-300 small fw-semibold">Current Location / Address</label>
-                            <input type="text" id="location" name="location" class="form-control bg-dark text-white border-secondary" placeholder="e.g. House No 42, Near River Bank, Sector 4" required>
+                            <label class="form-label">Current Location / Address</label>
+                            <input type="text" id="location" name="location" class="form-control" placeholder="e.g. House No 42, Near River Bank, Sector 4" required>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label text-slate-300 small fw-semibold">Urgency Level</label>
-                            <select name="urgency_level" class="form-select bg-dark text-white border-secondary">
+                            <label class="form-label">Urgency Level</label>
+                            <select name="urgency_level" class="form-select">
                                 <option value="Critical">🔴 CRITICAL (Immediate Life Threat)</option>
                                 <option value="High" selected>🟠 HIGH (Stranded / Medical Needed)</option>
                                 <option value="Medium">🟡 MEDIUM (Food / Supplies Needed)</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label text-slate-300 small fw-semibold">Describe Your Emergency Situation</label>
-                            <textarea name="situation_description" rows="3" class="form-control bg-dark text-white border-secondary" placeholder="Provide details (e.g. 4 people trapped on roof due to flood water, 1 elderly person needs medical assistance)" required></textarea>
+                            <label class="form-label">Describe Your Emergency Situation</label>
+                            <textarea name="situation_description" rows="3" class="form-control" placeholder="Provide details (e.g. 4 people trapped on roof due to flood water, 1 elderly person needs medical assistance)" required></textarea>
                         </div>
                     </div>
 

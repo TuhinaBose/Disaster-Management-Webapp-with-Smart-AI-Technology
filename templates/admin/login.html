@@ -1,44 +1,44 @@
 {% extends 'base.html' %}
 
-{% block title %}Admin Authentication - Disaster Management Portal{% endblock %}
+{% block title %}Admin Authentication - Smart Disaster Management System{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-5 col-lg-4">
+        <div class="col-md-5 col-lg-4 animate-scale-up">
             <div class="glass-card p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <div class="tile-icon-box bg-icon-cyan mx-auto mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-lavender-light text-lavender-dark mx-auto mb-3 shadow-2xs" style="width: 68px; height: 68px;">
                         <i class="fa-solid fa-user-shield fs-3"></i>
                     </div>
-                    <h4 class="fw-bold text-white mb-1">Admin Portal Login</h4>
+                    <h3 class="fw-extrabold text-dark mb-1">Admin Portal</h3>
                     <p class="text-muted small mb-0">Authorized Emergency Control Personnel Only</p>
                 </div>
 
                 <form method="POST" action="{{ url_for('admin.login') }}">
                     <div class="mb-3">
-                        <label class="form-label text-slate-300 small fw-semibold">Admin Username</label>
+                        <label class="form-label text-secondary small fw-bold">Admin Username</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark text-cyan border-secondary"><i class="fa-solid fa-user"></i></span>
-                            <input type="text" name="username" class="form-control bg-dark text-white border-secondary" placeholder="Username" required autofocus>
+                            <span class="input-group-text bg-white border-end-0 text-lavender-dark rounded-start-pill ps-3"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" name="username" class="form-control bg-white text-dark border-start-0 rounded-end-pill pe-3" placeholder="Username" required autofocus>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label text-slate-300 small fw-semibold">Admin Password</label>
+                        <label class="form-label text-secondary small fw-bold">Admin Password</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark text-cyan border-secondary"><i class="fa-solid fa-lock"></i></span>
-                            <input type="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="Password" required>
+                            <span class="input-group-text bg-white border-end-0 text-lavender-dark rounded-start-pill ps-3"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" name="password" class="form-control bg-white text-dark border-start-0 rounded-end-pill pe-3" placeholder="Password" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-cyan w-100 py-2 fw-bold mb-3">
-                        <i class="fa-solid fa-right-to-bracket me-1"></i> Log In to Dashboard
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i> Log In to Dashboard
                     </button>
 
-                    <div class="text-center p-2 rounded" style="background: rgba(255,255,255,0.05);">
-                        <small class="text-muted d-block">Default Credentials for Demo:</small>
-                        <small class="text-cyan font-monospace">Username: <strong>admin</strong> | Password: <strong>admin123</strong></small>
+                    <div class="text-center p-3 rounded-4 bg-lavender-light border border-lavender">
+                        <small class="text-muted d-block mb-1 fw-semibold">Default Credentials for Demo:</small>
+                        <small class="text-lavender-dark font-monospace fw-bold">Username: <strong>admin</strong> | Password: <strong>admin123</strong></small>
                     </div>
                 </form>
             </div>

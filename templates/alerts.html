@@ -1,29 +1,30 @@
 {% extends 'base.html' %}
 
-{% block title %}Live Weather & Disaster Alerts - RADAR Disaster Management{% endblock %}
+{% block title %}Live Weather & Disaster Alerts - Smart Disaster Management System{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="text-center mb-4">
-        <h2 class="fw-extrabold text-white"><i class="fa-solid fa-cloud-bolt text-warning me-2"></i>Live Weather & Disaster Alerts</h2>
-        <p class="text-muted mx-auto" style="max-width: 650px;">
-            Real-time meteorological warnings, live environmental telemetry, severe storm advisories, and disaster bulletins broadcasted directly by emergency management agencies.
+    <div class="text-center mb-5">
+        <span class="badge badge-pastel-blue mb-2 px-3 py-2 fw-bold"><i class="fa-solid fa-satellite-dish me-1"></i> METEOROLOGICAL TELEMETRY</span>
+        <h2 class="fw-bold" style="color: var(--text-primary);"><i class="fa-solid fa-cloud-bolt text-warning me-2"></i>Live Weather & Disaster Alerts</h2>
+        <p class="text-secondary mx-auto" style="max-width: 650px;">
+            Real-time meteorological warnings, live precipitation telemetry, severe storm advisories, and disaster bulletins broadcasted directly by emergency management agencies.
         </p>
     </div>
 
     <!-- Live Weather Interactive Widget -->
-    <div class="glass-card p-4 mb-4 border-start border-4 border-cyan" id="weather-widget">
-        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3 border-bottom border-secondary pb-3">
+    <div class="glass-card p-4 mb-5 border-start border-4" style="border-left-color: var(--pastel-blue-deep) !important;" id="weather-widget">
+        <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3 border-bottom pb-3" style="border-color: var(--border-soft) !important;">
             <div>
-                <h5 class="fw-bold text-white mb-0"><i class="fa-solid fa-tower-observation text-cyan me-2"></i>Real-Time Environmental Telemetry</h5>
-                <small id="weather-provider" class="text-cyan font-monospace">Loading live weather telemetry...</small>
+                <h5 class="fw-bold mb-0" style="color: var(--text-primary);"><i class="fa-solid fa-tower-observation text-primary me-2"></i>Real-Time Environmental Telemetry</h5>
+                <small id="weather-provider" class="text-secondary font-monospace">Connecting to satellite sensors...</small>
             </div>
 
             <!-- Weather Search & GPS Button -->
             <form id="weather-search-form" class="d-flex gap-2 align-items-center">
-                <input type="text" id="weather-search-input" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Type City or District (e.g. Mumbai, Kolkata, Shimla)..." style="min-width: 220px;">
-                <button type="submit" class="btn btn-cyan btn-sm fw-bold text-nowrap"><i class="fa-solid fa-search me-1"></i> Get Weather</button>
-                <button type="button" id="weather-gps-btn" class="btn btn-outline-cyan btn-sm text-nowrap" title="Use Live GPS">
+                <input type="text" id="weather-search-input" class="form-control form-control-sm" placeholder="City or District (e.g. Mumbai, Shimla, Kolkata)..." style="min-width: 220px;">
+                <button type="submit" class="btn btn-pastel-blue btn-sm fw-bold text-nowrap"><i class="fa-solid fa-search me-1"></i> Get Weather</button>
+                <button type="button" id="weather-gps-btn" class="btn btn-outline-pastel btn-sm text-nowrap" title="Use Live GPS">
                     <i class="fa-solid fa-location-crosshairs"></i> GPS
                 </button>
             </form>
@@ -33,42 +34,42 @@
         <div id="weather-status-text" class="mb-3"></div>
 
         <div class="row align-items-center g-4">
-            <div class="col-md-4 text-center border-end-md border-secondary">
-                <div class="tile-icon-box bg-icon-cyan mx-auto mb-2 fs-2">
+            <div class="col-md-4 text-center border-end-md" style="border-color: var(--border-soft) !important;">
+                <div class="stat-icon-wrap icon-blue mx-auto mb-2 fs-2">
                     <i id="weather-icon" class="fa-solid fa-cloud-sun-rain"></i>
                 </div>
-                <h2 id="weather-temp" class="fw-extrabold text-white mb-0">--°C</h2>
-                <p id="weather-condition" class="text-cyan fw-bold mb-1">Loading...</p>
-                <h6 id="weather-location" class="text-white small fw-semibold mb-1">Detecting Location...</h6>
-                <small id="weather-timestamp" class="text-muted d-block font-monospace">Updated: --</small>
+                <h2 id="weather-temp" class="fw-bold mb-0" style="color: var(--text-primary);">--°C</h2>
+                <p id="weather-condition" class="fw-bold mb-1" style="color: var(--pastel-blue-deep);">Loading...</p>
+                <h6 id="weather-location" class="small fw-semibold mb-1 text-dark">Detecting Location...</h6>
+                <small id="weather-timestamp" class="text-muted d-block" style="font-size: 0.74rem;">Updated: --</small>
             </div>
             <div class="col-md-8">
                 <div class="row text-center text-md-start g-3">
                     <div class="col-6 col-sm-3">
-                        <div class="p-3 glass-card text-center">
-                            <i class="fa-solid fa-cloud-showers-heavy text-cyan fs-4 mb-2"></i>
-                            <small class="text-muted d-block">Precipitation / Rain</small>
-                            <strong id="weather-rain" class="text-white fs-5">-- mm</strong>
+                        <div class="p-3 stat-card-pastel text-center h-100">
+                            <i class="fa-solid fa-cloud-showers-heavy text-primary fs-4 mb-2"></i>
+                            <small class="text-secondary d-block">Precipitation</small>
+                            <strong id="weather-rain" class="fs-5" style="color: var(--text-primary);">-- mm</strong>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
-                        <div class="p-3 glass-card text-center">
+                        <div class="p-3 stat-card-pastel text-center h-100">
                             <i class="fa-solid fa-wind text-warning fs-4 mb-2"></i>
-                            <small class="text-muted d-block">Wind Velocity</small>
-                            <strong id="weather-wind" class="text-white fs-5">-- km/h</strong>
+                            <small class="text-secondary d-block">Wind Speed</small>
+                            <strong id="weather-wind" class="fs-5" style="color: var(--text-primary);">-- km/h</strong>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
-                        <div class="p-3 glass-card text-center">
+                        <div class="p-3 stat-card-pastel text-center h-100">
                             <i class="fa-solid fa-droplet text-info fs-4 mb-2"></i>
-                            <small class="text-muted d-block">Humidity</small>
-                            <strong id="weather-humidity" class="text-white fs-5">-- %</strong>
+                            <small class="text-secondary d-block">Humidity</small>
+                            <strong id="weather-humidity" class="fs-5" style="color: var(--text-primary);">-- %</strong>
                         </div>
                     </div>
                     <div class="col-6 col-sm-3">
-                        <div class="p-3 glass-card text-center">
+                        <div class="p-3 stat-card-pastel text-center h-100">
                             <i class="fa-solid fa-shield-halved text-success fs-4 mb-2"></i>
-                            <small class="text-muted d-block">System Status</small>
+                            <small class="text-secondary d-block">Sensor Link</small>
                             <strong class="text-success fs-6">Live & Active</strong>
                         </div>
                     </div>
@@ -78,7 +79,12 @@
     </div>
 
     <!-- Active Alert Cards Feed -->
-    <h4 class="fw-bold text-white mb-4"><i class="fa-solid fa-bullhorn text-danger me-2"></i>Active Disaster Bulletins</h4>
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h4 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fa-solid fa-bullhorn text-danger me-2"></i>Active Disaster Bulletins</h4>
+            <p class="text-secondary small mb-0">Official advisories issued by Central Disaster Management Agencies</p>
+        </div>
+    </div>
 
     <div class="row g-4">
         {% if alerts %}
@@ -89,23 +95,23 @@
                         <span class="badge {% if alert.severity == 'Critical' %}bg-danger{% elif alert.severity == 'Warning' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %} fs-6">
                             <i class="fa-solid fa-triangle-exclamation me-1"></i>{{ alert.severity }}
                         </span>
-                        <span class="badge bg-dark text-cyan border border-secondary">{{ alert.disaster_type }}</span>
+                        <span class="badge badge-pastel-purple">{{ alert.disaster_type }}</span>
                     </div>
 
-                    <h5 class="fw-bold text-white mb-2">{{ alert.title }}</h5>
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">{{ alert.title }}</h5>
                     <p class="small text-danger mb-3"><i class="fa-solid fa-location-pin me-1"></i>Affected Region: <strong>{{ alert.location }}</strong></p>
-                    <p class="text-slate-300 small mb-4">{{ alert.description }}</p>
+                    <p class="text-secondary small mb-4">{{ alert.description }}</p>
 
-                    <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top border-secondary">
-                        <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>Issued: {{ alert.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
-                        <a href="{{ url_for('feature.predict') }}" class="btn btn-sm btn-outline-cyan">Check Risk</a>
+                    <div class="mt-auto d-flex justify-content-between align-items-center pt-3 border-top" style="border-color: var(--border-soft) !important;">
+                        <small class="text-secondary"><i class="fa-regular fa-clock me-1"></i>Issued: {{ alert.created_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                        <a href="{{ url_for('feature.predict') }}" class="btn btn-sm btn-outline-pastel">Check Risk</a>
                     </div>
                 </div>
             </div>
             {% endfor %}
         {% else %}
             <div class="col-12 text-center py-5 glass-card">
-                <p class="text-muted mb-0">No active disaster alerts registered.</p>
+                <p class="text-secondary mb-0"><i class="fa-solid fa-circle-check text-success me-2"></i>No active disaster alerts registered at this time.</p>
             </div>
         {% endif %}
     </div>

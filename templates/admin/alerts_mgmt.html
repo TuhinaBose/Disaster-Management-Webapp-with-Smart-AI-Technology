@@ -4,21 +4,24 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3 animate-fade-in">
         <div>
-            <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-bullhorn text-warning me-2"></i>Disaster Alert & Warning Broadcasts</h3>
-            <p class="text-muted small mb-0">Publish official advisories, severe storm warnings, and public safety announcements.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-peach-light text-peach-dark fw-semibold small mb-2 border border-peach">
+                <i class="fa-solid fa-bullhorn"></i> Public Broadcast System
+            </div>
+            <h3 class="fw-extrabold text-dark mb-1">Disaster Alert & Warning Broadcasts</h3>
+            <p class="text-muted small mb-0">Publish official advisories, severe storm warnings, and public safety announcements to citizen dashboards.</p>
         </div>
-        <button class="btn btn-warning btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#addAlertModal">
+        <button class="btn btn-warning rounded-pill px-4 fw-bold shadow-2xs" data-bs-toggle="modal" data-bs-target="#addAlertModal">
             <i class="fa-solid fa-plus me-1"></i> Broadcast New Alert
         </button>
     </div>
 
     <!-- Alerts Table -->
-    <div class="glass-card p-4">
+    <div class="glass-card p-4 animate-slide-up">
         <div class="table-responsive">
-            <table class="table table-custom align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary small">
                     <tr>
                         <th>ID</th>
                         <th>Alert Title</th>
@@ -33,32 +36,32 @@
                 <tbody>
                     {% for a in alerts %}
                     <tr>
-                        <td>#{{ a.id }}</td>
-                        <td class="fw-bold text-white">{{ a.title }}</td>
-                        <td><span class="badge bg-dark text-cyan border border-secondary">{{ a.disaster_type }}</span></td>
+                        <td><span class="badge bg-lavender-light text-lavender-dark rounded-pill">#{{ a.id }}</span></td>
+                        <td class="fw-bold text-dark">{{ a.title }}</td>
+                        <td><span class="badge bg-powder-light text-powder-dark rounded-pill px-2 py-1">{{ a.disaster_type }}</span></td>
                         <td>
-                            <span class="badge {% if a.severity == 'Critical' %}bg-danger{% elif a.severity == 'Warning' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                            <span class="badge {% if a.severity == 'Critical' %}bg-pink-light text-pink-dark{% elif a.severity == 'Warning' %}bg-peach-light text-peach-dark{% else %}bg-mint-light text-mint-dark{% endif %} rounded-pill px-2 py-1">
                                 {{ a.severity }}
                             </span>
                         </td>
-                        <td class="small">{{ a.location }}</td>
+                        <td class="small text-secondary">{{ a.location }}</td>
                         <td>
                             {% if a.is_active %}
-                                <span class="badge bg-success"><i class="fa-solid fa-signal me-1"></i>Active</span>
+                                <span class="badge bg-mint-light text-mint-dark rounded-pill px-2 py-1"><i class="fa-solid fa-signal me-1"></i>Active</span>
                             {% else %}
-                                <span class="badge bg-secondary">Inactive</span>
+                                <span class="badge bg-light text-muted border rounded-pill px-2 py-1">Inactive</span>
                             {% endif %}
                         </td>
                         <td class="small text-muted">{{ a.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
                         <td>
                             <div class="d-flex gap-1">
                                 <form method="POST" action="{{ url_for('admin.toggle_alert', alert_id=a.id) }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-info" title="Toggle Active Status">
+                                    <button type="submit" class="btn btn-sm btn-outline-primary rounded-pill" title="Toggle Active Status">
                                         <i class="fa-solid fa-power-off"></i>
                                     </button>
                                 </form>
                                 <form method="POST" action="{{ url_for('admin.delete_alert', alert_id=a.id) }}" onsubmit="return confirm('Delete this alert?');">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" title="Delete Alert"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </div>
                         </td>
@@ -70,52 +73,55 @@
     </div>
 </div>
 
-<!-- Add Alert Modal -->
+<!-- Add Alert Modal in Pastel Theme -->
 <div class="modal fade" id="addAlertModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-white border-secondary">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title fw-bold"><i class="fa-solid fa-bullhorn text-warning me-2"></i>Publish New Disaster Alert</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-peach-light border-bottom border-peach py-3">
+                <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-bullhorn text-peach-dark me-2"></i>Publish New Disaster Alert</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('admin.manage_alerts') }}">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small">Alert Title</label>
-                            <input type="text" name="title" class="form-control bg-dark text-white border-secondary" placeholder="e.g. Flash Flood Warning" required>
+                            <label class="form-label small fw-bold text-secondary">Alert Title</label>
+                            <input type="text" name="title" class="form-control" placeholder="e.g. Flash Flood Warning" required>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small">Disaster Type</label>
-                            <select name="disaster_type" class="form-select bg-dark text-white border-secondary">
+                            <label class="form-label small fw-bold text-secondary">Disaster Type</label>
+                            <select name="disaster_type" class="form-select">
                                 <option value="Flood">Flood</option>
                                 <option value="Cyclone">Cyclone</option>
                                 <option value="Earthquake">Earthquake</option>
                                 <option value="Heavy Rain">Heavy Rain</option>
                                 <option value="Heatwave">Heatwave</option>
                                 <option value="Fire">Fire</option>
+                                <option value="Landslide">Landslide</option>
+                                <option value="Tsunami">Tsunami</option>
                             </select>
                         </div>
                         <div class="col-md-3">
-                            <label class="form-label small">Severity Level</label>
-                            <select name="severity" class="form-select bg-dark text-white border-secondary">
+                            <label class="form-label small fw-bold text-secondary">Severity Level</label>
+                            <select name="severity" class="form-select">
                                 <option value="Critical">Critical</option>
                                 <option value="Warning" selected>Warning</option>
                                 <option value="Advisory">Advisory</option>
                             </select>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small">Affected Location / Region</label>
-                            <input type="text" name="location" class="form-control bg-dark text-white border-secondary" placeholder="e.g. North River Basin & Surrounding Towns" required>
+                            <label class="form-label small fw-bold text-secondary">Affected Location / Region</label>
+                            <input type="text" name="location" class="form-control" placeholder="e.g. North River Basin & Surrounding Towns" required>
                         </div>
                         <div class="col-12">
-                            <label class="form-label small">Detailed Alert Instructions</label>
-                            <textarea name="description" rows="3" class="form-control bg-dark text-white border-secondary" placeholder="Provide advisory instructions for citizens..." required></textarea>
+                            <label class="form-label small fw-bold text-secondary">Detailed Alert Instructions</label>
+                            <textarea name="description" rows="3" class="form-control" placeholder="Provide advisory instructions for citizens..." required></textarea>
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-secondary">
-                    <button type="submit" class="btn btn-warning btn-sm fw-bold">Publish & Broadcast Alert</button>
+                <div class="modal-footer bg-light border-0 py-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 fw-bold shadow-2xs">Publish & Broadcast Alert</button>
                 </div>
             </form>
         </div>

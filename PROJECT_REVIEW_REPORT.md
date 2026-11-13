@@ -3,60 +3,65 @@
 ---
 
 ## **PROJECT TITLE**
-### **RADAR - Smart AI Disaster Management System**
-*(Web-Based AI Emergency Assistance, Live Shelter Locator & Real-Time Disaster Risk Prediction System)*
+### **Smart Disaster Management System**
+*(Web-Based AI Emergency Assistance, Live Shelter Locator, Meteorological Telemetry & Multi-Hazard Disaster Risk Prediction Platform)*
 
 ---
 
 | Project Metadata | Information |
 | :--- | :--- |
-| **Project Name** | RADAR - Smart AI Disaster Management System |
+| **Project Name** | **Smart Disaster Management System** |
+| **Academic Purpose** | Final-Year B.Tech Capstone Project Review & Examination |
 | **Repository URL** | [GitHub Repository](https://github.com/TuhinaBose/Disaster-Management-Webapp-with-Smart-AI-Technology) |
-| **Target Domain** | Artificial Intelligence, Machine Learning, Web Technologies, Geographic Information Systems (GIS), Emergency Telemetry |
-| **Primary Stack** | Python (Flask), Scikit-Learn, Leaflet.js, OpenStreetMap Overpass & Nominatim APIs, SQLite/MySQL (SQLAlchemy), Bootstrap 5 |
-| **Document Purpose** | Comprehensive College Project Review Report (Review Phase / Mid-Term / Final Submission) |
+| **Target Domain** | Artificial Intelligence, Machine Learning, Web Engineering, Geographic Information Systems (GIS), Disaster Telemetry |
+| **Primary Stack** | Python (Flask), Scikit-Learn, Google Gemini API / Natural Language Processing, Leaflet.js, OpenStreetMap Overpass & Nominatim APIs, MySQL / SQLite (SQLAlchemy ORM), Bootstrap 5, Custom Pastel CSS3 Design System |
+| **Development Environment** | Visual Studio Code, Git, Google Antigravity |
 
 ---
 
 ## 1. ABSTRACT & PROJECT OVERVIEW
 
-Disaster management requires rapid, accurate, and accessible information dissemination to minimize loss of life and coordinate relief operations efficiently. **RADAR** is an end-to-end, full-stack disaster management web platform integrated with Smart AI technology and real-time Geographic Information Systems (GIS). 
+Disaster management requires rapid, accurate, and accessible information dissemination to minimize loss of life, coordinate relief operations, and empower citizens with actionable survival protocols. **Smart Disaster Management System** is a production-grade, full-stack disaster management web platform integrated with Smart AI technology, real-time Geographic Information Systems (GIS), and an elegant, modern **Pastel Design System**.
 
-The application empowers citizens during natural calamities (floods, cyclones, earthquakes, heatwaves, and landslides) by providing:
-1. **AI-driven Real-Time Disaster Risk Prediction**: Utilizing a trained Scikit-Learn Machine Learning classifier to analyze environmental telemetry (rainfall, river level, wind speed, temperature, humidity, and seismic magnitude).
-2. **Cascading State & Village-Level Shelter Locator**: A 4-tier hierarchical location engine (**State &rarr; District &rarr; City/Village &rarr; Facility Type**) covering all 28 Indian States, Union Territories, Hill Stations, and landslide-prone mountain belts.
-3. **Live OpenStreetMap Overpass API Integration**: Real-time automated discovery of local schools, colleges, hospitals, and emergency public buildings on an interactive dark-themed Leaflet map.
-4. **GPS Telemetry & Emergency SOS System**: One-click distress signal broadcasting live GPS coordinates to the Admin Operations Control Room.
-5. **RescuBot 24/7 AI Assistant**: Natural language processing chatbot for immediate emergency guidance, helpline access, and shelter telemetry.
-6. **Centralized Admin Operations Control Room**: Role-Based Access Control (RBAC) portal for relief shelter management, active alert broadcasts, and SOS request queue dispatching.
+The platform is designed to provide proactive protection before, during, and after severe natural hazards (floods, cyclones, earthquakes, heatwaves, landslides, tsunamis, and wildfires).
+
+### **Key Innovations in Current Release:**
+1. **Complete Brand Transformation**: Rebranded from legacy identifiers to **Smart Disaster Management System**, featuring a minimal vector disaster-protection shield symbol (`fa-shield-halved`) and clean typography.
+2. **Premium Pastel Visual Design System**: Modernized the entire user interface using a pastel palette (lavender `#DDD6FE`, baby pink `#FBCFE8`, powder blue `#BAE6FD`, mint green `#A7F3D0`, soft peach `#FED7AA`, and cream white `#FAF9F6`) with soft glassmorphic borders and fluid shadows.
+3. **Smooth Micro-Interactions & Animation Architecture**: Implemented smooth page entrance animations, floating pastel decorative orbs, animated statistics counters, interactive prompt chips, and subtle hover lifts.
+4. **Visual Content & Multi-Hazard Imagery**: Added high-resolution disaster relief and rescue photography with automatic SVG fallback handling.
+5. **AI Disaster Assistant (Intelligent Conversational Agent)**: Rebuilt the conversational assistant with multi-turn conversation memory, Google Gemini model cascading (`gemini-1.5-flash`, `gemini-2.0-flash`, `gemini-1.5-pro`), live database shelter querying, and a zero-latency fallback NLP engine covering 14 disaster scenarios.
+6. **Hierarchical Shelter & Bed Capacity Telemetry**: 4-tier administrative locator (**State $\rightarrow$ District $\rightarrow$ City/Village $\rightarrow$ Facility Type**) with real-time bed capacity tracking and OpenStreetMap Overpass amenities discovery.
+7. **Preserved Multi-Tier Architecture**: 100% preservation of Flask MVC backend, MySQL/SQLite compatibility, Scikit-Learn Random Forest prediction model, weather telemetry, and Admin Control Room.
 
 ---
 
 ## 2. SYSTEM ARCHITECTURE & TECHNICAL STACK
 
-The platform is engineered using the Model-View-Controller (MVC) Architectural Pattern with modular Flask Blueprints:
+The platform is engineered using the Model-View-Controller (MVC) architectural pattern organized into modular Flask Blueprints:
 
 ```
                   ┌──────────────────────────────────────────────┐
                   │                 CLIENT / UI                  │
-                  │   HTML5, CSS3, Bootstrap 5, JS ES6+, Leaflet  │
+                  │   HTML5, Pastel CSS3, Bootstrap 5, Leaflet   │
+                  │   AI Disaster Assistant Modal & Audio Cues   │
                   └──────────────────────┬───────────────────────┘
                                          │ HTTP / JSON REST APIs
                                          ▼
                   ┌──────────────────────────────────────────────┐
                   │           FLASK APPLICATION SERVER           │
-                  │           (Gunicorn / WSGI Engine)           │
+                  │              (WSGI Engine / Flask)           │
                   └──────┬───────────────┼───────────────┬───────┘
                          │               │               │
       ┌──────────────────┴──┐  ┌─────────┴─────────┐  ┌──┴──────────────────┐
       │     AUTH & MAIN     │  │   ADMIN OPERATIONS│  │   FEATURE & AI ML    │
-      │  (User / Admin RBAC)│  │ (Shelters/SOS/Alert) │ (ML/OSM/RescuBot)  │
+      │  (User / Admin RBAC)│  │ (Shelters/SOS/Alert) │ (ML/OSM/AI Assistant)│
       └──────────┬──────────┘  └─────────┬─────────┘  └──┬──────────────────┘
                  │                       │               │
                  ▼                       ▼               ▼
       ┌──────────────────────────────────────────────────────────┐
       │          DATABASE LAYER (Flask-SQLAlchemy ORM)           │
-      │              (SQLite / MySQL Relational Schema)          │
+      │        (MySQL in Production / SQLite in Development)     │
       └──────────────────────────────────────────────────────────┘
 ```
 
@@ -64,136 +69,100 @@ The platform is engineered using the Model-View-Controller (MVC) Architectural P
 
 | Layer | Component | Description / Function |
 | :--- | :--- | :--- |
-| **Frontend** | HTML5, Jinja2, Bootstrap 5, Custom CSS3 | Responsive dark-mode user interface optimized for mobile and desktop screens. |
-| **Mapping & GIS** | Leaflet.js, OpenStreetMap, CartoDB Tiles | Interactive mapping layer with dynamic marker clustering and GPS location tracking. |
-| **Backend Framework**| Python 3.x, Flask, Flask-SQLAlchemy | Modular MVC architecture organized into logical Blueprints (`main`, `admin`, `feature`). |
-| **Machine Learning** | Scikit-Learn, Joblib, NumPy | `RandomForestClassifier` trained on multi-variate environmental factors for disaster risk assessment. |
-| **Live External APIs**| OpenStreetMap Overpass & Nominatim APIs | Real-time geocoding and live spatial query engine for schools, colleges, hospitals, and shelters. |
-| **Database** | SQLite (Dev) / MySQL (Prod) | Object-Relational Mapping (ORM) storing `User`, `Shelter`, `DisasterAlert`, and `EmergencyRequest` models. |
+| **Frontend UI** | HTML5, Jinja2, Bootstrap 5, Custom Pastel CSS3 | Responsive interface with pastel styling, floating blobs, glassmorphic cards, and smooth CSS keyframes. |
+| **Mapping & GIS** | Leaflet.js, OpenStreetMap, CartoDB Voyager Tiles | Interactive spatial map with color-coded markers, capacity progress bars, and click-to-pin coordinate picker. |
+| **Backend Framework**| Python 3.14, Flask, Flask-SQLAlchemy | Modular MVC architecture organized into logical Blueprints (`main`, `admin`, `feature`). |
+| **Machine Learning** | Scikit-Learn, Joblib, NumPy | `RandomForestClassifier` trained on multi-variate environmental parameters for disaster risk level classification. |
+| **Conversational AI** | Google Gemini API (`1.5-flash`/`2.0-flash`) & Built-in NLP | Multi-turn conversational agent grounded with live database shelter telemetry and official safety guidelines. |
+| **Live External APIs**| OSM Nominatim & Overpass APIs, Open-Meteo | Live geocoding, reverse geocoding, meteorological telemetry, and public amenity scanning (schools, hospitals). |
+| **Database** | MySQL (Production) / SQLite (Development) | Relational schema storing `User`, `Shelter`, `DisasterAlert`, and `EmergencyRequest` models via SQLAlchemy ORM. |
 
 ---
 
-## 3. CORE MODULES & WORK ACCOMPLISHED
+## 3. CORE MODULES & IMPLEMENTED ENHANCEMENTS
 
-### **Module 1: Machine Learning Disaster Risk Predictor**
-- **Algorithm**: Scikit-Learn `RandomForestClassifier` (100 estimators, max depth 12).
-- **Features Analyzed**:
+### **Module 1: Visual Transformation & Pastel Design System**
+- **Color Palette Specification**:
+  - **Pastel Lavender**: Primary accents, AI badges, card borders (`#DDD6FE`, `#8B5CF6`).
+  - **Baby Pink**: Emergency alerts, high-urgency badges (`#FBCFE8`, `#EC4899`).
+  - **Powder Blue**: Weather cards, secondary buttons, water indicators (`#BAE6FD`, `#0284C7`).
+  - **Mint Green**: Verified shelter indicators, safe status indicators (`#A7F3D0`, `#059669`).
+  - **Soft Peach**: Active warnings, preparation steps, hazard cards (`#FED7AA`, `#EA580C`).
+  - **Cream White**: High-contrast, easy-on-the-eyes body canvas (`#FAF9F6`, `#FFFFFF`).
+- **Typography & Layout**: Modern sans-serif system font stack (`system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif`), rounded corners ($16\text{px}$ to $24\text{px}$), and soft layered drop shadows.
+- **Micro-Animations**:
+  - `@keyframes floatBlob`: Gentle floating background pastel orbs.
+  - `@keyframes fadeIn` & `@keyframes slideUp`: Smooth card and section entrances.
+  - Animated number counters for statistics on homepage and dashboard.
+  - Hover elevation with `transform: translateY(-4px)` on interactive cards.
+
+### **Module 2: Complete AI Chatbot Overhaul (AI Disaster Assistant)**
+- **Intelligent Assistant Name**: Renamed to **AI Disaster Assistant**.
+- **Multi-Turn Contextual History**: Added frontend and backend conversation memory (`conversationHistory` array passed with role and parts) allowing coherent follow-up questions.
+- **Database Telemetry Grounding**: The assistant dynamically queries the live `Shelter` database model to supply real-time bed counts, occupancy percentages, and facility contacts.
+- **Location-Specific Shelter Lookup**: Understands natural language requests (e.g., *"Find shelters in West Bengal"*, *"Show me Pune relief camps"*) and extracts real matching records.
+- **14 Disaster Knowledge Scenarios**: Comprehensive fallback NLP engine covering:
+  1. Earthquakes (Drop, Cover, and Hold On)
+  2. Floods & Flash Inundations
+  3. Cyclones & Tropical Storms
+  4. Tsunamis & Coastal Surges
+  5. Landslides & Mudflows
+  6. Wildfires & Structural Fires
+  7. Extreme Heatwaves
+  8. Drought Conditions
+  9. Severe Thunderstorms & Lightning
+  10. Emergency Evacuation Procedures
+  11. First Aid & Trauma Care
+  12. 72-Hour Survival Kit Assembling
+  13. National Emergency Helpline Directives
+  14. Post-Disaster Rehabilitation
+- **Suggested Quick Chips**: Included one-click prompt pills for the most urgent citizen queries.
+
+### **Module 3: Machine Learning Disaster Risk Predictor**
+- **Model**: Scikit-Learn `RandomForestClassifier` loaded via `joblib`.
+- **Environmental Telemetry Inputs**:
   - Rainfall Intensity ($mm$)
-  - River / Water Level ($m$)
-  - Wind Velocity ($km/h$)
+  - River / Water Reservoir Level ($m$)
+  - Wind Speed ($km/h$)
   - Ambient Temperature ($^\circ C$)
   - Humidity Percentage ($\%$)
-  - Seismic Richter Scale Magnitude
-- **Performance**: Achieved **$97.5\%$ accuracy** on synthetic environmental validation data.
-- **Output**: Returns real-time Risk Classification (**Low**, **Medium**, **High**) along with actionable safety recommendations.
+  - Seismic Richter Scale Magnitude ($M$)
+- **Output**: Predicts Risk Category (**Low**, **Medium**, **High**) along with a calibrated percentage risk score and mitigation directives.
 
-### **Module 2: Cascading Administrative Location Engine**
-- Implemented a 4-tier cascading hierarchy:
-  $$\text{State / UT} \longrightarrow \text{District} \longrightarrow \text{City / Village / Tehsil} \longrightarrow \text{Facility Type}$$
-- **Facility Classifications**:
-  - 🏫 **School** (e.g. *St. Mary Emergency High School*)
-  - 🎓 **College** (e.g. *Loyola College Relief Center*)
-  - 🏥 **Hospital** (e.g. *Apex Medical Relief Annex*)
-  - 🏛️ **Community Center** (e.g. *Central Relief Complex*)
-  - 🏟️ **Stadium** (e.g. *Salt Lake Indoor Stadium Refuge*)
-  - 🏢 **Building** (e.g. *Andheri Municipal Refuge*)
-- **Nationwide Coverage**: Comprehensive geographic dataset covering all 28 Indian States, UTs, and specialized Hill Station & Landslide-prone regions (*Darjeeling, Shimla, Manali, Munnar, Ooty, Gangtok, Wayanad, Cherrapunji, Mussoorie, Nainital*).
-- **Editable Datalist Auto-Complete**: Combines structured dropdowns with free-text typing support.
+### **Module 4: Cascading Shelter Locator & Capacity Manager**
+- **Hierarchical Cascading Filter**: State $\rightarrow$ District $\rightarrow$ City/Village $\rightarrow$ Facility Type.
+- **Bed Capacity Math**: Model automatically calculates:
+  $$\text{Available Beds} = \max(0, \text{Total Capacity} - \text{Current Occupancy})$$
+  $$\text{Occupancy Percentage} = \frac{\text{Current Occupancy}}{\text{Total Capacity}} \times 100\%$$
+- **Dual Layer Data**: Seamlessly renders verified official relief shelters alongside live OpenStreetMap scanned schools, colleges, and hospitals.
 
-### **Module 3: Live OpenStreetMap Overpass & Nominatim API Integration**
-- Built custom backend API `/api/search_facilities` and `/api/osm_facilities`.
-- When a user filters by any city, village, or town (e.g. *Habra*, *Ashoknagar*, *Civil Lines*, *Canning*), the system:
-  1. Performs multi-candidate reverse geocoding via OpenStreetMap Nominatim.
-  2. Executes an Overpass API spatial query (`node["amenity"="school"](around:15000, lat, lon)`).
-  3. Returns live local schools, colleges, hospitals, and public buildings directly onto the Leaflet map and search list—even if they are not pre-stored in the local database!
-
-### **Module 4: Real-Time GPS Positioning & Telemetry**
-- **Haversine Distance Formula**: Computes exact geodesic distance ($km$) between the user's live mobile GPS position and all relief centers:
-  $$d = 2R \cdot \arcsin\left(\sqrt{\sin^2\left(\frac{\Delta \phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta \lambda}{2}\right)}\right)$$
-- **Live Distance Badges**: Displays distance badges (e.g. `📍 2.4 km from your live position`) on shelter cards.
-
-### **Module 5: Emergency SOS Dispatch System**
-- One-click SOS emergency button on mobile/desktop.
-- Automatically captures current GPS latitude and longitude coordinates, emergency situation description, and contact info.
-- Transmits distress calls directly to the Admin Operations Control Room in real-time.
-
-### **Module 6: RescuBot 24/7 AI Assistant**
-- Automated NLP rule-based AI assistant.
-- Handles queries regarding open shelters, flood/earthquake/cyclone/fire/landslide safety advice, emergency helplines (108, 1078, 100, 101, 112), and user authentication guidance.
-- Directly queries database telemetry to report live available shelter bed counts.
-
-### **Module 7: Admin Operations & Role-Based Access Control (RBAC)**
-- **Authentication**: Supports login using Username OR Email address.
-- **Admin Interactive Map Location Picker**: Modal map allowing Admins to click anywhere on a Leaflet map to automatically populate exact Latitude, Longitude, and reverse-geocoded street addresses.
-- **Full CRUD Management**: Admin interface to add, edit, or delete shelters, create active disaster warnings, and manage emergency request resolution states (*Pending*, *In Progress*, *Resolved*).
+### **Module 5: Emergency SOS Dispatch Hub**
+- Instant one-click GPS coordinate capture using the browser Geolocation API.
+- Live distress transmission logging urgency level and situation notes.
+- Admin portal queue with status tracking (**Pending**, **In Progress**, **Resolved**) and direct Google Maps coordinate links.
 
 ---
 
-## 4. DATABASE SCHEMA & ENTITY-RELATIONSHIP ARCHITECTURE
+## 4. VERIFICATION & AUTOMATED TESTING RESULTS
 
-The application utilizes SQLAlchemy ORM with four primary entities:
+The application's integrity was verified using the automated test suite `test_app.py` under Python 3.14:
 
-```
-  ┌───────────────────────────┐         ┌───────────────────────────┐
-  │           USER            │         │          SHELTER          │
-  ├───────────────────────────┤         ├───────────────────────────┤
-  │ id (PK, Integer)          │         │ id (PK, Integer)          │
-  │ username (String)         │         │ name (String)             │
-  │ email (String)            │         │ address (Text)            │
-  │ password_hash (String)    │         │ state (String)            │
-  │ role ('user' | 'admin')   │         │ district (String)         │
-  │ created_at (DateTime)     │         │ city_village (String)     │
-  └─────────────┬─────────────┘         │ facility_type (String)    │
-                │ 1                     │ latitude (Float)          │
-                │                       │ longitude (Float)         │
-                │                       │ total_capacity (Integer)  │
-                │ N                     │ available_beds (Integer)  │
-  ┌─────────────┴─────────────┐         │ has_food (Boolean)        │
-  │     EMERGENCY_REQUEST     │         │ has_water (Boolean)       │
-  ├───────────────────────────┤         │ has_medical (Boolean)     │
-  │ id (PK, Integer)          │         │ contact_number (String)   │
-  │ user_id (FK -> User.id)   │         └───────────────────────────┘
-  │ contact_name (String)     │
-  │ phone_number (String)     │         ┌───────────────────────────┐
-  │ urgency_level (String)    │         │      DISASTER_ALERT       │
-  │ situation_desc (Text)     │         ├───────────────────────────┤
-  │ latitude (Float)          │         │ id (PK, Integer)          │
-  │ longitude (Float)         │         │ title (String)            │
-  │ status (Pending/Resolved) │         │ disaster_type (String)    │
-  │ created_at (DateTime)     │         │ severity (Critical/Warn)  │
-  └───────────────────────────┘         │ location (String)         │
-                                        │ description (Text)        │
-                                        │ is_active (Boolean)       │
-                                        └───────────────────────────┘
-```
+| Test Case | Module Tested | Expected Behavior | Status |
+| :--- | :--- | :--- | :--- |
+| `test_shelter_capacity_recalculation` | `models/shelter.py` | Occupancy changes accurately update available beds | **PASSED (OK)** |
+| `test_shelter_to_dict` | `models/shelter.py` | JSON serialization produces complete API payload | **PASSED (OK)** |
+| `test_ml_model_prediction` | `models/ai_model.py` | Random Forest outputs High/Medium/Low categories | **PASSED (OK)** |
+| `test_predict_api_high_risk` | `routes/feature_routes.py` | Severe environmental telemetry returns High risk | **PASSED (OK)** |
+| `test_realtime_weather_api` | `routes/feature_routes.py` | Resilient telemetry cache returns 200 with all fields | **PASSED (OK)** |
+| `test_ask_gemini_chatbot_api` | `routes/feature_routes.py` | Chatbot answers query with grounded knowledge | **PASSED (OK)** |
+| `test_homepage_route` | `routes/main_routes.py` | HTTP 200 with new system branding title | **PASSED (OK)** |
+| `test_shelters_view_route` | `routes/feature_routes.py` | HTTP 200 with shelter cards and filter dropdowns | **PASSED (OK)** |
+| `test_alerts_view_route` | `routes/feature_routes.py` | HTTP 200 with weather widget and alert feed | **PASSED (OK)** |
+
+**Overall Test Suite Result**: **9 of 9 Unit & Integration Tests Passed (100% Success)**.
 
 ---
 
-## 5. RECENT UPDATES & ENHANCEMENTS SUMMARY
+## 5. CONCLUSION
 
-1. **State & Village-Level Expansion**: Integrated comprehensive administrative dataset covering 28 States, UTs, and specific sub-districts/villages (e.g., all 31 towns/tehsils of North 24 Parganas including *Habra*, *Ashoknagar*, *Barasat*, *Barrackpore*, *Bidhannagar*, *Madhyamgram*, *Bangaon*, *Basirhat*, *Naihati*, *Bhatpara*, etc.).
-2. **Hill Station & Landslide Risk Module**: Expanded coverage to major Indian hill stations (*Darjeeling, Shimla, Manali, Munnar, Ooty, Gangtok, Wayanad, Cherrapunji, Mussoorie, Nainital*) with landslide warning capabilities.
-3. **Live OpenStreetMap Overpass Search Engine**: Implemented real-time Overpass API query integration to auto-discover local schools, colleges, hospitals, and emergency refuge buildings on demand.
-4. **Interactive Map Location Picker for Admins**: Created a map click coordinate capture tool inside the Admin modal.
-5. **Unified Login System**: Updated authentication logic so users and admins can log in using either their registered Username or Email address seamlessly.
-
----
-
-## 6. VERIFICATION & TESTING RESULTS
-
-The platform underwent rigorous testing across unit, integration, and API layers:
-
-- **Authentication Test**: Verified successful login for both Citizen (`/login`) and Admin (`/admin/login`) credentials via Username & Email.
-- **Shelter API Test**: Validated `GET /api/shelters` and `GET /api/search_facilities`, confirming dynamic JSON payloads containing both DB entries and live OpenStreetMap POIs.
-- **Cascading Filter Test**: Verified `GET /api/location_options?state=West%20Bengal&district=North%2024%20Parganas` correctly returns dynamic town/village options.
-- **Live OSM Search Test**: Validated OpenStreetMap Overpass queries for *Habra* and *Ashoknagar*, successfully returning 30+ real-time local schools, colleges, and hospitals.
-- **Deployment Build Test**: Verified application execution on host `0.0.0.0:5000` and compatibility with Gunicorn production WSGI servers.
-
----
-
-## 7. CONCLUSION & FUTURE SCOPE
-
-The **RADAR - Smart AI Disaster Management System** successfully demonstrates the integration of Machine Learning risk modeling, real-time GIS mapping, live spatial APIs, and emergency response management into a cohesive, user-friendly platform.
-
----
-*Report Prepared for College Project Technical Review Submission.*
+The **Smart Disaster Management System** stands as a robust, modern, and aesthetically distinguished final-year B.Tech project. By unifying Machine Learning risk prediction, real-time spatial GIS mapping, interactive disaster preparedness protocols, and an AI conversational assistant within an elegant pastel theme, the system delivers an exceptional user experience tailored for disaster resilience.

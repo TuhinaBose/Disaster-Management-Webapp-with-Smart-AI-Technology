@@ -1,5 +1,5 @@
 """
-COMPREHENSIVE AUTOMATED TEST SUITE FOR RADAR SMART DISASTER MANAGEMENT WEB APP
+COMPREHENSIVE AUTOMATED TEST SUITE FOR SMART DISASTER MANAGEMENT SYSTEM
 Verifies database operations, shelter data reliability, capacity calculations,
 independent location engine, weather API, Ask Gemini endpoint, and admin operations.
 """
@@ -173,7 +173,7 @@ class DisasterAppTestCase(unittest.TestCase):
         """Test home page loads with HTTP 200."""
         res = self.client.get('/')
         self.assertEqual(res.status_code, 200)
-        self.assertIn(b'RADAR', res.data)
+        self.assertIn(b'Smart Disaster Management System', res.data)
 
     def test_shelters_view_route(self):
         """Test shelters view page."""

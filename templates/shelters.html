@@ -1,61 +1,62 @@
 {% extends 'base.html' %}
 
-{% block title %}Cascading Shelter & POI Locator - RADAR Disaster Management{% endblock %}
+{% block title %}Cascading Shelter Locator - Smart Disaster Management System{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3">
         <div>
-            <h2 class="fw-extrabold text-white mb-1"><i class="fa-solid fa-campground text-cyan me-2"></i>Cascading Shelter & POI Locator</h2>
-            <p class="text-muted small mb-0">Select State &rarr; District &rarr; City/Village to locate Verified Disaster Shelters, Schools, Colleges, Hospitals, Police & Fire Stations.</p>
+            <span class="badge badge-pastel-purple px-3 py-1 mb-2">Relief Infrastructure</span>
+            <h2 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fa-solid fa-campground text-purple me-2" style="color: var(--pastel-lavender-deep);"></i>Relief Shelters & Facilities Locator</h2>
+            <p class="text-secondary small mb-0">Select State &rarr; District &rarr; City/Village to locate verified disaster relief camps, schools, colleges, and emergency hospitals.</p>
         </div>
 
         <div class="d-flex flex-column flex-sm-row gap-2">
-            <button id="locate-me-btn" class="btn btn-outline-cyan btn-sm text-nowrap">
+            <button id="locate-me-btn" class="btn btn-pastel-purple btn-sm text-nowrap">
                 <i class="fa-solid fa-location-crosshairs me-1"></i> Locate My GPS Position
             </button>
         </div>
     </div>
 
     <!-- Cascading Filter Bar: State -> District -> City/Village -> Facility Type + Keyword Search -->
-    <div class="glass-card p-3 p-md-4 mb-4 border-start border-4 border-cyan">
+    <div class="glass-card p-4 mb-4 border-start border-4" style="border-left-color: var(--pastel-lavender-deep) !important;">
         <form method="GET" action="{{ url_for('feature.shelters') }}" id="cascading-filter-form">
             <div class="mb-3">
-                <label class="form-label text-cyan small fw-bold"><i class="fa-solid fa-magnifying-glass me-1"></i> Search Verified Shelters & Local Facilities across India:</label>
+                <label class="form-label small fw-bold" style="color: var(--pastel-lavender-dark);"><i class="fa-solid fa-magnifying-glass me-1"></i> Search Shelters & Facilities across India:</label>
                 <div class="input-group">
-                    <input type="text" name="query" class="form-control bg-dark text-white border-secondary" placeholder="Type Shelter, School, College, Hospital, Police Station, Town, or Village name..." value="{{ search_query if search_query else '' }}">
-                    <button type="submit" class="btn btn-cyan fw-bold px-4"><i class="fa-solid fa-search me-1"></i> Search Places</button>
+                    <input type="text" name="query" class="form-control" placeholder="Search by Shelter, School, College, Hospital, Town, or Village name..." value="{{ search_query if search_query else '' }}">
+                    <button type="submit" class="btn btn-pastel-purple fw-bold px-4"><i class="fa-solid fa-search me-1"></i> Search</button>
                 </div>
             </div>
 
-            <div class="row g-2 align-items-end">
+            <div class="row g-3 align-items-end">
                 <!-- Step 1: Select State -->
                 <div class="col-6 col-md-3">
-                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-map me-1 text-cyan"></i>1. Select State</label>
-                    <select name="state" id="filter_state" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <label class="form-label small fw-semibold"><i class="fa-solid fa-map me-1 text-primary"></i>1. Select State</label>
+                    <select name="state" id="filter_state" class="form-select form-select-sm">
                         <option value="">All States / UTs</option>
                     </select>
                 </div>
 
                 <!-- Step 2: Select District (Cascading) -->
                 <div class="col-6 col-md-3">
-                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-building-flag me-1 text-cyan"></i>2. Select District</label>
-                    <select name="district" id="filter_district" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <label class="form-label small fw-semibold"><i class="fa-solid fa-building-flag me-1 text-primary"></i>2. Select District</label>
+                    <select name="district" id="filter_district" class="form-select form-select-sm">
                         <option value="">All Districts</option>
                     </select>
                 </div>
 
                 <!-- Step 3: Select City / Village (Cascading or Custom Type) -->
                 <div class="col-6 col-md-3">
-                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-city me-1 text-cyan"></i>3. City / Village / Town</label>
-                    <input type="text" name="city_village" id="filter_city_input" list="city_datalist" class="form-control form-control-sm bg-dark text-white border-secondary" placeholder="Select or type town/village..." value="{{ current_city if current_city else '' }}">
+                    <label class="form-label small fw-semibold"><i class="fa-solid fa-city me-1 text-primary"></i>3. City / Village / Town</label>
+                    <input type="text" name="city_village" id="filter_city_input" list="city_datalist" class="form-control form-control-sm" placeholder="Select or type town/village..." value="{{ current_city if current_city else '' }}">
                     <datalist id="city_datalist"></datalist>
                 </div>
 
                 <!-- Step 4: Facility Type -->
                 <div class="col-6 col-md-3">
-                    <label class="form-label text-slate-300 small fw-semibold mb-1"><i class="fa-solid fa-hospital-user me-1 text-cyan"></i>4. Facility Type</label>
-                    <select name="facility_type" id="filter_facility" class="form-select form-select-sm bg-dark text-white border-secondary">
+                    <label class="form-label small fw-semibold"><i class="fa-solid fa-hospital-user me-1 text-primary"></i>4. Facility Type</label>
+                    <select name="facility_type" id="filter_facility" class="form-select form-select-sm">
                         <option value="">All Facilities</option>
                         {% for ft in facility_types %}
                             <option value="{{ ft }}" {% if current_facility == ft %}selected{% endif %}>{{ ft }}</option>
@@ -64,8 +65,8 @@
                 </div>
 
                 <div class="col-12 text-end mt-3">
-                    <a href="{{ url_for('feature.shelters') }}" class="btn btn-sm btn-outline-secondary me-2">Reset Filters</a>
-                    <button type="submit" class="btn btn-sm btn-cyan px-4 fw-bold"><i class="fa-solid fa-filter me-1"></i> Apply Filters</button>
+                    <a href="{{ url_for('feature.shelters') }}" class="btn btn-sm btn-outline-pastel me-2">Reset Filters</a>
+                    <button type="submit" class="btn btn-sm btn-pastel-purple px-4 fw-bold"><i class="fa-solid fa-filter me-1"></i> Apply Filters</button>
                 </div>
             </div>
         </form>
@@ -73,7 +74,7 @@
 
     <!-- Live GPS Status Banner -->
     <div class="mb-3 text-end">
-        <span id="gps-status-text" class="small text-cyan font-monospace"></span>
+        <span id="gps-status-text" class="small fw-semibold" style="color: var(--pastel-lavender-deep);"></span>
     </div>
 
     <!-- Interactive Leaflet Map View -->
@@ -83,19 +84,19 @@
 
     <!-- Verified Disaster Shelters Section -->
     <div class="d-flex align-items-center justify-content-between mb-3">
-        <h4 class="fw-bold text-white mb-0">
-            <i class="fa-solid fa-shield-check text-success me-2"></i>Verified Disaster Shelters ({{ shelters|length }})
+        <h4 class="fw-bold mb-0" style="color: var(--text-primary);">
+            <i class="fa-solid fa-shield-heart text-success me-2"></i>Verified Disaster Shelters ({{ shelters|length }})
         </h4>
-        <span class="badge bg-success font-monospace">Official Registered Relieflist</span>
+        <span class="badge badge-pastel-mint px-3 py-1">Official Registered Camps</span>
     </div>
 
     <!-- No Verified Shelter Found Alert Message -->
     {% if no_verified_shelter_message %}
-        <div class="alert alert-warning border-0 shadow-sm mb-4 d-flex align-items-center gap-3">
+        <div class="alert alert-warning border-0 shadow-sm mb-4 d-flex align-items-center gap-3 rounded-4 p-3" style="background-color: #FEF3C7; color: #92400E;">
             <i class="fa-solid fa-triangle-exclamation fs-3 text-warning"></i>
             <div>
-                <h6 class="fw-bold mb-0 text-dark">No Verified Disaster Shelter Found Nearby</h6>
-                <p class="small mb-0 text-dark opacity-90">{{ no_verified_shelter_message }} You can view nearby general public facilities (schools, colleges, hospitals, police stations) listed below.</p>
+                <h6 class="fw-bold mb-0">No Verified Disaster Shelter Found Nearby</h6>
+                <p class="small mb-0 opacity-90">{{ no_verified_shelter_message }} You can view nearby general public facilities (schools, colleges, hospitals, police stations) listed below.</p>
             </div>
         </div>
     {% endif %}
@@ -104,11 +105,11 @@
         {% if shelters %}
             {% for s in shelters %}
             <div class="col-md-6 col-lg-4">
-                <div class="glass-card p-4 h-100 d-flex flex-column border-start border-4 border-success">
+                <div class="glass-card p-4 h-100 d-flex flex-column border-start border-4" style="border-left-color: var(--pastel-mint-deep) !important;">
                     <div class="d-flex align-items-start justify-content-between mb-2">
-                        <span class="badge bg-success text-white font-monospace fw-bold"><i class="fa-solid fa-check-double me-1"></i>Verified Shelter</span>
+                        <span class="badge badge-pastel-mint"><i class="fa-solid fa-check-double me-1"></i>Verified Relief</span>
                         {% if s.available_capacity > 50 %}
-                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Available</span>
+                            <span class="badge bg-success"><i class="fa-solid fa-circle-check me-1"></i>Beds Free</span>
                         {% elif s.available_capacity > 0 %}
                             <span class="badge bg-warning text-dark"><i class="fa-solid fa-triangle-exclamation me-1"></i>Limited Beds</span>
                         {% else %}
@@ -117,28 +118,28 @@
                     </div>
 
                     <div class="mb-2">
-                        <span class="badge bg-dark text-cyan border border-secondary me-1">
+                        <span class="badge badge-pastel-purple me-1">
                             🏢 {{ s.facility_type }}
                         </span>
-                        <span class="badge bg-dark text-slate-300 border border-secondary">{{ s.district }} &bull; {{ s.city_village }}</span>
+                        <span class="badge badge-pastel-blue">{{ s.district }} &bull; {{ s.city_village }}</span>
                     </div>
 
-                    <h5 class="fw-bold text-white mb-1">{{ s.name }}</h5>
-                    <p class="small text-muted mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ s.address }}</p>
+                    <h5 class="fw-bold mb-1" style="color: var(--text-primary);">{{ s.name }}</h5>
+                    <p class="small text-secondary mb-2"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ s.address }}</p>
 
                     <!-- Dynamic Live GPS Distance Badge -->
-                    <div id="shelter-dist-{{ s.id }}" class="small text-cyan mb-3 d-none"></div>
+                    <div id="shelter-dist-{{ s.id }}" class="small fw-bold mb-3 d-none" style="color: var(--pastel-lavender-deep);"></div>
 
                     <!-- Bed Occupancy & Capacity Bar -->
-                    <div class="mb-3 p-2 bg-dark rounded border border-secondary">
-                        <div class="d-flex justify-content-between small text-muted mb-1">
+                    <div class="mb-3 p-3 rounded-4" style="background: var(--pastel-surface); border: 1px solid var(--border-soft);">
+                        <div class="d-flex justify-content-between small text-secondary mb-1">
                             <span>Capacity Breakdown</span>
-                            <span class="fw-bold text-white">{{ s.available_capacity }} Free / {{ s.total_capacity }} Total</span>
+                            <span class="fw-bold text-dark">{{ s.available_capacity }} Free / {{ s.total_capacity }} Total</span>
                         </div>
-                        <div class="progress mb-1" style="height: 10px; background-color: rgba(255,255,255,0.1);">
+                        <div class="progress mb-1 rounded-pill" style="height: 9px; background-color: #E5E7EB;">
                             <div class="progress-bar {% if s.available_capacity < 50 %}bg-danger{% else %}bg-success{% endif %}" role="progressbar" style="width: {{ s.occupancy_percentage }}%;"></div>
                         </div>
-                        <div class="d-flex justify-content-between small text-slate-400" style="font-size: 0.75rem;">
+                        <div class="d-flex justify-content-between small text-muted" style="font-size: 0.74rem;">
                             <span>Occupancy: {{ s.current_occupancy }} beds</span>
                             <span>Available: {{ s.available_capacity }} beds</span>
                         </div>
@@ -147,21 +148,21 @@
                     <!-- Amenities Badges -->
                     <div class="d-flex flex-wrap gap-2 mb-4">
                         {% if s.has_food %}
-                            <span class="badge bg-dark border border-secondary text-slate-300"><i class="fa-solid fa-utensils text-warning me-1"></i> Food</span>
+                            <span class="badge badge-pastel-peach"><i class="fa-solid fa-utensils me-1"></i> Food Rations</span>
                         {% endif %}
                         {% if s.has_water %}
-                            <span class="badge bg-dark border border-secondary text-slate-300"><i class="fa-solid fa-bottle-water text-cyan me-1"></i> Clean Water</span>
+                            <span class="badge badge-pastel-blue"><i class="fa-solid fa-bottle-water me-1"></i> Clean Water</span>
                         {% endif %}
                         {% if s.has_medical %}
-                            <span class="badge bg-dark border border-secondary text-slate-300"><i class="fa-solid fa-kit-medical text-danger me-1"></i> Medical Desk</span>
+                            <span class="badge badge-pastel-pink"><i class="fa-solid fa-kit-medical me-1"></i> Medical Support</span>
                         {% endif %}
                     </div>
 
                     <div class="mt-auto d-flex gap-2">
-                        <a href="tel:{{ s.contact }}" class="btn btn-cyan btn-sm flex-fill fw-bold">
+                        <a href="tel:{{ s.contact }}" class="btn btn-pastel-purple btn-sm flex-fill fw-bold">
                             <i class="fa-solid fa-phone me-1"></i> {{ s.contact }}
                         </a>
-                        <a href="https://maps.google.com/?q={{ s.latitude }},{{ s.longitude }}" target="_blank" class="btn btn-outline-light btn-sm" title="Open in Google Maps">
+                        <a href="https://maps.google.com/?q={{ s.latitude }},{{ s.longitude }}" target="_blank" class="btn btn-outline-pastel btn-sm" title="Open in Google Maps">
                             <i class="fa-solid fa-map-location-dot"></i>
                         </a>
                     </div>
@@ -170,42 +171,42 @@
             {% endfor %}
         {% else %}
             <div class="col-12 text-center py-4 glass-card">
-                <p class="text-warning mb-0"><i class="fa-solid fa-triangle-exclamation me-2"></i>No verified disaster shelter found nearby matching your selected location filters.</p>
+                <p class="text-secondary mb-0"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>No verified disaster shelter found nearby matching your selected location filters.</p>
             </div>
         {% endif %}
     </div>
 
-    <!-- General Public Facilities Section (Schools, Colleges, Hospitals, Police, Fire Stations) -->
+    <!-- General Public Facilities Section (Schools, Colleges, Hospitals) -->
     {% if general_facilities %}
-    <div class="d-flex align-items-center justify-content-between mb-3 pt-3 border-top border-secondary">
-        <h4 class="fw-bold text-white mb-0">
+    <div class="d-flex align-items-center justify-content-between mb-3 pt-3 border-top" style="border-color: var(--border-soft) !important;">
+        <h4 class="fw-bold mb-0" style="color: var(--text-primary);">
             <i class="fa-solid fa-building text-warning me-2"></i>General Facilities in Region ({{ general_facilities|length }})
         </h4>
-        <span class="badge bg-warning text-dark font-monospace">Schools, Colleges, Hospitals & Helplines</span>
+        <span class="badge badge-pastel-peach">Schools, Colleges & Hospitals</span>
     </div>
 
     <div class="row g-4">
         {% for f in general_facilities %}
         <div class="col-md-6 col-lg-4">
-            <div class="glass-card p-4 h-100 d-flex flex-column border-start border-4 border-warning">
+            <div class="glass-card p-4 h-100 d-flex flex-column border-start border-4" style="border-left-color: var(--pastel-peach-deep) !important;">
                 <div class="d-flex align-items-start justify-content-between mb-2">
-                    <span class="badge bg-warning text-dark font-monospace fw-bold">{{ f.facility_type }}</span>
-                    <span class="badge bg-dark text-warning border border-secondary">Unverified Facility</span>
+                    <span class="badge badge-pastel-peach">{{ f.facility_type }}</span>
+                    <span class="badge badge-pastel-purple">Nearby POI</span>
                 </div>
 
-                <h5 class="fw-bold text-white mb-1">{{ f.name }}</h5>
-                <p class="small text-muted mb-3"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ f.address }}</p>
+                <h5 class="fw-bold mb-1" style="color: var(--text-primary);">{{ f.name }}</h5>
+                <p class="small text-secondary mb-3"><i class="fa-solid fa-location-dot text-danger me-1"></i>{{ f.address }}</p>
 
-                <div class="small text-slate-300 mb-3">
+                <div class="small text-secondary mb-3">
                     <strong>Category:</strong> {{ f.facility_category }}<br>
                     <strong>Contact:</strong> {{ f.contact }}
                 </div>
 
                 <div class="mt-auto d-flex gap-2">
-                    <a href="tel:{{ f.contact }}" class="btn btn-outline-warning btn-sm flex-fill fw-bold">
+                    <a href="tel:{{ f.contact }}" class="btn btn-outline-pastel btn-sm flex-fill fw-bold">
                         <i class="fa-solid fa-phone me-1"></i> Call Facility
                     </a>
-                    <a href="https://maps.google.com/?q={{ f.latitude }},{{ f.longitude }}" target="_blank" class="btn btn-outline-light btn-sm" title="Open in Google Maps">
+                    <a href="https://maps.google.com/?q={{ f.latitude }},{{ f.longitude }}" target="_blank" class="btn btn-outline-pastel btn-sm" title="Open in Google Maps">
                         <i class="fa-solid fa-map-location-dot"></i>
                     </a>
                 </div>

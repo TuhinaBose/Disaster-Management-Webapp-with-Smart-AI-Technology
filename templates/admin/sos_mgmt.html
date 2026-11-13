@@ -4,18 +4,21 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3 animate-fade-in">
         <div>
-            <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-headset text-danger me-2"></i>Emergency SOS Distress Queue</h3>
-            <p class="text-muted small mb-0">Monitor live citizen distress calls, dispatch rescue teams, and update request status.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-pink-light text-pink-dark fw-semibold small mb-2 border border-pink">
+                <i class="fa-solid fa-headset"></i> Rescue Dispatch Hub
+            </div>
+            <h3 class="fw-extrabold text-dark mb-1">Emergency SOS Distress Queue</h3>
+            <p class="text-muted small mb-0">Monitor live citizen distress transmissions, coordinate emergency rescue teams, and update dispatch status.</p>
         </div>
     </div>
 
     <!-- SOS Requests Table -->
-    <div class="glass-card p-4">
+    <div class="glass-card p-4 animate-slide-up">
         <div class="table-responsive">
-            <table class="table table-custom align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary small">
                     <tr>
                         <th>ID</th>
                         <th>Sender</th>
@@ -30,34 +33,38 @@
                 <tbody>
                     {% for req in requests %}
                     <tr>
-                        <td>#{{ req.id }}</td>
-                        <td class="fw-bold text-white">{{ req.sender_name }}</td>
-                        <td><a href="tel:{{ req.contact_phone }}" class="btn btn-sm btn-cyan text-nowrap"><i class="fa-solid fa-phone me-1"></i>{{ req.contact_phone }}</a></td>
+                        <td><span class="badge bg-lavender-light text-lavender-dark rounded-pill">#{{ req.id }}</span></td>
+                        <td class="fw-bold text-dark">{{ req.sender_name }}</td>
+                        <td>
+                            <a href="tel:{{ req.contact_phone }}" class="btn btn-sm btn-outline-primary rounded-pill text-nowrap px-3">
+                                <i class="fa-solid fa-phone me-1 small"></i>{{ req.contact_phone }}
+                            </a>
+                        </td>
                         <td class="small">
-                            <strong>{{ req.location }}</strong>
+                            <strong class="text-dark">{{ req.location }}</strong>
                             {% if req.latitude and req.longitude %}
-                                <br><a href="https://maps.google.com/?q={{ req.latitude }},{{ req.longitude }}" target="_blank" class="text-cyan small"><i class="fa-solid fa-map-location-dot me-1"></i>Map GPS: {{ req.latitude|round(4) }}, {{ req.longitude|round(4) }}</a>
+                                <br><a href="https://maps.google.com/?q={{ req.latitude }},{{ req.longitude }}" target="_blank" class="text-primary small text-decoration-none"><i class="fa-solid fa-map-location-dot me-1"></i>GPS: {{ req.latitude|round(4) }}, {{ req.longitude|round(4) }}</a>
                             {% endif %}
                         </td>
                         <td>
-                            <span class="badge {% if req.urgency_level == 'Critical' %}bg-danger{% elif req.urgency_level == 'High' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
+                            <span class="badge {% if req.urgency_level == 'Critical' %}bg-pink-light text-pink-dark{% elif req.urgency_level == 'High' %}bg-peach-light text-peach-dark{% else %}bg-powder-light text-powder-dark{% endif %} rounded-pill px-2 py-1">
                                 {{ req.urgency_level }}
                             </span>
                         </td>
-                        <td class="small text-slate-300">{{ req.situation_description }}</td>
+                        <td class="small text-secondary">{{ req.situation_description }}</td>
                         <td>
-                            <span class="badge {% if req.status == 'Pending' %}bg-danger{% elif req.status == 'In Progress' %}bg-warning text-dark{% else %}bg-success{% endif %}">
+                            <span class="badge {% if req.status == 'Pending' %}bg-danger text-white{% elif req.status == 'In Progress' %}bg-peach-light text-peach-dark{% else %}bg-mint-light text-mint-dark{% endif %} rounded-pill px-3 py-1">
                                 {{ req.status }}
                             </span>
                         </td>
                         <td>
-                            <form method="POST" action="{{ url_for('admin.update_sos_status', req_id=req.id) }}" class="d-flex gap-1">
-                                <select name="status" class="form-select form-select-sm bg-dark text-white border-secondary">
+                            <form method="POST" action="{{ url_for('admin.update_sos_status', req_id=req.id) }}" class="d-flex gap-1 align-items-center">
+                                <select name="status" class="form-select form-select-sm rounded-pill" style="min-width: 120px;">
                                     <option value="Pending" {% if req.status == 'Pending' %}selected{% endif %}>Pending</option>
                                     <option value="In Progress" {% if req.status == 'In Progress' %}selected{% endif %}>In Progress</option>
                                     <option value="Resolved" {% if req.status == 'Resolved' %}selected{% endif %}>Resolved</option>
                                 </select>
-                                <button type="submit" class="btn btn-sm btn-cyan" title="Save Status"><i class="fa-solid fa-check"></i></button>
+                                <button type="submit" class="btn btn-sm btn-primary rounded-circle" title="Save Status" style="width: 32px; height: 32px; padding: 0;"><i class="fa-solid fa-check"></i></button>
                             </form>
                         </td>
                     </tr>

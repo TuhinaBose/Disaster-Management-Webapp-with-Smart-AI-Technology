@@ -4,7 +4,7 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log("RADAR - Smart AI Disaster Management Web Application Initialized.");
+    console.log("Smart Disaster Management System Initialized.");
 
     // Auto-dismiss alerts after 5 seconds
     const alerts = document.querySelectorAll('.alert-dismissible');

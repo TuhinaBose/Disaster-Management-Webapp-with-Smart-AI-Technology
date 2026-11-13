@@ -1,82 +1,120 @@
 {% extends 'base.html' %}
 
-{% block title %}Safety Guidelines & Disaster Preparedness{% endblock %}
+{% block title %}Safety Guidelines & Disaster Preparedness - Smart Disaster Management System{% endblock %}
 
 {% block content %}
 <div class="container py-5">
-    <div class="text-center mb-5">
-        <h2 class="fw-extrabold text-white"><i class="fa-solid fa-book-medical text-success me-2"></i>Disaster Safety Guidelines & Preparedness</h2>
-        <p class="text-muted mx-auto" style="max-width: 650px;">
-            Official survival instructions, emergency checklists, and action protocols approved by disaster management authorities.
+    <!-- Header Banner -->
+    <div class="text-center mb-5 animate-fade-in">
+        <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-mint-light text-mint-dark fw-semibold small mb-3 border border-mint">
+            <i class="fa-solid fa-book-medical"></i> Official Emergency Protocols
+        </div>
+        <h1 class="fw-extrabold display-5 text-dark mb-3">Disaster Safety Guidelines & Preparedness</h1>
+        <p class="text-muted mx-auto lead fs-6" style="max-width: 720px;">
+            Step-by-step life preservation protocols, before-during-after safety instructions, and verified survival equipment checklists approved by disaster management authorities.
         </p>
     </div>
 
-    <!-- Disaster Type Navigation Tabs -->
-    <ul class="nav nav-pills justify-content-center gap-2 mb-5" id="safetyTabs" role="tablist">
+    <!-- Category Tabs Navigation -->
+    <ul class="nav nav-pills justify-content-center gap-2 mb-5 animate-slide-up" id="safetyTabs" role="tablist">
         <li class="nav-item" role="presentation">
-            <button class="nav-link active btn-sm" id="flood-tab" data-bs-toggle="tab" data-bs-target="#flood" type="button" role="tab">
-                <i class="fa-solid fa-water me-1 text-primary"></i> Flood Safety
+            <button class="nav-link active rounded-pill px-4 py-2 fw-semibold" id="flood-tab" data-bs-toggle="tab" data-bs-target="#flood" type="button" role="tab">
+                <i class="fa-solid fa-water me-2 text-primary"></i> Flood Safety
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link btn-sm" id="earthquake-tab" data-bs-toggle="tab" data-bs-target="#earthquake" type="button" role="tab">
-                <i class="fa-solid fa-house-crack me-1 text-danger"></i> Earthquake Safety
+            <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="earthquake-tab" data-bs-toggle="tab" data-bs-target="#earthquake" type="button" role="tab">
+                <i class="fa-solid fa-house-crack me-2 text-danger"></i> Earthquake
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link btn-sm" id="cyclone-tab" data-bs-toggle="tab" data-bs-target="#cyclone" type="button" role="tab">
-                <i class="fa-solid fa-wind me-1 text-info"></i> Cyclone Safety
+            <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="cyclone-tab" data-bs-toggle="tab" data-bs-target="#cyclone" type="button" role="tab">
+                <i class="fa-solid fa-wind me-2 text-info"></i> Cyclone & Storm
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link btn-sm" id="fire-tab" data-bs-toggle="tab" data-bs-target="#fire" type="button" role="tab">
-                <i class="fa-solid fa-fire me-1 text-warning"></i> Fire Safety
+            <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="landslide-tab" data-bs-toggle="tab" data-bs-target="#landslide" type="button" role="tab">
+                <i class="fa-solid fa-mountain me-2 text-warning"></i> Landslide & Tsunami
             </button>
         </li>
         <li class="nav-item" role="presentation">
-            <button class="nav-link btn-sm" id="heatwave-tab" data-bs-toggle="tab" data-bs-target="#heatwave" type="button" role="tab">
-                <i class="fa-solid fa-sun me-1 text-warning"></i> Heatwave Safety
+            <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="fire-tab" data-bs-toggle="tab" data-bs-target="#fire" type="button" role="tab">
+                <i class="fa-solid fa-fire me-2 text-danger"></i> Wildfire & Fire
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4 py-2 fw-semibold" id="heatwave-tab" data-bs-toggle="tab" data-bs-target="#heatwave" type="button" role="tab">
+                <i class="fa-solid fa-temperature-arrow-up me-2 text-warning"></i> Heatwave & Drought
             </button>
         </li>
     </ul>
 
     <!-- Tab Content -->
-    <div class="tab-content" id="safetyTabsContent">
+    <div class="tab-content animate-slide-up" id="safetyTabsContent">
 
         <!-- 1. FLOOD SAFETY -->
         <div class="tab-pane fade show active" id="flood" role="tabpanel">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="glass-card p-4 h-100 border-start border-4 border-primary">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-clock text-primary me-2"></i>BEFORE a Flood</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Know your area's flood risk and evacuation routes.</li>
-                            <li class="mb-2">Keep emergency kit ready with 3 days of clean drinking water.</li>
-                            <li class="mb-2">Move valuable electronics and important documents to upper floors.</li>
-                            <li>Disconnect electrical appliances if water enters premises.</li>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-info">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-powder-light text-powder-dark rounded-pill px-3 py-2"><i class="fa-solid fa-clock me-1"></i> PHASE 1</span>
+                            <h5 class="fw-bold text-dark mb-0">BEFORE a Flood</h5>
+                        </div>
+                        <p class="text-muted small">Preparation before water levels rise saves lives and keeps communications open.</p>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Know your region's flood elevation zone and identify the highest surrounding topography.</li>
+                            <li class="mb-2">Elevate all critical appliances, circuit breakers, and electrical wiring above flood baselines.</li>
+                            <li class="mb-2">Keep your 72-hour survival kit, water purification tablets, and sealed medication ready.</li>
+                            <li>Clear neighborhood drains and secure toxic chemicals out of water reach.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-danger">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-exclamation text-danger me-2"></i>DURING a Flood</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Move immediately to high ground or upper levels of sturdy buildings.</li>
-                            <li class="mb-2"><strong>NEVER</strong> attempt to walk or drive through moving flood water.</li>
-                            <li class="mb-2">Avoid touching electrical equipment or fallen power lines.</li>
-                            <li>If stranded on roof, signal for rescue using a bright cloth or flashlight.</li>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-pink-light text-pink-dark rounded-pill px-3 py-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> PHASE 2</span>
+                            <h5 class="fw-bold text-dark mb-0">DURING a Flood</h5>
+                        </div>
+                        <p class="text-muted small">Immediate survival actions when inundation begins.</p>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>Turn Around, Don't Drown:</strong> Just 6 inches of moving water can knock down an adult; 12 inches can sweep away cars.</li>
+                            <li class="mb-2">Evacuate immediately if instructed by local authorities or emergency sirens.</li>
+                            <li class="mb-2">Never touch submerged electrical equipment or severed power lines.</li>
+                            <li>If trapped in a structure, move to the roof, not a closed attic; wave bright cloth for helicopter rescue.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-success">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-check text-success me-2"></i>AFTER a Flood</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Listen to official news before returning home.</li>
-                            <li class="mb-2">Boil all drinking water to prevent waterborne diseases.</li>
-                            <li class="mb-2">Do not enter damaged buildings until inspected.</li>
-                            <li>Report damaged utility lines to authorities immediately.</li>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-mint-light text-mint-dark rounded-pill px-3 py-2"><i class="fa-solid fa-shield-heart me-1"></i> PHASE 3</span>
+                            <h5 class="fw-bold text-dark mb-0">AFTER a Flood</h5>
+                        </div>
+                        <p class="text-muted small">Safe recovery and health prevention once waters recede.</p>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Return home only after authorities issue an official all-clear bulletin.</li>
+                            <li class="mb-2">Boil or chemically treat all municipal water before drinking to prevent cholera and leptospirosis.</li>
+                            <li class="mb-2">Take photographs of property damage before cleanup for emergency relief assistance.</li>
+                            <li>Inspect walls and foundations for structural integrity before entering buildings.</li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card p-4 bg-powder-light border border-powder">
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                    <img src="https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=350&q=80" 
+                         alt="Flood Rescue Operations" 
+                         class="rounded-4 shadow-sm img-fluid" style="width: 260px; height: 160px; object-fit: cover;"
+                         onerror="this.src='https://placehold.co/350x200/BAE6FD/0369A1?text=Flood+Safety';">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-life-ring text-primary me-2"></i>Key National Flood Emergency Helplines</h5>
+                        <p class="text-muted small mb-3">National Disaster Response Force (NDRF): <strong>1078 / 011-24363260</strong> | Flood Control Room: <strong>1070</strong> | Medical Ambulance: <strong>108</strong></p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/shelters" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa-solid fa-tents me-1"></i> Find Flood Relief Shelters</a>
+                            <a href="/sos" class="btn btn-sm btn-danger rounded-pill"><i class="fa-solid fa-tower-broadcast me-1"></i> Send SOS Distress Beacon</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -84,36 +122,66 @@
 
         <!-- 2. EARTHQUAKE SAFETY -->
         <div class="tab-pane fade" id="earthquake" role="tabpanel">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="glass-card p-4 h-100 border-start border-4 border-primary">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-clock text-primary me-2"></i>BEFORE an Earthquake</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Secure heavy furniture, mirrors, and bookshelves to walls.</li>
-                            <li class="mb-2">Identify safe spots in each room (under sturdy tables).</li>
-                            <li>Conduct regular earthquake drills with family members.</li>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-info">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-powder-light text-powder-dark rounded-pill px-3 py-2"><i class="fa-solid fa-clock me-1"></i> PHASE 1</span>
+                            <h5 class="fw-bold text-dark mb-0">BEFORE an Earthquake</h5>
+                        </div>
+                        <p class="text-muted small">Mitigation measures within your home or workspace.</p>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Anchor tall bookcases, heavy mirrors, cabinets, and water heaters securely to structural wall studs.</li>
+                            <li class="mb-2">Identify safe zones in every room: under sturdy wooden desks or against interior load-bearing walls.</li>
+                            <li class="mb-2">Keep a flashlight, whistle, and thick-soled shoes next to every bed.</li>
+                            <li>Learn how to manually shut off gas, water mains, and circuit breakers.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-danger">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-exclamation text-danger me-2"></i>DURING an Earthquake</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2"><strong>DROP, COVER, and HOLD ON!</strong></li>
-                            <li class="mb-2">If indoors, stay inside. Cover head and neck under a sturdy table.</li>
-                            <li class="mb-2">If outdoors, move away from buildings, streetlights, and utility wires.</li>
-                            <li>If driving, pull over safely away from overpasses and stop.</li>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-pink-light text-pink-dark rounded-pill px-3 py-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> PHASE 2</span>
+                            <h5 class="fw-bold text-dark mb-0">DURING an Earthquake</h5>
+                        </div>
+                        <p class="text-muted small">Life-saving actions during severe seismic tremors.</p>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>DROP, COVER, AND HOLD ON:</strong> Drop to your hands and knees. Cover head and neck under a sturdy table. Hold on until shaking stops.</li>
+                            <li class="mb-2">Stay indoors until ground movement stops. Never rush outside during shaking as falling glass kills.</li>
+                            <li class="mb-2">If outdoors, move into open spaces away from high-rise buildings, utility lines, and facades.</li>
+                            <li>If driving, pull over safely away from overpasses and remain inside with seatbelts fastened.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-success">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-check text-success me-2"></i>AFTER an Earthquake</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Expect aftershocks. Be prepared to drop and cover again.</li>
-                            <li class="mb-2">Check for gas leaks and electrical damage. Shut off main valves if suspected.</li>
-                            <li>Wear sturdy shoes to protect feet from broken glass.</li>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-mint-light text-mint-dark rounded-pill px-3 py-2"><i class="fa-solid fa-shield-heart me-1"></i> PHASE 3</span>
+                            <h5 class="fw-bold text-dark mb-0">AFTER an Earthquake</h5>
+                        </div>
+                        <p class="text-muted small">Inspection and aftershock management.</p>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Anticipate seismic aftershocks. Be ready to repeat Drop, Cover, and Hold on.</li>
+                            <li class="mb-2">Check for gas leaks (smell of rotten eggs). Do not strike matches or turn on light switches.</li>
+                            <li class="mb-2">Wear thick shoes to avoid injuries from shattered glass and collapsed masonry.</li>
+                            <li>Use text messages rather than phone calls to keep emergency networks unburdened.</li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="glass-card p-4 bg-lavender-light border border-lavender">
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                    <img src="https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=350&q=80" 
+                         alt="Seismic Safety" 
+                         class="rounded-4 shadow-sm img-fluid" style="width: 260px; height: 160px; object-fit: cover;"
+                         onerror="this.src='https://placehold.co/350x200/DDD6FE/6D28D9?text=Earthquake+Safety';">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-helmet-safety text-lavender-dark me-2"></i>Trapped Under Debris Protocol</h5>
+                        <p class="text-muted small mb-3">Cover your mouth with a cloth to filter dust. Do not shout continuously to avoid dust inhalation and stamina loss. Instead, tap rhythmically with a metal object or rock against a pipe or wall so acoustic search sensors can triangulate your position.</p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/predict" class="btn btn-sm btn-outline-primary rounded-pill"><i class="fa-solid fa-wand-magic-sparkles me-1"></i> Run Seismic AI Risk Predictor</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -121,107 +189,158 @@
 
         <!-- 3. CYCLONE SAFETY -->
         <div class="tab-pane fade" id="cyclone" role="tabpanel">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="glass-card p-4 h-100 border-start border-4 border-primary">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-clock text-primary me-2"></i>BEFORE a Cyclone</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Secure loose roof tiles, doors, and window shutters.</li>
-                            <li class="mb-2">Trim dead tree branches near your house.</li>
-                            <li>Store emergency food, water, battery bank, and torchlight.</li>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-info">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-powder-light text-powder-dark rounded-pill px-3 py-2"><i class="fa-solid fa-clock me-1"></i> PHASE 1</span>
+                            <h5 class="fw-bold text-dark mb-0">BEFORE a Cyclone</h5>
+                        </div>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Inspect roof sheets, tiles, and window shutters; bolt them firmly against hurricane-force winds.</li>
+                            <li class="mb-2">Prune dead tree branches within proximity of utility cables and residential structures.</li>
+                            <li class="mb-2">Recharge all power banks, battery-powered radios, and portable emergency lamps.</li>
+                            <li>Anchor outdoor water tanks, trash containers, and loose garden materials.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-danger">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-exclamation text-danger me-2"></i>DURING a Cyclone</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Stay indoors in the strongest part of the building.</li>
-                            <li class="mb-2">Keep away from windows and glass doors.</li>
-                            <li>Do not be fooled by the calm "eye" of the cyclone; winds will resume suddenly.</li>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-pink-light text-pink-dark rounded-pill px-3 py-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> PHASE 2</span>
+                            <h5 class="fw-bold text-dark mb-0">DURING a Cyclone</h5>
+                        </div>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Shelter in an interior room without external glass windows, bathrooms, or reinforced hallways.</li>
+                            <li class="mb-2">Disconnect electrical appliances and turn off LPG gas regulators.</li>
+                            <li class="mb-2"><strong>Eye of the Storm Trap:</strong> Do not venture outside when wind suddenly ceases; the opposite wall of the cyclone will strike with extreme velocity.</li>
+                            <li>Keep listening to official meteorological advisories via battery radio or phone alerts.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-success">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-check text-success me-2"></i>AFTER a Cyclone</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Remain inside until officially declared safe.</li>
-                            <li class="mb-2">Watch out for fallen trees, electrical wires, and sharp debris.</li>
-                            <li>Drink boiled water to avoid contamination.</li>
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-mint-light text-mint-dark rounded-pill px-3 py-2"><i class="fa-solid fa-shield-heart me-1"></i> PHASE 3</span>
+                            <h5 class="fw-bold text-dark mb-0">AFTER a Cyclone</h5>
+                        </div>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Remain inside until government disaster managers broadcast that the cyclone has formally dissipated.</li>
+                            <li class="mb-2">Beware of snapped electric cables suspended in puddles; treat all fallen wires as live.</li>
+                            <li class="mb-2">Do not enter flooded underpasses or drive near coastal tide surge zones.</li>
+                            <li>Help elderly and injured neighbors reach designated medical camps.</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 4. FIRE SAFETY -->
+        <!-- 4. LANDSLIDE & TSUNAMI -->
+        <div class="tab-pane fade" id="landslide" role="tabpanel">
+            <div class="row g-4 mb-4">
+                <div class="col-lg-6">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-warning">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-peach-light text-peach-dark rounded-pill px-3 py-2"><i class="fa-solid fa-mountain me-1"></i> HILLSLOPE PROTOCOL</span>
+                            <h5 class="fw-bold text-dark mb-0">Landslide Warning Signs & Action</h5>
+                        </div>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>Warning Signs:</strong> Tilting trees, utility poles leaning downhill, new cracks in soil, suddenly muddy river water, or rumbling sounds that gradually increase.</li>
+                            <li class="mb-2">Move away from the path of debris flow or landslide immediately. Run perpendicular to the direction of flow, never downhill in its path.</li>
+                            <li class="mb-2">If escape is impossible, curl into a tight ball and protect your head with your arms or heavy blankets.</li>
+                            <li>Avoid river valleys and low-lying canyon floors during heavy torrential monsoon rains.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-info">
+                        <div class="d-flex align-items-center gap-2 mb-3">
+                            <span class="badge bg-powder-light text-powder-dark rounded-pill px-3 py-2"><i class="fa-solid fa-water me-1"></i> OCEAN COASTAL PROTOCOL</span>
+                            <h5 class="fw-bold text-dark mb-0">Tsunami Warning Signs & Evacuation</h5>
+                        </div>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>Natural Warning:</strong> A strong earthquake near the coast or sudden ocean water receding and exposing the seabed is nature's tsunami siren.</li>
+                            <li class="mb-2"><strong>Do not stay to watch!</strong> Run immediately inland towards high elevation ground (at least 100 feet above sea level or 2 miles inland).</li>
+                            <li class="mb-2">Tsunamis are not a single wave but a series of destructive surges that can last for many hours.</li>
+                            <li>Never board a ship or boat in shallow harbor waters during a tsunami warning.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5. FIRE SAFETY -->
         <div class="tab-pane fade" id="fire" role="tabpanel">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="glass-card p-4 h-100 border-start border-4 border-primary">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-clock text-primary me-2"></i>BEFORE a Fire</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Install smoke alarms on every level of your home.</li>
-                            <li class="mb-2">Keep fire extinguishers accessible and learn how to use them (PASS).</li>
-                            <li>Plan and practice two escape routes out of every room.</li>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-info">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-fire-extinguisher text-primary me-2"></i>Fire Extinguisher PASS Method</h5>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>P - Pull</strong> the safety pin at the top of the extinguisher.</li>
+                            <li class="mb-2"><strong>A - Aim</strong> low, pointing the nozzle at the base of the fire.</li>
+                            <li class="mb-2"><strong>S - Squeeze</strong> the handle slowly and evenly.</li>
+                            <li><strong>S - Sweep</strong> the nozzle from side to side until flames are extinguished.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-danger">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-exclamation text-danger me-2"></i>DURING a Fire</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2"><strong>GET OUT, STAY OUT!</strong> Never go back inside.</li>
-                            <li class="mb-2">Crawl low under smoke to avoid toxic gas inhalation.</li>
-                            <li>If clothes catch fire: <strong>STOP, DROP, and ROLL</strong>.</li>
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-person-running text-danger me-2"></i>Building Evacuation</h5>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>Crawl Low Under Smoke:</strong> Smoke and toxic superheated gases rise to the ceiling; breathable clean air is near the floor.</li>
+                            <li class="mb-2">Feel door handles with the back of your hand before opening. If hot, do not open.</li>
+                            <li class="mb-2"><strong>Never use elevators</strong> during a fire emergency; always utilize marked emergency fire stairs.</li>
+                            <li>Once outside, never re-enter a burning structure under any circumstance.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-success">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-check text-success me-2"></i>AFTER a Fire</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Seek medical attention for burns or smoke inhalation.</li>
-                            <li class="mb-2">Do not re-enter premises until fire department gives clearance.</li>
-                            <li>Notify insurance provider and disaster authorities.</li>
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-tree text-success me-2"></i>Wildfire Defense</h5>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Maintain a 30-foot defensible perimeter around your residence by clearing dry brush and leaves.</li>
+                            <li class="mb-2">Close all windows, roof vents, and doors to prevent burning ember infiltration.</li>
+                            <li class="mb-2">Wear N95/P100 respirators to prevent hazardous particulate lung injury.</li>
+                            <li>Evacuate along pre-planned escape corridors well before flames approach road margins.</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- 5. HEATWAVE SAFETY -->
+        <!-- 6. HEATWAVE & DROUGHT -->
         <div class="tab-pane fade" id="heatwave" role="tabpanel">
-            <div class="row g-4">
-                <div class="col-md-4">
-                    <div class="glass-card p-4 h-100 border-start border-4 border-primary">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-clock text-primary me-2"></i>BEFORE a Heatwave</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Stock oral rehydration salts (ORS), lemon water, and fluids.</li>
-                            <li class="mb-2">Cover windows with curtains or reflective shades.</li>
-                            <li>Check on elderly neighbors and vulnerable individuals.</li>
+            <div class="row g-4 mb-4">
+                <div class="col-lg-4">
+                    <div class="glass-card p-4 h-100 border-start border-4 border-warning">
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-sun text-warning me-2"></i>Preventive Measures</h5>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Avoid direct solar exposure between 11:30 AM and 4:30 PM during heatwave alerts.</li>
+                            <li class="mb-2">Hydrate continuously with water, ORS (oral rehydration salt), buttermilk, or coconut water.</li>
+                            <li class="mb-2">Wear lightweight, breathable, light-colored cotton clothing and wide-brimmed hats.</li>
+                            <li>Never leave young children, disabled persons, or pets unattended in closed motor vehicles.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-danger">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-exclamation text-danger me-2"></i>DURING a Heatwave</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Avoid outdoor exposure between 12:00 PM and 4:00 PM.</li>
-                            <li class="mb-2">Drink plenty of water even if you do not feel thirsty.</li>
-                            <li class="mb-2">Wear lightweight, loose-fitting, light-colored cotton clothes.</li>
-                            <li>Never leave children or pets inside parked vehicles.</li>
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-heart-pulse text-danger me-2"></i>Recognizing Heatstroke</h5>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2"><strong>High Body Temperature:</strong> Core body temperature exceeding 104°F (40°C).</li>
+                            <li class="mb-2"><strong>Altered Mental State:</strong> Confusion, slurred speech, delirium, dizziness, or loss of consciousness.</li>
+                            <li class="mb-2"><strong>Skin Flushed & Hot:</strong> Skin turns red and hot; sweating may completely stop.</li>
+                            <li>Rapid heart rate and pounding pulse.</li>
                         </ul>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-lg-4">
                     <div class="glass-card p-4 h-100 border-start border-4 border-success">
-                        <h5 class="fw-bold text-white mb-3"><i class="fa-solid fa-circle-check text-success me-2"></i>HEATSTROKE FIRST AID</h5>
-                        <ul class="text-slate-300 small mb-0 ps-3">
-                            <li class="mb-2">Move person to a cool, shaded place.</li>
-                            <li class="mb-2">Wipe body with cold damp cloth or apply ice packs to armpits/neck.</li>
-                            <li>Call emergency helpline <strong>108</strong> immediately.</li>
+                        <h5 class="fw-bold text-dark mb-3"><i class="fa-solid fa-kit-medical text-success me-2"></i>Heatstroke First Aid</h5>
+                        <ul class="text-secondary small mb-0 ps-3">
+                            <li class="mb-2">Call emergency medical services (<strong>108 / 112</strong>) immediately.</li>
+                            <li class="mb-2">Move victim to a cool, air-conditioned room or deep shaded area.</li>
+                            <li class="mb-2">Apply ice packs or cold damp towels to neck, armpits, and groin where major blood vessels run.</li>
+                            <li>Do not give oral fluids if the patient is semi-conscious or vomiting.</li>
                         </ul>
                     </div>
                 </div>
@@ -230,53 +349,90 @@
 
     </div>
 
-    <!-- Emergency Survival Kit Checklist -->
+    <!-- 72-Hour Survival Kit Interactive Checklist -->
     <div class="glass-card p-4 p-md-5 mt-5">
-        <h4 class="fw-bold text-white mb-3"><i class="fa-solid fa-box-archive text-warning me-2"></i>Emergency Survival Kit Checklist</h4>
-        <div class="row g-3 text-slate-300 small">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3 mb-4">
+            <div>
+                <span class="badge bg-lavender-light text-lavender-dark rounded-pill px-3 py-2 mb-2"><i class="fa-solid fa-box-archive me-1"></i> Preparedness Toolkit</span>
+                <h3 class="fw-bold text-dark mb-1">Official 72-Hour Emergency Survival Kit Checklist</h3>
+                <p class="text-muted small mb-0">Check off items as you assemble your personal and family emergency bag. Keep in an accessible, waterproof container.</p>
+            </div>
+            <button class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="resetKitChecklist()">
+                <i class="fa-solid fa-rotate-left me-1"></i> Reset Checklist
+            </button>
+        </div>
+        
+        <div class="row g-3 text-secondary small">
             <div class="col-md-4">
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit1">
-                    <label class="form-check-label" for="kit1">Drinking Water (3 gallons per person)</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit2">
-                    <label class="form-check-label" for="kit2">Non-perishable Canned Food</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit3">
-                    <label class="form-check-label" for="kit3">First Aid Kit & Medications</label>
+                <div class="p-3 rounded-4 bg-white border border-light shadow-2xs h-100">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-bottle-water text-primary me-2"></i>Water & Nutrition</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit1">
+                        <label class="form-check-label text-dark" for="kit1">Drinking Water (1 gallon per person per day)</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit2">
+                        <label class="form-check-label text-dark" for="kit2">Non-perishable canned food & protein bars</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit3">
+                        <label class="form-check-label text-dark" for="kit3">Manual can opener & disposable utensils</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="kit4">
+                        <label class="form-check-label text-dark" for="kit4">Water purification chlorine tablets</label>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit4">
-                    <label class="form-check-label" for="kit4">Battery LED Flashlight & Extra Batteries</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit5">
-                    <label class="form-check-label" for="kit5">Power Bank & Phone Cables</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit6">
-                    <label class="form-check-label" for="kit6">Emergency Distress Whistle</label>
+                <div class="p-3 rounded-4 bg-white border border-light shadow-2xs h-100">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-briefcase-medical text-danger me-2"></i>Medical & Sanitation</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit5">
+                        <label class="form-check-label text-dark" for="kit5">Full First Aid kit (bandages, antiseptics, gauze)</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit6">
+                        <label class="form-check-label text-dark" for="kit6">7-day supply of critical prescription medications</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit7">
+                        <label class="form-check-label text-dark" for="kit7">Moist towelettes, hand sanitizers, masks</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="kit8">
+                        <label class="form-check-label text-dark" for="kit8">Feminine supplies & personal hygiene items</label>
+                    </div>
                 </div>
             </div>
             <div class="col-md-4">
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit7">
-                    <label class="form-check-label" for="kit7">ID Proofs & Insurance Copies in Waterproof Bag</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit8">
-                    <label class="form-check-label" for="kit8">Blankets & Raincoats</label>
-                </div>
-                <div class="form-check">
-                    <input class="form-check-input bg-dark border-secondary" type="checkbox" id="kit9">
-                    <label class="form-check-label" for="kit9">Hand Sanitizer & Masks</label>
+                <div class="p-3 rounded-4 bg-white border border-light shadow-2xs h-100">
+                    <h6 class="fw-bold text-dark mb-3"><i class="fa-solid fa-radio text-warning me-2"></i>Tools & Communications</h6>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit9">
+                        <label class="form-check-label text-dark" for="kit9">Battery-powered or hand-crank emergency radio</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit10">
+                        <label class="form-check-label text-dark" for="kit10">High-lumen LED flashlight & spare batteries</label>
+                    </div>
+                    <div class="form-check mb-2">
+                        <input class="form-check-input" type="checkbox" id="kit11">
+                        <label class="form-check-label text-dark" for="kit11">Loud distress whistle (to signal search teams)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="kit12">
+                        <label class="form-check-label text-dark" for="kit12">Multi-tool pocket knife & waterproof matches</label>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 </div>
+
+<script>
+function resetKitChecklist() {
+    document.querySelectorAll('#safetyTabsContent ~ .glass-card input[type="checkbox"]').forEach(cb => cb.checked = false);
+}
+</script>
 {% endblock %}

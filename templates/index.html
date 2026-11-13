@@ -1,161 +1,394 @@
 {% extends 'base.html' %}
 
-{% block title %}RADAR - Smart AI Disaster Management System{% endblock %}
+{% block title %}Smart Disaster Management System - AI Emergency Response & Relief{% endblock %}
 
 {% block content %}
-<!-- Hero Section -->
-<section class="hero-section text-center">
-    <div class="container">
-        <div class="mb-3">
-            <span class="badge-emergency">
-                <div class="pulse-dot"></div>
-                RADAR MONITORING ACTIVE
-            </span>
-        </div>
-        <h1 class="hero-title mb-3">
-            RADAR: Disaster Management System<br>with <span class="text-cyan">Smart AI Technology</span>
-        </h1>
-        <p class="hero-subtitle mx-auto mb-4">
-            Real-time disaster risk prediction, instant emergency shelter navigation, live meteorological alert broadcasts, and rapid one-click emergency SOS dispatch.
-        </p>
+<!-- Decorative Pastel Background Orbs -->
+<div class="pastel-blob blob-lavender"></div>
+<div class="pastel-blob blob-pink"></div>
+<div class="pastel-blob blob-blue"></div>
+<div class="pastel-blob blob-mint"></div>
 
-        <div class="d-flex justify-content-center flex-wrap gap-3 mb-5">
-            <a href="{{ url_for('feature.predict') }}" class="btn btn-cyan btn-lg px-4 py-3 shadow">
-                <i class="fa-solid fa-brain me-2"></i> Check Disaster Risk
-            </a>
-            <a href="{{ url_for('feature.shelters') }}" class="btn btn-outline-light btn-lg px-4 py-3">
-                <i class="fa-solid fa-campground me-2 text-warning"></i> Find Nearby Shelter
-            </a>
-            <a href="{{ url_for('feature.sos') }}" class="btn btn-emergency btn-lg px-4 py-3">
-                <i class="fa-solid fa-triangle-exclamation me-2"></i> Emergency SOS
-            </a>
+<!-- Hero Section -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row align-items-center g-5">
+            <div class="col-lg-6">
+                <div class="mb-3">
+                    <span class="hero-badge">
+                        <span class="pulse-dot-green"></span>
+                        AI-Powered Disaster Resilience & Relief
+                    </span>
+                </div>
+                <h1 class="hero-title mb-3">
+                    Smart Disaster <br>
+                    <span class="hero-gradient-text">Management System</span>
+                </h1>
+                <p class="hero-subtitle mb-4">
+                    Empowering citizens and emergency responders with real-time AI risk prediction, automated shelter routing, live meteorological alert broadcasts, and rapid one-click emergency SOS dispatch.
+                </p>
+
+                <div class="d-flex flex-wrap gap-3 mb-4">
+                    <a href="{{ url_for('feature.predict') }}" class="btn btn-pastel-purple btn-lg px-4 shadow-sm">
+                        <i class="fa-solid fa-brain"></i> Check Disaster Risk
+                    </a>
+                    <a href="{{ url_for('feature.shelters') }}" class="btn btn-pastel-blue btn-lg px-4 shadow-sm">
+                        <i class="fa-solid fa-campground"></i> Find Nearby Shelters
+                    </a>
+                    <a href="{{ url_for('feature.sos') }}" class="btn btn-emergency btn-lg px-4 shadow-sm">
+                        <i class="fa-solid fa-triangle-exclamation"></i> Emergency SOS
+                    </a>
+                </div>
+
+                <div class="d-flex align-items-center gap-4 pt-2 text-secondary small">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-success"></i> Verified Relief Centers
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-primary"></i> 24/7 AI Assistant
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-circle-check text-purple" style="color: var(--pastel-lavender-deep);"></i> OpenStreetMap GIS
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="hero-visual-card">
+                    <div class="hero-img-wrap">
+                        <img src="https://images.unsplash.com/photo-1544984243-ec57ea16fe25?auto=format&fit=crop&w=1200&q=80" 
+                             alt="Emergency Disaster Rescue Operations"
+                             onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'800\' height=\'500\' viewBox=\'0 0 800 500\'><rect width=\'100%\' height=\'100%\' fill=\'%23EDE9FE\'/><text x=\'50%\' y=\'50%\' font-family=\'sans-serif\' font-size=\'24\' fill=\'%236D28D9\' text-anchor=\'middle\'>Emergency Disaster Rescue Operations</text></svg>';">
+                    </div>
+                    <div class="hero-floating-badge">
+                        <div class="stat-icon-wrap icon-lavender mb-0" style="width: 44px; height: 44px; font-size: 1.2rem;">
+                            <i class="fa-solid fa-shield-heart"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block text-dark small">AI Prediction Active</strong>
+                            <span class="text-muted" style="font-size: 0.76rem;">Environmental sensors & ML risk classifier</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 </section>
 
-<!-- Live Awareness Banner Ticker -->
+<!-- Live Awareness Alert Ticker -->
 {% if active_alerts %}
 <div class="container mb-5">
-    <div class="alert-ticker-wrap shadow-sm">
+    <div class="alert-ticker-wrap">
         <div class="d-flex align-items-center gap-2 text-danger fw-bold flex-shrink-0">
-            <i class="fa-solid fa-bullhorn fa-beat"></i>
-            <span>LIVE ALERT:</span>
+            <i class="fa-solid fa-bullhorn fa-bounce"></i>
+            <span>LIVE BULLETIN:</span>
         </div>
-        <div class="text-white overflow-hidden text-truncate">
+        <div class="text-dark overflow-hidden text-truncate small">
             {% for alert in active_alerts %}
                 <span class="badge bg-danger me-2">{{ alert.severity }}</span>
                 <strong>{{ alert.title }}</strong> ({{ alert.location }}) &nbsp;•&nbsp;
             {% endfor %}
         </div>
-        <a href="{{ url_for('main.alerts') }}" class="btn btn-sm btn-outline-danger ms-auto flex-shrink-0">View All Alerts</a>
+        <a href="{{ url_for('main.alerts') }}" class="btn btn-sm btn-outline-danger ms-auto flex-shrink-0">View All</a>
     </div>
 </div>
 {% endif %}
 
-<!-- Real-Time System Metrics Counter -->
+<!-- Real-Time System Statistics Counter -->
 <div class="container mb-5">
     <div class="row g-4 text-center">
-        <div class="col-6 col-md-3">
-            <div class="glass-card p-4">
-                <div class="tile-icon-box bg-icon-blue mx-auto mb-3">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-pastel">
+                <div class="stat-icon-wrap icon-blue">
                     <i class="fa-solid fa-hospital-user"></i>
                 </div>
-                <h2 class="fw-extrabold text-white mb-1">{{ total_shelters }}</h2>
-                <p class="text-muted small mb-0">Total Active Shelters</p>
+                <h2 class="fw-bold mb-1" style="color: var(--text-primary);">{{ total_shelters }}</h2>
+                <p class="text-secondary small mb-0 fw-semibold">Active Relief Shelters</p>
             </div>
         </div>
-        <div class="col-6 col-md-3">
-            <div class="glass-card p-4">
-                <div class="tile-icon-box bg-icon-green mx-auto mb-3">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-pastel">
+                <div class="stat-icon-wrap icon-mint">
                     <i class="fa-solid fa-bed"></i>
                 </div>
-                <h2 class="fw-extrabold text-white mb-1">{{ available_beds }}</h2>
-                <p class="text-muted small mb-0">Available Beds</p>
+                <h2 class="fw-bold mb-1" style="color: var(--text-primary);">{{ available_beds }}</h2>
+                <p class="text-secondary small mb-0 fw-semibold">Available Emergency Beds</p>
             </div>
         </div>
-        <div class="col-6 col-md-3">
-            <div class="glass-card p-4">
-                <div class="tile-icon-box bg-icon-red mx-auto mb-3">
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-pastel">
+                <div class="stat-icon-wrap icon-pink">
                     <i class="fa-solid fa-bell"></i>
                 </div>
-                <h2 class="fw-extrabold text-white mb-1">{{ active_alerts|length }}</h2>
-                <p class="text-muted small mb-0">Active Warning Bulletins</p>
+                <h2 class="fw-bold mb-1" style="color: var(--text-primary);">{{ active_alerts|length }}</h2>
+                <p class="text-secondary small mb-0 fw-semibold">Active Warning Bulletins</p>
             </div>
         </div>
-        <div class="col-6 col-md-3">
-            <div class="glass-card p-4">
-                <div class="tile-icon-box bg-icon-cyan mx-auto mb-3">
-                    <i class="fa-solid fa-headset"></i>
+        <div class="col-6 col-lg-3">
+            <div class="stat-card-pastel">
+                <div class="stat-icon-wrap icon-lavender">
+                    <i class="fa-solid fa-robot"></i>
                 </div>
-                <h2 class="fw-extrabold text-white mb-1">24 / 7</h2>
-                <p class="text-muted small mb-0">AI Emergency Operations</p>
+                <h2 class="fw-bold mb-1" style="color: var(--text-primary);">24 / 7</h2>
+                <p class="text-secondary small mb-0 fw-semibold">AI Disaster Assistant</p>
             </div>
         </div>
     </div>
 </div>
 
-<!-- Four Core Feature Tiles -->
-<div class="container mb-5">
-    <div class="text-center mb-4">
-        <h3 class="fw-bold text-white mb-2">Core System Features</h3>
-        <p class="text-muted">Intelligent emergency response modules powered by machine learning and geospatial data.</p>
+<!-- Core Disaster Categories (Visuals + High-Impact Guidance) -->
+<section class="container mb-5">
+    <div class="text-center mb-5">
+        <span class="badge badge-pastel-purple px-3 py-2 mb-2">Disaster Hazards</span>
+        <h2 class="fw-bold mb-2" style="color: var(--text-primary);">Comprehensive Disaster Management</h2>
+        <p class="text-secondary mx-auto" style="max-width: 620px;">
+            Immediate multi-hazard resilience with dedicated safety protocols, early warnings, and evacuation routes.
+        </p>
+    </div>
+
+    <div class="row g-4">
+        <!-- Flood -->
+        <div class="col-md-6 col-lg-4">
+            <div class="disaster-card">
+                <div class="disaster-img-box">
+                    <img src="https://images.unsplash.com/photo-1544984243-ec57ea16fe25?auto=format&fit=crop&w=700&q=80" alt="Floods" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'250\' fill=\'%23BAE6FD\'><rect width=\'100%\' height=\'100%\'/><text x=\'50%\' y=\'50%\' fill=\'%230284C7\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\'>Floods</text></svg>';">
+                    <span class="disaster-badge text-primary"><i class="fa-solid fa-water me-1"></i> Flood Hazard</span>
+                </div>
+                <div class="disaster-body">
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">Floods & River Overflow</h5>
+                    <p class="small text-secondary flex-grow-1">
+                        Track rising water gauge levels, avoid walking/driving through moving currents, and locate elevated relief shelters.
+                    </p>
+                    <a href="{{ url_for('main.safety') }}" class="btn btn-outline-pastel btn-sm w-100">Flood Safety Manual <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Earthquake -->
+        <div class="col-md-6 col-lg-4">
+            <div class="disaster-card">
+                <div class="disaster-img-box">
+                    <img src="https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=700&q=80" alt="Earthquakes" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'250\' fill=\'%23DDD6FE\'><rect width=\'100%\' height=\'100%\'/><text x=\'50%\' y=\'50%\' fill=\'%236D28D9\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\'>Earthquake</text></svg>';">
+                    <span class="disaster-badge text-purple" style="color: var(--pastel-lavender-deep);"><i class="fa-solid fa-house-crack me-1"></i> Seismic Hazard</span>
+                </div>
+                <div class="disaster-body">
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">Earthquakes & Tremors</h5>
+                    <p class="small text-secondary flex-grow-1">
+                        Master the <strong>Drop, Cover & Hold On</strong> rule. Learn how to inspect structures for gas leaks and structural cracks.
+                    </p>
+                    <a href="{{ url_for('main.safety') }}" class="btn btn-outline-pastel btn-sm w-100">Earthquake Protocol <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cyclone -->
+        <div class="col-md-6 col-lg-4">
+            <div class="disaster-card">
+                <div class="disaster-img-box">
+                    <img src="https://images.unsplash.com/photo-1527482797697-8795b05a13fe?auto=format&fit=crop&w=700&q=80" alt="Cyclones" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'250\' fill=\'%23FED7AA\'><rect width=\'100%\' height=\'100%\'/><text x=\'50%\' y=\'50%\' fill=\'%23EA580C\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\'>Cyclone</text></svg>';">
+                    <span class="disaster-badge text-danger"><i class="fa-solid fa-tornado me-1"></i> Severe Storm</span>
+                </div>
+                <div class="disaster-body">
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">Cyclones & Gale Winds</h5>
+                    <p class="small text-secondary flex-grow-1">
+                        Secure exterior doors and windows, identify interior safe rooms, and track real-time wind gusts via satellite telemetry.
+                    </p>
+                    <a href="{{ url_for('main.safety') }}" class="btn btn-outline-pastel btn-sm w-100">Cyclone Advisory <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Landslide -->
+        <div class="col-md-6 col-lg-4">
+            <div class="disaster-card">
+                <div class="disaster-img-box">
+                    <img src="https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=700&q=80" alt="Landslides" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'250\' fill=\'%23A7F3D0\'><rect width=\'100%\' height=\'100%\'/><text x=\'50%\' y=\'50%\' fill=\'%23059669\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\'>Landslide</text></svg>';">
+                    <span class="disaster-badge text-success"><i class="fa-solid fa-mountain me-1"></i> Hill Stations</span>
+                </div>
+                <div class="disaster-body">
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">Landslides & Mudflows</h5>
+                    <p class="small text-secondary flex-grow-1">
+                        Specialized safety guidelines for hilly terrains like Darjeeling, Shimla, Manali, Wayanad, and Munnar slopes.
+                    </p>
+                    <a href="{{ url_for('main.safety') }}" class="btn btn-outline-pastel btn-sm w-100">Landslide Guidelines <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wildfire -->
+        <div class="col-md-6 col-lg-4">
+            <div class="disaster-card">
+                <div class="disaster-img-box">
+                    <img src="https://images.unsplash.com/photo-1508873696983-2df57046475a?auto=format&fit=crop&w=700&q=80" alt="Wildfires" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'250\' fill=\'%23FBCFE8\'><rect width=\'100%\' height=\'100%\'/><text x=\'50%\' y=\'50%\' fill=\'%23EC4899\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\'>Wildfire</text></svg>';">
+                    <span class="disaster-badge text-danger"><i class="fa-solid fa-fire me-1"></i> Fire Emergency</span>
+                </div>
+                <div class="disaster-body">
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">Wildfires & Structural Blazes</h5>
+                    <p class="small text-secondary flex-grow-1">
+                        Rapid smoke evacuation steps, Stop-Drop-and-Roll techniques, and immediate 101 Fire Brigade dispatch protocols.
+                    </p>
+                    <a href="{{ url_for('main.safety') }}" class="btn btn-outline-pastel btn-sm w-100">Fire Safety Guide <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Heatwave -->
+        <div class="col-md-6 col-lg-4">
+            <div class="disaster-card">
+                <div class="disaster-img-box">
+                    <img src="https://images.unsplash.com/photo-1534088568595-a066f410bcda?auto=format&fit=crop&w=700&q=80" alt="Heatwaves" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' width=\'400\' height=\'250\' fill=\'%23FED7AA\'><rect width=\'100%\' height=\'100%\'/><text x=\'50%\' y=\'50%\' fill=\'%23EA580C\' font-family=\'sans-serif\' font-size=\'20\' text-anchor=\'middle\'>Heatwave</text></svg>';">
+                    <span class="disaster-badge text-warning"><i class="fa-solid fa-sun me-1"></i> Thermal Hazard</span>
+                </div>
+                <div class="disaster-body">
+                    <h5 class="fw-bold mb-2" style="color: var(--text-primary);">Heatwaves & Extreme Drought</h5>
+                    <p class="small text-secondary flex-grow-1">
+                        Hydration routines, peak hour sunstroke prevention, ORS administration, and vulnerable community protection.
+                    </p>
+                    <a href="{{ url_for('main.safety') }}" class="btn btn-outline-pastel btn-sm w-100">Heatwave Advice <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Disaster Relief Operations & Medical Assistance Showcase -->
+<section class="container mb-5">
+    <div class="glass-card p-4 p-lg-5">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6">
+                <span class="badge badge-pastel-mint px-3 py-2 mb-2">Relief Infrastructure</span>
+                <h3 class="fw-bold mb-3" style="color: var(--text-primary);">Emergency Medical & Shelter Coordination</h3>
+                <p class="text-secondary mb-4">
+                    The Smart Disaster Management System bridges citizen distress signals directly with active medical units, ambulance networks, and verified relief shelters across India.
+                </p>
+                <div class="d-flex flex-column gap-3 mb-4">
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon-wrap icon-mint mb-0" style="width: 44px; height: 44px; font-size: 1.15rem;">
+                            <i class="fa-solid fa-kit-medical"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block" style="color: var(--text-primary);">Medical Triage & Beds</strong>
+                            <small class="text-secondary">Track real-time available beds across hospital relief annexes and community centers.</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon-wrap icon-blue mb-0" style="width: 44px; height: 44px; font-size: 1.15rem;">
+                            <i class="fa-solid fa-bowl-food"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block" style="color: var(--text-primary);">Food & Water Provisioning</strong>
+                            <small class="text-secondary">Verified amenity badges highlight shelters equipped with clean drinking water and food rations.</small>
+                        </div>
+                    </div>
+                    <div class="d-flex align-items-start gap-3">
+                        <div class="stat-icon-wrap icon-lavender mb-0" style="width: 44px; height: 44px; font-size: 1.15rem;">
+                            <i class="fa-solid fa-map-location-dot"></i>
+                        </div>
+                        <div>
+                            <strong class="d-block" style="color: var(--text-primary);">Interactive GPS Geocoding</strong>
+                            <small class="text-secondary">Haversine distance telemetry calculates the exact shortest kilometer route from your live mobile position.</small>
+                        </div>
+                    </div>
+                </div>
+                <a href="{{ url_for('feature.shelters') }}" class="btn btn-pastel-purple">Explore Live Shelter Map <i class="fa-solid fa-arrow-right ms-1"></i></a>
+            </div>
+
+            <div class="col-lg-6">
+                <div class="row g-3">
+                    <div class="col-6">
+                        <div class="rounded-4 overflow-hidden shadow-sm" style="height: 180px;">
+                            <img src="https://images.unsplash.com/photo-1582213782179-e0d53f98f2ca?auto=format&fit=crop&w=600&q=80" alt="Rescue Operations" class="w-100 h-100 object-fit-cover">
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="rounded-4 overflow-hidden shadow-sm" style="height: 180px;">
+                            <img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=600&q=80" alt="Hospital Care" class="w-100 h-100 object-fit-cover">
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="rounded-4 overflow-hidden shadow-sm" style="height: 190px;">
+                            <img src="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=800&q=80" alt="Community Relief" class="w-100 h-100 object-fit-cover">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Emergency Preparedness & Survival Kit -->
+<section class="container mb-5">
+    <div class="text-center mb-5">
+        <span class="badge badge-pastel-pink px-3 py-2 mb-2">Life Safety</span>
+        <h2 class="fw-bold mb-2" style="color: var(--text-primary);">72-Hour Survival Preparedness</h2>
+        <p class="text-secondary mx-auto" style="max-width: 620px;">
+            Be ready before disaster strikes. Keep an essential emergency kit ready for yourself and your family.
+        </p>
     </div>
 
     <div class="row g-4">
         <div class="col-md-6 col-lg-3">
-            <div class="glass-card p-4 h-100 d-flex flex-column">
-                <div class="tile-icon-box bg-icon-cyan mb-3">
-                    <i class="fa-solid fa-microchip"></i>
+            <div class="stat-card-pastel text-start p-4 h-100 d-flex flex-column">
+                <div class="stat-icon-wrap icon-blue ms-0">
+                    <i class="fa-solid fa-bottle-water"></i>
                 </div>
-                <h5 class="fw-bold text-white mb-2">1. AI Risk Prediction</h5>
-                <p class="text-muted small flex-grow-1">Analyze environmental metrics including rainfall, river gauge, wind speed, and earthquake magnitude with Random Forest ML.</p>
-                <a href="{{ url_for('feature.predict') }}" class="btn btn-sm btn-cyan w-100 mt-3">Analyze Risk Now <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <h5 class="fw-bold mb-2" style="color: var(--text-primary);">1. Water & Nutrition</h5>
+                <p class="small text-secondary flex-grow-1">
+                    Store 3-4 liters of water per person per day, plus 3 days of non-perishable food (granola bars, canned goods, dried fruit).
+                </p>
+                <span class="badge badge-pastel-blue align-self-start">Hydration Priority</span>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="glass-card p-4 h-100 d-flex flex-column">
-                <div class="tile-icon-box bg-icon-blue mb-3">
-                    <i class="fa-solid fa-location-dot"></i>
+            <div class="stat-card-pastel text-start p-4 h-100 d-flex flex-column">
+                <div class="stat-icon-wrap icon-pink ms-0">
+                    <i class="fa-solid fa-briefcase-medical"></i>
                 </div>
-                <h5 class="fw-bold text-white mb-2">2. Nearby Shelter Locator</h5>
-                <p class="text-muted small flex-grow-1">Search relief centers by district. View live bed availability, food/water amenities, medical support, and Leaflet map location.</p>
-                <a href="{{ url_for('feature.shelters') }}" class="btn btn-sm btn-outline-primary w-100 mt-3">Find Shelters <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <h5 class="fw-bold mb-2" style="color: var(--text-primary);">2. First-Aid Supplies</h5>
+                <p class="small text-secondary flex-grow-1">
+                    Pack antiseptic, sterile bandages, burn ointments, adhesive tape, scissors, ORS sachets, and 7-day personal prescription medications.
+                </p>
+                <span class="badge badge-pastel-pink align-self-start">Medical First</span>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="glass-card p-4 h-100 d-flex flex-column">
-                <div class="tile-icon-box bg-icon-red mb-3">
-                    <i class="fa-solid fa-phone-volume"></i>
+            <div class="stat-card-pastel text-start p-4 h-100 d-flex flex-column">
+                <div class="stat-icon-wrap icon-lavender ms-0">
+                    <i class="fa-solid fa-battery-three-quarters"></i>
                 </div>
-                <h5 class="fw-bold text-white mb-2">3. Emergency SOS</h5>
-                <p class="text-muted small flex-grow-1">One-click SOS alert sending your live browser GPS coordinates directly to disaster control rooms and emergency helplines.</p>
-                <a href="{{ url_for('feature.sos') }}" class="btn btn-sm btn-emergency w-100 mt-3">Transmit SOS <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <h5 class="fw-bold mb-2" style="color: var(--text-primary);">3. Power & Comms</h5>
+                <p class="small text-secondary flex-grow-1">
+                    Battery-powered LED flashlight, charged 20,000mAh power bank, spare AA/AAA batteries, emergency whistle, and portable radio.
+                </p>
+                <span class="badge badge-pastel-purple align-self-start">Connectivity</span>
             </div>
         </div>
 
         <div class="col-md-6 col-lg-3">
-            <div class="glass-card p-4 h-100 d-flex flex-column">
-                <div class="tile-icon-box bg-icon-green mb-3">
-                    <i class="fa-solid fa-shield-heart"></i>
+            <div class="stat-card-pastel text-start p-4 h-100 d-flex flex-column">
+                <div class="stat-icon-wrap icon-mint ms-0">
+                    <i class="fa-solid fa-folder-closed"></i>
                 </div>
-                <h5 class="fw-bold text-white mb-2">4. Safety Guidelines</h5>
-                <p class="text-muted small flex-grow-1">Interactive survival checklists and emergency protocol procedures for Floods, Earthquakes, Cyclones, Fires, and Heatwaves.</p>
-                <a href="{{ url_for('main.safety') }}" class="btn btn-sm btn-outline-success w-100 mt-3">View Guidelines <i class="fa-solid fa-arrow-right ms-1"></i></a>
+                <h5 class="fw-bold mb-2" style="color: var(--text-primary);">4. Vital Documents</h5>
+                <p class="small text-secondary flex-grow-1">
+                    Waterproof sealed pouch containing Aadhaar card, passport copies, insurance papers, medical histories, and emergency cash notes.
+                </p>
+                <span class="badge badge-pastel-mint align-self-start">Essential ID</span>
             </div>
         </div>
     </div>
-</div>
+</section>
 
-<!-- Active Alerts Bulletin Feed -->
-<div class="container mb-5">
+<!-- Active Advisories Feed -->
+<section class="container mb-5">
     <div class="d-flex align-items-center justify-content-between mb-4">
         <div>
-            <h4 class="fw-bold text-white mb-1"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Active Disaster Advisories</h4>
-            <p class="text-muted small mb-0">Issued by Central Meteorological & Disaster Authorities</p>
+            <h4 class="fw-bold mb-1" style="color: var(--text-primary);"><i class="fa-solid fa-triangle-exclamation text-warning me-2"></i>Active Disaster Advisories</h4>
+            <p class="text-secondary small mb-0">Issued by Central Meteorological & Disaster Management Authorities</p>
         </div>
-        <a href="{{ url_for('main.alerts') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+        <a href="{{ url_for('main.alerts') }}" class="btn btn-outline-pastel btn-sm">View All Bulletins</a>
     </div>
 
     <div class="row g-3">
@@ -167,19 +400,19 @@
                         <span class="badge {% if alert.severity == 'Critical' %}bg-danger{% elif alert.severity == 'Warning' %}bg-warning text-dark{% else %}bg-info text-dark{% endif %}">
                             {{ alert.severity }}
                         </span>
-                        <small class="text-muted"><i class="fa-regular fa-clock me-1"></i>{{ alert.created_at.strftime('%b %d, %H:%M') }}</small>
+                        <small class="text-secondary"><i class="fa-regular fa-clock me-1"></i>{{ alert.created_at.strftime('%b %d, %H:%M') }}</small>
                     </div>
-                    <h6 class="fw-bold text-white mb-1">{{ alert.title }}</h6>
-                    <p class="small text-muted mb-2"><i class="fa-solid fa-location-pin me-1 text-danger"></i>{{ alert.location }}</p>
-                    <p class="small text-slate-300 mb-0 line-clamp-2">{{ alert.description }}</p>
+                    <h6 class="fw-bold mb-1" style="color: var(--text-primary);">{{ alert.title }}</h6>
+                    <p class="small text-secondary mb-2"><i class="fa-solid fa-location-pin me-1 text-danger"></i>{{ alert.location }}</p>
+                    <p class="small text-secondary mb-0 line-clamp-2">{{ alert.description }}</p>
                 </div>
             </div>
             {% endfor %}
         {% else %}
             <div class="col-12 text-center py-4 glass-card">
-                <p class="text-muted mb-0"><i class="fa-solid fa-circle-check text-success me-2"></i>No active disaster advisories at present. Weather conditions normal.</p>
+                <p class="text-secondary mb-0"><i class="fa-solid fa-circle-check text-success me-2"></i>No active critical warnings at present. Weather conditions normal.</p>
             </div>
         {% endif %}
     </div>
-</div>
+</section>
 {% endblock %}

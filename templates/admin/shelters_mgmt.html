@@ -4,21 +4,24 @@
 
 {% block content %}
 <div class="container py-5">
-    <div class="d-flex align-items-center justify-content-between mb-4">
+    <div class="d-flex flex-column flex-md-row align-items-md-center justify-content-between mb-4 gap-3 animate-fade-in">
         <div>
-            <h3 class="fw-bold text-white mb-1"><i class="fa-solid fa-hospital-user text-cyan me-2"></i>Verified Emergency Shelter & Bed Capacity Manager</h3>
-            <p class="text-muted small mb-0">Manage official registered shelters, update bed occupancy, state/district/village telemetry, and click-to-pin map coordinates.</p>
+            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill bg-mint-light text-mint-dark fw-semibold small mb-2 border border-mint">
+                <i class="fa-solid fa-hospital-user"></i> Shelter Operations
+            </div>
+            <h3 class="fw-extrabold text-dark mb-1">Emergency Shelter & Bed Capacity Manager</h3>
+            <p class="text-muted small mb-0">Register shelters, update live bed occupancies, telemetry, and click-to-pin map coordinates.</p>
         </div>
-        <button class="btn btn-cyan btn-sm fw-bold" data-bs-toggle="modal" data-bs-target="#addShelterModal" id="openAddModalBtn">
-            <i class="fa-solid fa-plus-circle me-1"></i> Add Verified Shelter via Map Picker
+        <button class="btn btn-primary rounded-pill px-4 fw-bold shadow-2xs" data-bs-toggle="modal" data-bs-target="#addShelterModal" id="openAddModalBtn">
+            <i class="fa-solid fa-plus-circle me-1"></i> Add Shelter via Map Picker
         </button>
     </div>
 
     <!-- Shelters Table -->
-    <div class="glass-card p-4">
+    <div class="glass-card p-4 animate-slide-up">
         <div class="table-responsive">
-            <table class="table table-custom align-middle">
-                <thead>
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-light text-secondary small">
                     <tr>
                         <th>ID</th>
                         <th>Facility & Name</th>
@@ -26,7 +29,7 @@
                         <th>District / Village</th>
                         <th>Total Cap</th>
                         <th>Occupancy</th>
-                        <th>Available Cap</th>
+                        <th>Available</th>
                         <th>Contact</th>
                         <th>Status</th>
                         <th>Actions</th>
@@ -35,63 +38,63 @@
                 <tbody>
                     {% for s in shelters %}
                     <tr>
-                        <td>#{{ s.id }}</td>
+                        <td><span class="badge bg-lavender-light text-lavender-dark rounded-pill">#{{ s.id }}</span></td>
                         <td>
-                            <div class="fw-bold text-white mb-1">{{ s.name }}</div>
-                            <span class="badge bg-dark text-cyan border border-secondary small">
+                            <div class="fw-bold text-dark mb-1">{{ s.name }}</div>
+                            <span class="badge bg-powder-light text-powder-dark rounded-pill px-2 py-1 small">
                                 🏢 {{ s.facility_type }}
                             </span>
                         </td>
-                        <td><span class="badge bg-primary text-white">{{ s.state }}</span></td>
+                        <td><span class="badge bg-lavender-light text-lavender-dark rounded-pill px-2 py-1">{{ s.state }}</span></td>
                         <td>
-                            <div class="small fw-bold text-white">{{ s.district }}</div>
+                            <div class="small fw-bold text-dark">{{ s.district }}</div>
                             <div class="small text-muted">{{ s.city_village }}</div>
                         </td>
-                        <td class="fw-bold text-white">{{ s.total_capacity }}</td>
-                        <td class="fw-bold text-warning">{{ s.current_occupancy }}</td>
+                        <td class="fw-bold text-dark">{{ s.total_capacity }}</td>
+                        <td class="fw-bold text-peach-dark">{{ s.current_occupancy }}</td>
                         <td>
                             <span class="fw-bold fs-6 {% if s.available_capacity < 50 %}text-danger{% else %}text-success{% endif %}">
                                 {{ s.available_capacity }}
                             </span>
                         </td>
-                        <td class="small font-monospace">{{ s.contact }}</td>
+                        <td class="small font-monospace text-secondary">{{ s.contact }}</td>
                         <td>
                             {% if s.verification_status == 'Verified' %}
-                                <span class="badge bg-success"><i class="fa-solid fa-shield-check me-1"></i>Verified</span>
+                                <span class="badge bg-mint-light text-mint-dark rounded-pill px-2 py-1"><i class="fa-solid fa-shield-check me-1"></i>Verified</span>
                             {% else %}
-                                <span class="badge bg-warning text-dark">Unverified</span>
+                                <span class="badge bg-peach-light text-peach-dark rounded-pill px-2 py-1">Unverified</span>
                             {% endif %}
                         </td>
                         <td>
                             <div class="d-flex gap-1">
-                                <button class="btn btn-sm btn-outline-info" data-bs-toggle="modal" data-bs-target="#editModal{{ s.id }}" title="Edit Shelter & Capacity">
+                                <button class="btn btn-sm btn-outline-primary rounded-pill" data-bs-toggle="modal" data-bs-target="#editModal{{ s.id }}" title="Edit Shelter & Capacity">
                                     <i class="fa-solid fa-pen"></i>
                                 </button>
                                 <form method="POST" action="{{ url_for('admin.delete_shelter', shelter_id=s.id) }}" onsubmit="return confirm('Delete shelter {{ s.name }}?');">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger" title="Delete"><i class="fa-solid fa-trash"></i></button>
+                                    <button type="submit" class="btn btn-sm btn-outline-danger rounded-pill" title="Delete"><i class="fa-solid fa-trash"></i></button>
                                 </form>
                             </div>
                         </td>
                     </tr>
 
-                    <!-- Edit Shelter Modal -->
+                    <!-- Edit Shelter Modal in Pastel Theme -->
                     <div class="modal fade" id="editModal{{ s.id }}" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-lg">
-                            <div class="modal-content bg-dark text-white border-secondary">
-                                <div class="modal-header border-secondary">
-                                    <h5 class="modal-title fw-bold"><i class="fa-solid fa-pen text-cyan me-2"></i>Edit Shelter #{{ s.id }} - {{ s.name }}</h5>
-                                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                            <div class="modal-content border-0 shadow-lg rounded-4">
+                                <div class="modal-header bg-lavender-light border-bottom border-lavender py-3">
+                                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-pen text-lavender-dark me-2"></i>Edit Shelter #{{ s.id }} - {{ s.name }}</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                 </div>
                                 <form method="POST" action="{{ url_for('admin.edit_shelter', shelter_id=s.id) }}">
-                                    <div class="modal-body">
-                                        <div class="row g-2 mb-3">
+                                    <div class="modal-body p-4">
+                                        <div class="row g-3 mb-3">
                                             <div class="col-md-6">
-                                                <label class="form-label small">Shelter Name</label>
-                                                <input type="text" name="name" class="form-control bg-dark text-white border-secondary" value="{{ s.name }}" required>
+                                                <label class="form-label small fw-bold text-secondary">Shelter Name</label>
+                                                <input type="text" name="name" class="form-control" value="{{ s.name }}" required>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label small">Facility Type</label>
-                                                <select name="facility_type" class="form-select bg-dark text-white border-secondary" required>
+                                                <label class="form-label small fw-bold text-secondary">Facility Type</label>
+                                                <select name="facility_type" class="form-select" required>
                                                     <option value="Shelter" {% if s.facility_type == 'Shelter' %}selected{% endif %}>Relief Shelter 🏕️</option>
                                                     <option value="School" {% if s.facility_type == 'School' %}selected{% endif %}>School 🏫</option>
                                                     <option value="College" {% if s.facility_type == 'College' %}selected{% endif %}>College 🎓</option>
@@ -102,55 +105,55 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="row g-2 mb-3">
+                                        <div class="row g-3 mb-3">
                                             <div class="col-md-4">
-                                                <label class="form-label small">State</label>
-                                                <input type="text" name="state" class="form-control bg-dark text-white border-secondary" value="{{ s.state }}" required>
+                                                <label class="form-label small fw-bold text-secondary">State</label>
+                                                <input type="text" name="state" class="form-control" value="{{ s.state }}" required>
                                             </div>
                                             <div class="col-md-4">
-                                                <label class="form-label small">District</label>
-                                                <input type="text" name="district" class="form-control bg-dark text-white border-secondary" value="{{ s.district }}" required>
+                                                <label class="form-label small fw-bold text-secondary">District</label>
+                                                <input type="text" name="district" class="form-control" value="{{ s.district }}" required>
                                             </div>
                                             <div class="col-md-4">
-                                                <label class="form-label small">City / Village</label>
-                                                <input type="text" name="city_village" class="form-control bg-dark text-white border-secondary" value="{{ s.city_village }}" required>
+                                                <label class="form-label small fw-bold text-secondary">City / Village</label>
+                                                <input type="text" name="city_village" class="form-control" value="{{ s.city_village }}" required>
                                             </div>
                                         </div>
 
                                         <!-- CAPACITY & OCCUPANCY EDITING -->
-                                        <div class="p-3 mb-3 bg-dark rounded border border-secondary">
-                                            <h6 class="fw-bold text-cyan mb-2"><i class="fa-solid fa-bed me-1"></i>Shelter Bed Capacity & Occupancy Calculator</h6>
+                                        <div class="p-3 mb-3 bg-lavender-light rounded-4 border border-lavender">
+                                            <h6 class="fw-bold text-lavender-dark mb-2"><i class="fa-solid fa-bed me-1"></i>Shelter Bed Capacity & Occupancy Calculator</h6>
                                             <div class="row g-2">
                                                 <div class="col-md-4">
-                                                    <label class="form-label small">Total Capacity</label>
-                                                    <input type="number" id="tot_cap_{{ s.id }}" name="total_capacity" class="form-control bg-dark text-white border-secondary" value="{{ s.total_capacity }}" min="1" required oninput="calcAvail({{ s.id }})">
+                                                    <label class="form-label small fw-semibold">Total Capacity</label>
+                                                    <input type="number" id="tot_cap_{{ s.id }}" name="total_capacity" class="form-control bg-white" value="{{ s.total_capacity }}" min="1" required oninput="calcAvail({{ s.id }})">
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <label class="form-label small">Current Occupancy</label>
-                                                    <input type="number" id="curr_occ_{{ s.id }}" name="current_occupancy" class="form-control bg-dark text-white border-secondary" value="{{ s.current_occupancy }}" min="0" required oninput="calcAvail({{ s.id }})">
+                                                    <label class="form-label small fw-semibold">Current Occupancy</label>
+                                                    <input type="number" id="curr_occ_{{ s.id }}" name="current_occupancy" class="form-control bg-white" value="{{ s.current_occupancy }}" min="0" required oninput="calcAvail({{ s.id }})">
                                                 </div>
                                                 <div class="col-md-4">
-                                                    <label class="form-label small">Available Capacity (Auto-calculated)</label>
-                                                    <input type="number" id="avail_cap_{{ s.id }}" class="form-control bg-dark text-success fw-bold border-secondary" value="{{ s.available_capacity }}" readonly>
+                                                    <label class="form-label small fw-semibold">Available Capacity</label>
+                                                    <input type="number" id="avail_cap_{{ s.id }}" class="form-control bg-white text-success fw-bold" value="{{ s.available_capacity }}" readonly>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="row g-2 mb-3">
+                                        <div class="row g-3 mb-3">
                                             <div class="col-md-6">
-                                                <label class="form-label small">Contact Helpline Number</label>
-                                                <input type="text" name="contact_number" class="form-control bg-dark text-white border-secondary" value="{{ s.contact }}" required>
+                                                <label class="form-label small fw-bold text-secondary">Contact Helpline Number</label>
+                                                <input type="text" name="contact_number" class="form-control" value="{{ s.contact }}" required>
                                             </div>
                                             <div class="col-md-6">
-                                                <label class="form-label small">Verification Status</label>
-                                                <select name="verification_status" class="form-select bg-dark text-white border-secondary" required>
+                                                <label class="form-label small fw-bold text-secondary">Verification Status</label>
+                                                <select name="verification_status" class="form-select" required>
                                                     <option value="Verified" {% if s.verification_status == 'Verified' %}selected{% endif %}>Verified Disaster Shelter ✅</option>
                                                     <option value="Unverified" {% if s.verification_status == 'Unverified' %}selected{% endif %}>Unverified / General Facility ⚠️</option>
                                                 </select>
                                             </div>
                                         </div>
 
-                                        <div class="d-flex gap-3 pt-2">
+                                        <div class="d-flex gap-4 pt-2">
                                             <div class="form-check">
                                                 <input type="checkbox" name="has_food" class="form-check-input" id="efood{{ s.id }}" {% if s.has_food %}checked{% endif %}>
                                                 <label class="form-check-label small" for="efood{{ s.id }}">Food Supply</label>
@@ -165,8 +168,9 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <div class="modal-footer border-secondary">
-                                        <button type="submit" class="btn btn-cyan btn-sm fw-bold">Save Changes & Update Capacity</button>
+                                    <div class="modal-footer bg-light border-0 py-3">
+                                        <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-2xs">Save Changes & Update</button>
                                     </div>
                                 </form>
                             </div>
@@ -179,32 +183,32 @@
     </div>
 </div>
 
-<!-- Add Shelter via Map Picker Modal -->
+<!-- Add Shelter via Map Picker Modal in Pastel Theme -->
 <div class="modal fade" id="addShelterModal" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-white border-secondary">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title fw-bold"><i class="fa-solid fa-map-location-dot text-cyan me-2"></i>Add Verified Shelter - State & Map Picker</h5>
-                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header bg-mint-light border-bottom border-mint py-3">
+                <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-map-location-dot text-mint-dark me-2"></i>Add Verified Shelter - State & Map Picker</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <form method="POST" action="{{ url_for('admin.manage_shelters') }}">
-                <div class="modal-body">
+                <div class="modal-body p-4">
                     <!-- Interactive Map Location Picker -->
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-cyan"><i class="fa-solid fa-hand-pointer me-1"></i> Click anywhere on the map to pinpoint shelter location:</label>
-                        <div id="admin-map-picker" style="height: 240px; border-radius: 12px; border: 1px solid var(--border-color);"></div>
-                        <small id="picker-coordinates-text" class="text-warning font-monospace small d-block mt-1">📍 Click map to set location coordinates automatically...</small>
+                        <label class="form-label small fw-bold text-dark"><i class="fa-solid fa-hand-pointer text-primary me-1"></i> Click anywhere on the map to pinpoint shelter location:</label>
+                        <div id="admin-map-picker" style="height: 240px; border-radius: 16px; border: 1px solid var(--border-color); overflow: hidden;"></div>
+                        <small id="picker-coordinates-text" class="text-secondary font-monospace small d-block mt-2">📍 Click map to set coordinates automatically...</small>
                     </div>
 
                     <div class="row g-3">
                         <div class="col-md-6">
-                            <label class="form-label small">Shelter Name</label>
-                            <input type="text" id="admin_shelter_name" name="name" class="form-control bg-dark text-white border-secondary" placeholder="e.g. St. Mary Primary School Emergency Shelter" required>
+                            <label class="form-label small fw-bold text-secondary">Shelter Name</label>
+                            <input type="text" id="admin_shelter_name" name="name" class="form-control" placeholder="e.g. St. Mary Primary School Emergency Shelter" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small">Facility Type</label>
-                            <select name="facility_type" id="admin_facility_type" class="form-select bg-dark text-white border-secondary" required>
+                            <label class="form-label small fw-bold text-secondary">Facility Type</label>
+                            <select name="facility_type" id="admin_facility_type" class="form-select" required>
                                 <option value="Shelter" selected>Relief Shelter 🏕️</option>
                                 <option value="School">School 🏫</option>
                                 <option value="College">College 🎓</option>
@@ -216,61 +220,61 @@
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label small">State</label>
-                            <select name="state" id="admin_state_select" class="form-select bg-dark text-white border-secondary" required>
+                            <label class="form-label small fw-bold text-secondary">State</label>
+                            <select name="state" id="admin_state_select" class="form-select" required>
                                 <option value="">Select State...</option>
                             </select>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label small">District</label>
-                            <select name="district" id="admin_district_select" class="form-select bg-dark text-white border-secondary" required>
+                            <label class="form-label small fw-bold text-secondary">District</label>
+                            <select name="district" id="admin_district_select" class="form-select" required>
                                 <option value="">Select District...</option>
                             </select>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label small">City / Village / Town</label>
-                            <select name="city_village" id="admin_city_select" class="form-select bg-dark text-white border-secondary" required>
+                            <label class="form-label small fw-bold text-secondary">City / Village / Town</label>
+                            <select name="city_village" id="admin_city_select" class="form-select" required>
                                 <option value="">Select City/Village...</option>
                             </select>
                         </div>
 
                         <div class="col-12">
-                            <label class="form-label small">Full Street Address (Auto-filled on map click)</label>
-                            <input type="text" id="admin_address" name="address" class="form-control bg-dark text-white border-secondary" placeholder="Click map or type street address..." required>
+                            <label class="form-label small fw-bold text-secondary">Full Street Address (Auto-filled on map click)</label>
+                            <input type="text" id="admin_address" name="address" class="form-control" placeholder="Click map or type street address..." required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small">Latitude Coordinate (Auto-filled)</label>
-                            <input type="number" step="0.000001" id="admin_latitude" name="latitude" class="form-control bg-dark text-white border-secondary" placeholder="28.6139" required readonly>
+                            <label class="form-label small fw-bold text-secondary">Latitude Coordinate (Auto-filled)</label>
+                            <input type="number" step="0.000001" id="admin_latitude" name="latitude" class="form-control" placeholder="28.6139" required readonly>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label small">Longitude Coordinate (Auto-filled)</label>
-                            <input type="number" step="0.000001" id="admin_longitude" name="longitude" class="form-control bg-dark text-white border-secondary" placeholder="77.2090" required readonly>
+                            <label class="form-label small fw-bold text-secondary">Longitude Coordinate (Auto-filled)</label>
+                            <input type="number" step="0.000001" id="admin_longitude" name="longitude" class="form-control" placeholder="77.2090" required readonly>
                         </div>
 
                         <div class="col-md-4">
-                            <label class="form-label small">Total Capacity</label>
-                            <input type="number" id="add_tot_cap" name="total_capacity" class="form-control bg-dark text-white border-secondary" placeholder="500" min="1" required oninput="calcAddAvail()">
+                            <label class="form-label small fw-bold text-secondary">Total Capacity</label>
+                            <input type="number" id="add_tot_cap" name="total_capacity" class="form-control" placeholder="500" min="1" required oninput="calcAddAvail()">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small">Current Occupancy</label>
-                            <input type="number" id="add_curr_occ" name="current_occupancy" class="form-control bg-dark text-white border-secondary" placeholder="150" value="0" min="0" required oninput="calcAddAvail()">
+                            <label class="form-label small fw-bold text-secondary">Current Occupancy</label>
+                            <input type="number" id="add_curr_occ" name="current_occupancy" class="form-control" placeholder="150" value="0" min="0" required oninput="calcAddAvail()">
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label small">Available Capacity</label>
-                            <input type="number" id="add_avail_cap" class="form-control bg-dark text-success fw-bold border-secondary" placeholder="350" readonly>
+                            <label class="form-label small fw-bold text-secondary">Available Capacity</label>
+                            <input type="number" id="add_avail_cap" class="form-control text-success fw-bold" placeholder="350" readonly>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small">Helpline Number</label>
-                            <input type="text" name="contact_number" class="form-control bg-dark text-white border-secondary" placeholder="+91-9876543210" required>
+                            <label class="form-label small fw-bold text-secondary">Helpline Number</label>
+                            <input type="text" name="contact_number" class="form-control" placeholder="+91-9876543210" required>
                         </div>
 
                         <div class="col-md-6">
-                            <label class="form-label small">Verification Status</label>
-                            <select name="verification_status" class="form-select bg-dark text-white border-secondary" required>
+                            <label class="form-label small fw-bold text-secondary">Verification Status</label>
+                            <select name="verification_status" class="form-select" required>
                                 <option value="Verified" selected>Verified Disaster Shelter ✅</option>
                                 <option value="Unverified">Unverified / General Facility ⚠️</option>
                             </select>
@@ -292,8 +296,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="modal-footer border-secondary">
-                    <button type="submit" class="btn btn-cyan btn-sm fw-bold">Save Verified Shelter to Database</button>
+                <div class="modal-footer bg-light border-0 py-3">
+                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary rounded-pill px-4 fw-bold shadow-2xs">Save Verified Shelter</button>
                 </div>
             </form>
         </div>
@@ -378,7 +383,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!pickerMap) {
                 pickerMap = L.map('admin-map-picker').setView([20.5937, 78.9629], 5);
 
-                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
                     attribution: '&copy; OpenStreetMap'
                 }).addTo(pickerMap);
 

@@ -1,5 +1,5 @@
 /**
- * REAL-TIME WEATHER MODULE (RADAR DISASTER MANAGEMENT)
+ * REAL-TIME WEATHER MODULE (SMART DISASTER MANAGEMENT SYSTEM)
  * Fetches live meteorological telemetry from /api/weather based on user GPS or location query.
  */
 

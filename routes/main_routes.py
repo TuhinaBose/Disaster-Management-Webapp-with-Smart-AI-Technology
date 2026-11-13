@@ -68,7 +68,7 @@ def register():
         session['user_id'] = new_user.id
         session['username'] = new_user.username
         session['role'] = new_user.role
-        flash(f'Welcome to RADAR, {new_user.username}! Your account has been created.', 'success')
+        flash(f'Welcome to Smart Disaster Management System, {new_user.username}! Your account has been created.', 'success')
         return redirect(url_for('main.index'))
 
     return render_template('register.html')

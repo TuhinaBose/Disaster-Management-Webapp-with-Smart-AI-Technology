@@ -1,43 +1,43 @@
 {% extends 'base.html' %}
 
-{% block title %}Sign In - RADAR Disaster Management System{% endblock %}
+{% block title %}Sign In - Smart Disaster Management System{% endblock %}
 
 {% block content %}
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-md-5 col-lg-4">
+        <div class="col-md-5 col-lg-4 animate-scale-up">
             <div class="glass-card p-4 p-md-5">
                 <div class="text-center mb-4">
-                    <div class="tile-icon-box bg-icon-blue mx-auto mb-3">
+                    <div class="d-inline-flex align-items-center justify-content-center rounded-circle bg-lavender-light text-lavender-dark mx-auto mb-3 shadow-2xs" style="width: 68px; height: 68px;">
                         <i class="fa-solid fa-right-to-bracket fs-3"></i>
                     </div>
-                    <h4 class="fw-bold text-white mb-1">Account Sign In</h4>
-                    <p class="text-muted small mb-0">Sign in to manage your SOS requests and emergency settings.</p>
+                    <h3 class="fw-extrabold text-dark mb-1">Account Sign In</h3>
+                    <p class="text-muted small mb-0">Sign in to manage your emergency distress calls, verify shelter updates, and access saved relief resources.</p>
                 </div>
 
                 <form method="POST" action="{{ url_for('main.login') }}">
                     <div class="mb-3">
-                        <label class="form-label text-slate-300 small fw-semibold">Username</label>
+                        <label class="form-label text-secondary small fw-bold">Username</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark text-primary border-secondary"><i class="fa-solid fa-user"></i></span>
-                            <input type="text" name="username" class="form-control bg-dark text-white border-secondary" placeholder="Username" required autofocus>
+                            <span class="input-group-text bg-white border-end-0 text-lavender-dark rounded-start-pill ps-3"><i class="fa-solid fa-user"></i></span>
+                            <input type="text" name="username" class="form-control bg-white text-dark border-start-0 rounded-end-pill pe-3" placeholder="Enter your username" required autofocus>
                         </div>
                     </div>
 
                     <div class="mb-4">
-                        <label class="form-label text-slate-300 small fw-semibold">Password</label>
+                        <label class="form-label text-secondary small fw-bold">Password</label>
                         <div class="input-group">
-                            <span class="input-group-text bg-dark text-primary border-secondary"><i class="fa-solid fa-lock"></i></span>
-                            <input type="password" name="password" class="form-control bg-dark text-white border-secondary" placeholder="Password" required>
+                            <span class="input-group-text bg-white border-end-0 text-lavender-dark rounded-start-pill ps-3"><i class="fa-solid fa-lock"></i></span>
+                            <input type="password" name="password" class="form-control bg-white text-dark border-start-0 rounded-end-pill pe-3" placeholder="Enter password" required>
                         </div>
                     </div>
 
-                    <button type="submit" class="btn btn-primary w-100 py-2 fw-bold mb-3">
-                        <i class="fa-solid fa-right-to-bracket me-1"></i> Sign In
+                    <button type="submit" class="btn btn-primary w-100 py-2 rounded-pill fw-bold mb-3 shadow-sm">
+                        <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In to Portal
                     </button>
 
                     <div class="text-center mt-3">
-                        <small class="text-muted">Don't have an account yet? <a href="{{ url_for('main.register') }}" class="text-cyan fw-bold text-decoration-none">Create Account</a></small>
+                        <small class="text-muted">Don't have an account yet? <a href="{{ url_for('main.register') }}" class="text-primary fw-bold text-decoration-none">Create Account</a></small>
                     </div>
                 </form>
             </div>
