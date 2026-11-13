@@ -104,10 +104,10 @@
             
             <div class="glass-card p-4 bg-powder-light border border-powder">
                 <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=350&q=80" 
+                    <img src="{{ url_for('static', filename='img/flood.jpg') }}" 
                          alt="Flood Rescue Operations" 
                          class="rounded-4 shadow-sm img-fluid" style="width: 260px; height: 160px; object-fit: cover;"
-                         onerror="this.src='https://placehold.co/350x200/BAE6FD/0369A1?text=Flood+Safety';">
+                         onerror="this.src='https://images.unsplash.com/photo-1547683905-f686c993aae5?auto=format&fit=crop&w=350&q=80';">
                     <div>
                         <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-life-ring text-primary me-2"></i>Key National Flood Emergency Helplines</h5>
                         <p class="text-muted small mb-3">National Disaster Response Force (NDRF): <strong>1078 / 011-24363260</strong> | Flood Control Room: <strong>1070</strong> | Medical Ambulance: <strong>108</strong></p>
@@ -172,10 +172,10 @@
             
             <div class="glass-card p-4 bg-lavender-light border border-lavender">
                 <div class="d-flex flex-column flex-md-row align-items-center gap-4">
-                    <img src="https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=350&q=80" 
+                    <img src="{{ url_for('static', filename='img/earthquake.jpg') }}" 
                          alt="Seismic Safety" 
                          class="rounded-4 shadow-sm img-fluid" style="width: 260px; height: 160px; object-fit: cover;"
-                         onerror="this.src='https://placehold.co/350x200/DDD6FE/6D28D9?text=Earthquake+Safety';">
+                         onerror="this.src='https://images.unsplash.com/photo-1584483766114-2cea6facdf57?auto=format&fit=crop&w=350&q=80';">
                     <div>
                         <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-helmet-safety text-lavender-dark me-2"></i>Trapped Under Debris Protocol</h5>
                         <p class="text-muted small mb-3">Cover your mouth with a cloth to filter dust. Do not shout continuously to avoid dust inhalation and stamina loss. Instead, tap rhythmically with a metal object or rock against a pipe or wall so acoustic search sensors can triangulate your position.</p>
@@ -303,6 +303,22 @@
                             <li class="mb-2">Wear N95/P100 respirators to prevent hazardous particulate lung injury.</li>
                             <li>Evacuate along pre-planned escape corridors well before flames approach road margins.</li>
                         </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="glass-card p-4 bg-pink-light border border-pink mt-4">
+                <div class="d-flex flex-column flex-md-row align-items-center gap-4">
+                    <img src="{{ url_for('static', filename='img/wildfire.jpg') }}" 
+                         alt="Wildfire Response" 
+                         class="rounded-4 shadow-sm img-fluid" style="width: 260px; height: 160px; object-fit: cover;"
+                         onerror="this.src='https://images.unsplash.com/photo-1542385151-efd9000785a0?auto=format&fit=crop&w=350&q=80';">
+                    <div>
+                        <h5 class="fw-bold text-dark mb-2"><i class="fa-solid fa-fire-flame-curved text-danger me-2"></i>Fire Emergency Helplines & Response</h5>
+                        <p class="text-muted small mb-3">Fire Service: <strong>101</strong> | National Emergency Support: <strong>112</strong> | Forest Fire Crisis Cell: <strong>1800-11-9334</strong></p>
+                        <div class="d-flex flex-wrap gap-2">
+                            <a href="/sos" class="btn btn-sm btn-danger rounded-pill"><i class="fa-solid fa-tower-broadcast me-1"></i> Send Emergency SOS</a>
+                        </div>
                     </div>
                 </div>
             </div>
