@@ -1,6 +1,7 @@
 /**
- * REAL-TIME WEATHER MODULE (SMART DISASTER MANAGEMENT SYSTEM)
+ * REAL-TIME WEATHER MODULE (RADAR - Smart AI Disaster Management)
  * Fetches live meteorological telemetry from /api/weather based on user GPS or location query.
+ * Auto-detects user location via browser Geolocation API on page load.
  */
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,8 +23,24 @@ document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('weather-search-input');
     const gpsBtn = document.getElementById('weather-gps-btn');
 
-    // Default load: Delhi NCR weather or user GPS
-    loadWeather();
+    // Auto-detect user location on page load for live weather
+    if (navigator.geolocation) {
+        showStatus("Detecting your location for live weather...", "info");
+        navigator.geolocation.getCurrentPosition(
+            (pos) => {
+                loadWeather({ lat: pos.coords.latitude, lng: pos.coords.longitude });
+            },
+            (err) => {
+                // GPS denied/unavailable — fall back to Delhi NCR default
+                console.warn("GPS auto-detect failed, loading default weather:", err.message);
+                loadWeather();
+            },
+            { enableHighAccuracy: true, timeout: 6000 }
+        );
+    } else {
+        // Browser doesn't support geolocation — load default
+        loadWeather();
+    }
 
     if (searchForm) {
         searchForm.addEventListener('submit', (e) => {
@@ -52,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 (err) => {
                     gpsBtn.disabled = false;
                     let msg = "GPS access denied or unavailable.";
-                    if (err.code === err.PERMISSION_DENIED) msg = "Location permission denied. Please allow location access.";
+                    if (err.code === err.PERMISSION_DENIED) msg = "Location permission denied. Please allow location access in your browser settings.";
                     else if (err.code === err.TIMEOUT) msg = "GPS lookup timed out. Please try searching by city name.";
                     showStatus(msg, "warning");
                 },
@@ -96,21 +113,29 @@ document.addEventListener('DOMContentLoaded', () => {
                     // Update weather icon based on condition
                     if (iconEl) {
                         const cond = (data.weather_condition || '').toLowerCase();
-                        if (cond.includes('rain') || cond.includes('drizzle')) iconEl.className = 'fa-solid fa-cloud-showers-heavy text-cyan';
-                        elif (cond.includes('thunder') || cond.includes('storm')) iconEl.className = 'fa-solid fa-cloud-bolt text-warning';
-                        elif (cond.includes('cloud') || cond.includes('overcast')) iconEl.className = 'fa-solid fa-cloud-sun text-info';
-                        elif (cond.includes('fog')) iconEl.className = 'fa-solid fa-smog text-secondary';
-                        else iconEl.className = 'fa-solid fa-sun text-warning';
+                        if (cond.includes('rain') || cond.includes('drizzle')) {
+                            iconEl.className = 'fa-solid fa-cloud-showers-heavy text-cyan';
+                        } else if (cond.includes('thunder') || cond.includes('storm')) {
+                            iconEl.className = 'fa-solid fa-cloud-bolt text-warning';
+                        } else if (cond.includes('cloud') || cond.includes('overcast')) {
+                            iconEl.className = 'fa-solid fa-cloud-sun text-info';
+                        } else if (cond.includes('fog') || cond.includes('mist') || cond.includes('haze')) {
+                            iconEl.className = 'fa-solid fa-smog text-secondary';
+                        } else if (cond.includes('snow')) {
+                            iconEl.className = 'fa-solid fa-snowflake text-info';
+                        } else {
+                            iconEl.className = 'fa-solid fa-sun text-warning';
+                        }
                     }
 
-                    showStatus(`Weather updated for ${data.location}`, "success", 3000);
+                    showStatus(`✅ Weather updated for ${data.location}`, "success", 4000);
                 } else {
                     showStatus(data.error || "Could not retrieve weather for specified location.", "danger");
                 }
             })
             .catch(err => {
                 console.error("Weather error:", err);
-                showStatus("Failed to load real-time weather telemetry. Please try again.", "danger");
+                showStatus("⚠️ Weather service unavailable. Check your internet connection and try again.", "danger");
             });
     }
 

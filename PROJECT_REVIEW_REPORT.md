@@ -3,14 +3,14 @@
 ---
 
 ## **PROJECT TITLE**
-### **Smart Disaster Management System**
+### **RADAR - Smart AI Disaster Management System**
 *(Web-Based AI Emergency Assistance, Live Shelter Locator, Meteorological Telemetry & Multi-Hazard Disaster Risk Prediction Platform)*
 
 ---
 
 | Project Metadata | Information |
 | :--- | :--- |
-| **Project Name** | **Smart Disaster Management System** |
+| **Project Name** | **RADAR - Smart AI Disaster Management System** |
 | **Academic Purpose** | Final-Year B.Tech Capstone Project Review & Examination |
 | **Repository URL** | [GitHub Repository](https://github.com/TuhinaBose/Disaster-Management-Webapp-with-Smart-AI-Technology) |
 | **Target Domain** | Artificial Intelligence, Machine Learning, Web Engineering, Geographic Information Systems (GIS), Disaster Telemetry |
@@ -21,12 +21,12 @@
 
 ## 1. ABSTRACT & PROJECT OVERVIEW
 
-Disaster management requires rapid, accurate, and accessible information dissemination to minimize loss of life, coordinate relief operations, and empower citizens with actionable survival protocols. **Smart Disaster Management System** is a production-grade, full-stack disaster management web platform integrated with Smart AI technology, real-time Geographic Information Systems (GIS), and an elegant, modern **Pastel Design System**.
+Disaster management requires rapid, accurate, and accessible information dissemination to minimize loss of life, coordinate relief operations, and empower citizens with actionable survival protocols. **RADAR** is a production-grade, full-stack disaster management web platform integrated with Smart AI technology, real-time Geographic Information Systems (GIS), and an elegant, modern **Pastel Design System**.
 
 The platform is designed to provide proactive protection before, during, and after severe natural hazards (floods, cyclones, earthquakes, heatwaves, landslides, tsunamis, and wildfires).
 
 ### **Key Innovations in Current Release:**
-1. **Complete Brand Transformation**: Rebranded from legacy identifiers to **Smart Disaster Management System**, featuring a minimal vector disaster-protection shield symbol (`fa-shield-halved`) and clean typography.
+1. **Complete Brand Transformation**: Rebranded to **RADAR - Smart AI Disaster Management System**, featuring a minimal vector disaster-protection shield symbol (`fa-shield-halved`) and clean typography.
 2. **Premium Pastel Visual Design System**: Modernized the entire user interface using a pastel palette (lavender `#DDD6FE`, baby pink `#FBCFE8`, powder blue `#BAE6FD`, mint green `#A7F3D0`, soft peach `#FED7AA`, and cream white `#FAF9F6`) with soft glassmorphic borders and fluid shadows.
 3. **Smooth Micro-Interactions & Animation Architecture**: Implemented smooth page entrance animations, floating pastel decorative orbs, animated statistics counters, interactive prompt chips, and subtle hover lifts.
 4. **Visual Content & Multi-Hazard Imagery**: Added high-resolution disaster relief and rescue photography with automatic SVG fallback handling.
@@ -165,4 +165,4 @@ The application's integrity was verified using the automated test suite `test_ap
 
 ## 5. CONCLUSION
 
-The **Smart Disaster Management System** stands as a robust, modern, and aesthetically distinguished final-year B.Tech project. By unifying Machine Learning risk prediction, real-time spatial GIS mapping, interactive disaster preparedness protocols, and an AI conversational assistant within an elegant pastel theme, the system delivers an exceptional user experience tailored for disaster resilience.
+The **RADAR** platform stands as a robust, modern, and aesthetically distinguished final-year B.Tech project. By unifying Machine Learning risk prediction, real-time spatial GIS mapping, interactive disaster preparedness protocols, and an AI conversational assistant within an elegant pastel theme, the system delivers an exceptional user experience tailored for disaster resilience.

@@ -167,7 +167,7 @@ def shelters():
         try:
             full_loc_query = ', '.join(loc_parts) + ', India'
             nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(full_loc_query)}&format=json&limit=1"
-            req = urllib.request.Request(nom_url, headers={'User-Agent': 'SmartDisasterApp/2.0'})
+            req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-DisasterApp/2.0'})
             with urllib.request.urlopen(req, timeout=5) as resp:
                 nom_data = json.loads(resp.read().decode())
 
@@ -360,7 +360,7 @@ def api_weather():
     if (lat is None or lng is None) and location_name:
         try:
             nom_url = f"https://nominatim.openstreetmap.org/search?q={urllib.parse.quote(location_name + ', India')}&format=json&limit=1"
-            req = urllib.request.Request(nom_url, headers={'User-Agent': 'SmartDisasterApp/2.0'})
+            req = urllib.request.Request(nom_url, headers={'User-Agent': 'RADAR-DisasterApp/2.0'})
             with urllib.request.urlopen(req, timeout=5) as resp:
                 geo_data = json.loads(resp.read().decode())
                 if geo_data:
@@ -560,7 +560,7 @@ def chatbot_api():
         # 2. If Gemini API Key exists, call Google Gemini with full multi-turn conversation history
         if gemini_key and len(gemini_key.strip()) > 5:
             system_instruction = f"""
-            You are the 'AI Disaster Assistant', an official conversational intelligence engine for the 'Smart Disaster Management System'.
+            You are the 'AI Disaster Assistant', an official conversational intelligence engine for 'RADAR - Smart AI Disaster Management'.
             Your mission is to provide calm, precise, actionable, and empathetic assistance during natural and man-made disasters.
 
             REAL-TIME SYSTEM CONTEXT (Ground your answers in this verified telemetry):
@@ -638,7 +638,7 @@ def chatbot_api():
         # General Greetings & Politeness
         if any(k in q for k in ['hi', 'hello', 'hey', 'greetings', 'good morning', 'good afternoon', 'good evening']):
             reply = (
-                "👋 **Hello! Welcome to the Smart Disaster Management System.**\n\n"
+                "👋 **Hello! Welcome to RADAR.**\n\n"
                 "I am your **AI Disaster Assistant**. How can I assist you right now?\n\n"
                 "- 🧱 **Earthquake / Flood / Cyclone Safety**: Ask *'What should I do during an earthquake?'*\n"
                 "- 🏠 **Relief Shelters**: Ask *'Find nearby emergency shelters'*\n"
@@ -651,7 +651,7 @@ def chatbot_api():
         elif any(k in q for k in ['who are you', 'what is your name', 'what are you', 'about you', 'what can you do', 'system features']):
             reply = (
                 "🤖 **About AI Disaster Assistant**:\n\n"
-                "I am an intelligent conversational assistant developed for the **Smart Disaster Management System**.\n\n"
+                "I am an intelligent conversational assistant developed for **RADAR - Smart AI Disaster Management**.\n\n"
                 "**What I Can Do For You**:\n"
                 "1. **Disaster Safety & Survival**: Detailed, step-by-step guidance for earthquakes, floods, cyclones, landslides, wildfires, tsunamis, and thunderstorms.\n"
                 "2. **Live Shelter Telemetry**: Direct access to verified relief centers, free bed counts, food/medical facilities, and contacts.\n"
@@ -824,7 +824,7 @@ def chatbot_api():
         elif any(k in q for k in ['predict', 'prediction', 'risk model', 'machine learning', 'ml model', 'algorithm']):
             reply = (
                 "🧠 **AI Disaster Risk Prediction Engine**:\n\n"
-                "The **Smart Disaster Management System** employs a trained Scikit-Learn `RandomForestClassifier` trained on multi-variate environmental factors:\n"
+                "**RADAR** employs a trained Scikit-Learn `RandomForestClassifier` trained on multi-variate environmental factors:\n"
                 "- 🌧️ **Precipitation / Rainfall** (mm)\n"
                 "- 🌊 **River / Water Gauge Level** (m)\n"
                 "- 💨 **Wind Velocity** (km/h)\n"

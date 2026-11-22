@@ -317,8 +317,8 @@ app = create_app()
 
 if __name__ == '__main__':
     print("\n========================================================")
-    print(" 🚀 SMART DISASTER MANAGEMENT SYSTEM RUNNING")
-    print(" Project: Smart Disaster Management System with AI Technology")
+    print(" 🚀 RADAR - SMART AI DISASTER MANAGEMENT RUNNING")
+    print(" Project: RADAR - Disaster Management Web Application with AI")
     print(" Access on Laptop: http://127.0.0.1:5000")
     print(" Access on Mobile: http://10.183.89.85:5000")
     print(" Admin Login at: http://127.0.0.1:5000/admin/login")
